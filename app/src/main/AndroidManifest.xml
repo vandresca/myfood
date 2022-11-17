@@ -21,12 +21,13 @@
         android:theme="@style/Theme.MyFood.NoActionBar"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
         <activity
             android:name="com.journeyapps.barcodescanner.CaptureActivity"
             android:screenOrientation="portrait"
             tools:replace="screenOrientation" />
         <activity
-            android:name="com.example.myfood.activities.SignUpActivity"
+            android:name="com.example.myfood.activity.SignUpActivity"
             android:exported="false"
             android:label="SignUpActivity"
             android:theme="@style/Theme.MyFood.NoActionBar">
@@ -35,7 +36,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name="com.example.myfood.activities.MainActivity"
+            android:name="com.example.myfood.activity.MainActivity"
             android:exported="false"
             android:label="MainActivity"
             android:theme="@style/Theme.MyFood.NoActionBar">
@@ -44,7 +45,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name="com.example.myfood.activities.LoginActivity"
+            android:name="com.example.myfood.activity.LoginActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.MyFood.NoActionBar">

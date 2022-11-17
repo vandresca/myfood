@@ -37,6 +37,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="bottom"
         android:background="@color/turquoise"
-        app:menu="@menu/menu" />
+        app:menu="@menu/main_menu" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,4 +1,4 @@
-package com.example.myfood.fragments
+package com.example.myfood.fragment
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,12 +11,14 @@ import com.example.pec1.R
 import com.google.zxing.integration.android.IntentIntegrator
 
 
-class PurchaseListFragment : Fragment() {
+class AddPurchaseFragment : Fragment() {
     lateinit var btnBarcode: Button
     lateinit var textBarcode: TextView
     lateinit var quantityUnit: Spinner
-    lateinit var datePickerExpirationDate: EditText
-    lateinit var datePickerPreferenceDate: EditText
+    lateinit var datePickerExpirationDate: ImageButton
+    lateinit var editTextExpirationDate: EditText
+    lateinit var datePickerPreferenceDate: ImageButton
+    lateinit var editTextPreferenceDate: EditText
 
     val dropdownItems = arrayOf(
         "Vic 1",
@@ -40,7 +42,7 @@ class PurchaseListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.purchaselist_fragment, container, false)
+        return inflater.inflate(R.layout.add_purchase_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -49,7 +51,19 @@ class PurchaseListFragment : Fragment() {
         textBarcode = view.findViewById(R.id.editTextBarcode)
         quantityUnit = view.findViewById(R.id.spinnerQuantityUnit)
         datePickerExpirationDate = view.findViewById(R.id.datePickerExpirationDate)
+        editTextExpirationDate = view.findViewById(R.id.editTextExpirationDate)
         datePickerPreferenceDate = view.findViewById(R.id.datePickerPreferenceDate)
+        editTextPreferenceDate = view.findViewById(R.id.editTextPreferenceDate)
+        datePickerExpirationDate.setOnClickListener {
+            var dialogDate =
+                DatePickerFragment { year, month, day -> showExpirationResult(year, month, day) }
+            dialogDate.show(childFragmentManager, "DataPicker")
+        }
+        datePickerPreferenceDate.setOnClickListener {
+            var dialogDate =
+                DatePickerFragment { year, month, day -> showPreferenceResult(year, month, day) }
+            dialogDate.show(childFragmentManager, "DataPicker")
+        }
         btnBarcode.setOnClickListener { initScanner() }
         initCombos()
     }
@@ -109,5 +123,13 @@ class PurchaseListFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun showExpirationResult(year: Int, month: Int, day: Int) {
+        editTextExpirationDate.setText("$day/$month/$year")
+    }
+
+    private fun showPreferenceResult(year: Int, month: Int, day: Int) {
+        editTextPreferenceDate.setText("$day/$month/$year")
     }
 }

@@ -30,6 +30,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
     buildFeatures {
         viewBinding true
     }
@@ -49,5 +50,6 @@ dependencies {
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
     implementation('com.journeyapps:zxing-android-embedded:4.1.0') { transitive = false }
     implementation 'com.google.zxing:core:3.3.0'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation("org.jsoup:jsoup:1.11.3")
 }

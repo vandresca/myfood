@@ -1,10 +1,10 @@
-package com.example.myfood.activities
+package com.example.myfood.activity
 
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.myfood.fragments.*
+import com.example.myfood.fragment.*
 import com.example.pec1.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         header = findViewById(R.id.title_header)
         bottomNav = findViewById(R.id.bottom_navigation)
         loadFragment(PurchaseListFragment())
-        header.text = "Despensa"
+        header.text = "Purchase List"
         navigate()
     }
 
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
             when (it.itemId) {
                 R.id.purchaseItem -> {
                     loadFragment(PurchaseListFragment())
-                    header.text = "Despensa"
+                    header.text = "Purchase List"
                     true
                 }
                 R.id.shopListItem -> {

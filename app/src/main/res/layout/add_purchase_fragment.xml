@@ -244,19 +244,36 @@
                     android:text="@string/ExpirationDate"
                     android:textColor="@color/turquoise" />
 
-                <EditText
-                    android:id="@+id/datePickerExpirationDate"
-                    android:layout_width="200dp"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:autofillHints="creditCardNumber"
-                    android:drawableRight="@drawable/ic_baseline_calendar_month_24"
-                    android:drawablePadding="10dp"
-                    android:ems="10"
-                    android:hint="DD/MM/YYYY"
-                    android:inputType="date"
-                    android:text="" />
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/editTextExpirationDate"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:autofillHints="creditCardNumber"
+                        android:drawableRight="@drawable/ic_baseline_calendar_month_24"
+                        android:drawablePadding="10dp"
+                        android:ems="10"
+                        android:hint="DD/MM/YYYY"
+                        android:enabled="false"
+                        android:inputType="none"
+                        android:text="" />
+
+                    <ImageButton
+                        android:id="@+id/datePickerExpirationDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="20dp"
+                        android:backgroundTint="@color/turquoise"
+                        android:src="@drawable/ic_baseline_calendar_month_24"
+                        android:textAllCaps="false" />
+
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout
@@ -274,19 +291,37 @@
                     android:text="@string/PreferenceDate"
                     android:textColor="@color/turquoise" />
 
-                <EditText
-                    android:id="@+id/datePickerPreferenceDate"
-                    android:layout_width="200dp"
+                <LinearLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:autofillHints="creditCardNumber"
-                    android:drawableRight="@drawable/ic_baseline_calendar_month_24"
-                    android:drawablePadding="10dp"
-                    android:ems="10"
-                    android:hint="DD/MM/YYYY"
-                    android:inputType="date"
-                    android:text="" />
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/editTextPreferenceDate"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:autofillHints="creditCardNumber"
+                        android:drawableRight="@drawable/ic_baseline_calendar_month_24"
+                        android:drawablePadding="10dp"
+                        android:ems="10"
+                        android:hint="DD/MM/YYYY"
+                        android:enabled="false"
+                        android:inputType="none"
+                        android:text="" />
+
+                    <ImageButton
+                        android:id="@+id/datePickerPreferenceDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="20dp"
+                        android:backgroundTint="@color/turquoise"
+                        android:src="@drawable/ic_baseline_calendar_month_24"
+                        android:textAllCaps="false" />
+
+                </LinearLayout>
+
             </LinearLayout>
 
             <LinearLayout
@@ -306,6 +341,7 @@
                         android:layout_height="60dp"
                         android:layout_marginEnd="20dp"
                         android:backgroundTint="@color/turquoise"
+                        android:layout_marginTop="20dp"
                         android:text="@string/Add"
                         android:textAllCaps="false" />
                 </RelativeLayout>

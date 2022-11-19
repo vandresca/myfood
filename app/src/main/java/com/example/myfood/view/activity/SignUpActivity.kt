@@ -1,8 +1,8 @@
-package com.example.myfood.activity
+package com.example.myfood.view.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.pec1.R
+import com.example.myfood.R
 
 class SignUpActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

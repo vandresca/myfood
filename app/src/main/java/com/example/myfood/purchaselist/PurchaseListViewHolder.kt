@@ -1,9 +1,8 @@
-package com.example.myfood.adapter
+package com.example.myfood.purchaselist
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myfood.entity.PurchaseList
-import com.example.pec1.databinding.ElementPurchaseListBinding
+import com.example.myfood.databinding.ElementPurchaseListBinding
 
 
 class PurchaseListViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
@@ -22,6 +21,6 @@ class PurchaseListViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         binding.tvPPCurrency.text = purchaseListModel.currency
         binding.itemViewPL.setOnClickListener { onClickListener(purchaseListModel) }
         binding.btnDeletePP.setOnClickListener { onCLickDelete(adapterPosition) }
-        binding.btnUpdatePP.setOnClickListener { onClickListener(purchaseListModel) }
+        binding.btnUpdatePP.setOnClickListener { onClickUpdate(purchaseListModel) }
     }
 }

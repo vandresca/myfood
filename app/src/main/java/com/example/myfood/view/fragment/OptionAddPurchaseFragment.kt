@@ -1,4 +1,4 @@
-package com.example.myfood.fragment
+package com.example.myfood.view.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.example.pec1.R
+import com.example.myfood.R
 
 
-class OptionAddPurchaseProductFragment : Fragment() {
+class OptionAddPurchaseFragment : Fragment() {
     lateinit var buttonOptionBarcode: ImageButton
     lateinit var buttonOptionKeyboard: ImageButton
     lateinit var header: TextView
@@ -30,18 +30,18 @@ class OptionAddPurchaseProductFragment : Fragment() {
         header = (requireActivity()).findViewById(R.id.title_header)
 
         buttonOptionBarcode.setOnClickListener {
-            loadFragment(AddPurchaseFragment())
-            header.text = "HH!"
+            loadFragment(AddPurchaseFragment(AddPurchaseFragment.MODE_ADD))
+            header.text = "Add Purchase"
         }
         buttonOptionKeyboard.setOnClickListener {
-            loadFragment(AddPurchaseFragment())
-            header.text = "OOO!"
+            loadFragment(AddPurchaseFragment(AddPurchaseFragment.MODE_ADD))
+            header.text = "Add Purchase"
         }
     }
 
     private fun loadFragment(fragment: Fragment) {
         val transaction = parentFragmentManager.beginTransaction()
-        transaction.replace(R.id.container, fragment)
+        transaction.add(R.id.container, fragment)
         transaction.addToBackStack(null)
         transaction.commit()
     }

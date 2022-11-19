@@ -8,7 +8,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/white">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -21,7 +22,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/imageViewProduct"
+                    android:id="@+id/ivProduct"
                     android:layout_width="130dp"
                     android:layout_height="130dp"
                     android:layout_gravity="bottom|start"
@@ -32,7 +33,7 @@
                     app:srcCompat="@drawable/image_default" />
 
                 <Button
-                    android:id="@+id/buttonChangeImage"
+                    android:id="@+id/btnChangeImage"
                     android:layout_width="100dp"
                     android:layout_height="60dp"
                     android:layout_gravity="bottom|start"
@@ -47,7 +48,7 @@
                     android:gravity="end">
 
                     <Button
-                        android:id="@+id/buttonOCR"
+                        android:id="@+id/btnOCR"
                         android:layout_width="68dp"
                         android:layout_height="60dp"
                         android:layout_marginEnd="20dp"
@@ -58,7 +59,7 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/labelProductName"
+                android:id="@+id/lProductName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -67,7 +68,7 @@
                 android:textColor="@color/turquoise" />
 
             <EditText
-                android:id="@+id/editTextProductName"
+                android:id="@+id/etProductName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -79,7 +80,7 @@
                 android:text="" />
 
             <TextView
-                android:id="@+id/labelBarcode"
+                android:id="@+id/lBarcode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -92,12 +93,13 @@
                 android:orientation="horizontal">
 
                 <EditText
-                    android:id="@+id/editTextBarcode"
+                    android:id="@+id/etBarcode"
                     android:layout_width="250dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:autofillHints="creditCardNumber"
+                    android:editable="true"
                     android:ems="10"
                     android:inputType="textPersonName"
                     android:text="" />
@@ -109,7 +111,7 @@
                     android:gravity="end">
 
                     <Button
-                        android:id="@+id/buttonScan"
+                        android:id="@+id/btnScan"
                         android:layout_width="110dp"
                         android:layout_height="60dp"
                         android:layout_marginEnd="20dp"
@@ -131,7 +133,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/labelQuantity"
+                        android:id="@+id/lQuantity"
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
@@ -140,7 +142,7 @@
                         android:textColor="@color/turquoise" />
 
                     <EditText
-                        android:id="@+id/editTextQuantity"
+                        android:id="@+id/etQuantity"
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
@@ -158,7 +160,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/labelQuantityUnit"
+                        android:id="@+id/lQuantityUnit"
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
@@ -166,7 +168,7 @@
                         android:textColor="@color/turquoise" />
 
                     <Spinner
-                        android:id="@+id/spinnerQuantityUnit"
+                        android:id="@+id/sQuantityUnit"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:spinnerMode="dropdown" />
@@ -186,7 +188,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/labelWeight"
+                        android:id="@+id/lWeight"
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
@@ -195,7 +197,7 @@
                         android:textColor="@color/turquoise" />
 
                     <EditText
-                        android:id="@+id/editTextWeight"
+                        android:id="@+id/etWeight"
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
@@ -213,7 +215,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/labelPlace"
+                        android:id="@+id/lPlace"
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
@@ -221,7 +223,7 @@
                         android:textColor="@color/turquoise" />
 
                     <Spinner
-                        android:id="@+id/spinnerPLace"
+                        android:id="@+id/sPLace"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:spinnerMode="dropdown" />
@@ -236,7 +238,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/labelExpirationDate"
+                    android:id="@+id/lExpirationDate"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
@@ -250,7 +252,7 @@
                     android:orientation="horizontal">
 
                     <EditText
-                        android:id="@+id/editTextExpirationDate"
+                        android:id="@+id/etExpirationDate"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
@@ -259,13 +261,13 @@
                         android:drawableRight="@drawable/ic_baseline_calendar_month_24"
                         android:drawablePadding="10dp"
                         android:ems="10"
-                        android:hint="DD/MM/YYYY"
                         android:enabled="false"
+                        android:hint="DD/MM/YYYY"
                         android:inputType="none"
                         android:text="" />
 
                     <ImageButton
-                        android:id="@+id/datePickerExpirationDate"
+                        android:id="@+id/dpExpirationDate"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_marginEnd="20dp"
@@ -283,7 +285,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/labelPreferenceDate"
+                    android:id="@+id/lPreferenceDate"
                     android:layout_width="150dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="20dp"
@@ -297,7 +299,7 @@
                     android:orientation="horizontal">
 
                     <EditText
-                        android:id="@+id/editTextPreferenceDate"
+                        android:id="@+id/etPreferenceDate"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
@@ -306,13 +308,13 @@
                         android:drawableRight="@drawable/ic_baseline_calendar_month_24"
                         android:drawablePadding="10dp"
                         android:ems="10"
-                        android:hint="DD/MM/YYYY"
                         android:enabled="false"
+                        android:hint="DD/MM/YYYY"
                         android:inputType="none"
                         android:text="" />
 
                     <ImageButton
-                        android:id="@+id/datePickerPreferenceDate"
+                        android:id="@+id/dpPreferenceDate"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_marginEnd="20dp"
@@ -336,12 +338,12 @@
                     android:gravity="end">
 
                     <Button
-                        android:id="@+id/buttonAddPurchaseProduct"
+                        android:id="@+id/btnAddPurchaseProduct"
                         android:layout_width="150dp"
                         android:layout_height="60dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginEnd="20dp"
                         android:backgroundTint="@color/turquoise"
-                        android:layout_marginTop="20dp"
                         android:text="@string/Add"
                         android:textAllCaps="false" />
                 </RelativeLayout>

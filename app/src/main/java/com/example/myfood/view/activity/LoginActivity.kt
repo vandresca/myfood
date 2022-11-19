@@ -1,12 +1,18 @@
-package com.example.myfood.activity
+package com.example.myfood.view.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import com.example.pec1.R
+import com.example.myfood.R
+import com.example.myfood.databasesqlite.Language
+import com.example.myfood.databasesqlite.RoomSingleton
 
 class LoginActivity : AppCompatActivity() {
+
+    private lateinit var db: RoomSingleton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -21,5 +27,11 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
+
+        db = RoomSingleton.getInstance(application)
+
+        var values: List<Language> = db.sqliteDao().getLanguages()
+
+        Log.i("INFO", "============= > " + values)
     }
 }

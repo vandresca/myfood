@@ -1,10 +1,9 @@
-package com.example.myfood.adapter
+package com.example.myfood.purchaselist
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myfood.entity.PurchaseList
-import com.example.pec1.R
+import com.example.myfood.R
 
 class PurchaseListAdapter(
     private var purchaseList: List<PurchaseList>,

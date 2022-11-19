@@ -8,10 +8,10 @@ import android.widget.TextView
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.myfood.R
+import com.example.myfood.databinding.PurchaseListFragmentBinding
 import com.example.myfood.view.fragment.AddPurchaseFragment
 import com.example.myfood.view.fragment.OptionAddPurchaseFragment
-import com.example.pec1.R
-import com.example.pec1.databinding.PurchaseListFragmentBinding
 
 class PurchaseListFragment : Fragment(), PurchaseListContract.View {
     private var _binding: PurchaseListFragmentBinding? = null

@@ -1,16 +1,21 @@
-package com.example.myfood.activity
+package com.example.myfood.view.activity
 
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.myfood.fragment.*
-import com.example.pec1.R
+import com.example.myfood.R
+import com.example.myfood.fragment.ConfigFragment
+import com.example.myfood.fragment.ExpirationFragment
+import com.example.myfood.fragment.RecipeFragment
+import com.example.myfood.fragment.ShopListFragment
+import com.example.myfood.purchaselist.PurchaseListFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
-    lateinit var header: TextView
-    lateinit var bottomNav: BottomNavigationView
+    private lateinit var header: TextView
+    private lateinit var bottomNav: BottomNavigationView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,8 +33,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadFragment(fragment: Fragment) {
         val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.container, fragment)
-        transaction.addToBackStack(null)
+        transaction.add(R.id.container, fragment)
+        if (supportFragmentManager.fragments.isNotEmpty())
+            transaction.addToBackStack(fragment.toString())
         transaction.commit()
     }
 

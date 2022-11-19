@@ -1,4 +1,4 @@
-package com.example.myfood.entity
+package com.example.myfood.purchaselist
 
 data class PurchaseList(
     val name: String,

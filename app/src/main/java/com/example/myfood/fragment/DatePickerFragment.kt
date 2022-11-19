@@ -5,7 +5,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.widget.DatePicker
 import androidx.fragment.app.DialogFragment
-import com.example.pec1.R
+import com.example.myfood.R
 import java.util.*
 
 class DatePickerFragment(val listener: (year: Int, month: Int, day: Int) -> Unit) :

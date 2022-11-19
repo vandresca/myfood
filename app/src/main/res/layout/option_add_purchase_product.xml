@@ -2,36 +2,40 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <ImageButton
-            android:id="@+id/buttonOptionBarCode"
-            android:layout_width="295dp"
-            android:layout_height="124dp"
-            android:layout_margin="50dp"
-            android:background="@drawable/barcode"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="MissingConstraints"
-            tools:layout_editor_absoluteY="369dp" />
+        android:background="@color/white">
 
         <ImageButton
             android:id="@+id/buttonOptionKeyboard"
-            android:layout_width="295dp"
+            android:layout_width="0dp"
             android:layout_height="124dp"
-            android:layout_margin="50dp"
-            android:background="@drawable/keyboard"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:background="@drawable/barcode"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="MissingConstraints"
-            tools:layout_editor_absoluteY="194dp" />
-    </LinearLayout>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.3" />
+
+        <ImageButton
+            android:id="@+id/buttonOptionBarCode"
+            android:layout_width="0dp"
+            android:layout_height="124dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:background="@drawable/keyboard"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/buttonOptionKeyboard"
+            app:layout_constraintVertical_bias="0.3" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

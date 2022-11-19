@@ -3,6 +3,7 @@ package com.example.myfood.databasesqlite
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
+import com.example.myfood.databasesqlite.entity.*
 
 
 @Database(
@@ -19,7 +20,9 @@ abstract class RoomSingleton : androidx.room.RoomDatabase() {
                 context,
                 RoomSingleton::class.java,
                 "sample.db"
-            ).createFromAsset("myfood.db").build()
+            )
+                .fallbackToDestructiveMigration()
+                .createFromAsset("myfood.db").build()
         }
     }
 }

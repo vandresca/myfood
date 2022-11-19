@@ -4,7 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.myfood.view.activity.LoginActivity">
+    tools:context="com.example.myfood.mvp.addpurchaseproduc.login.LoginActivity">
+
+    <Spinner
+        android:id="@+id/sLanguageLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:spinnerMode="dropdown"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,37 +32,23 @@
             android:layout_gravity="center"
             app:srcCompat="@drawable/logo" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/editNameLogin"
-            android:layout_width="295dp"
+        <EditText
+            android:id="@+id/etNameLogin"
+            android:layout_width="match_parent"
             android:layout_height="60dp"
             android:hint="Name"
-            android:textColorHint="@color/turquoise"
+            android:inputType="text"
             app:boxBackgroundColor="@color/white"
-            app:hintTextColor="@color/turquoise">
+            app:hintTextColor="@color/turquoise" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="295dp"
-                android:layout_height="60dp"
-                android:inputType="textPersonName" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/editPasswordLogin"
-            android:layout_width="295dp"
+        <EditText
+            android:id="@+id/etPasswordLogin"
+            android:layout_width="match_parent"
             android:layout_height="60dp"
             android:hint="Password"
-            android:textColorHint="@color/turquoise"
+            android:inputType="textPassword"
             app:boxBackgroundColor="@color/white"
-            app:endIconMode="password_toggle"
-            app:endIconTint="@color/turquoise"
-            app:hintTextColor="@color/turquoise">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="295dp"
-                android:layout_height="60dp"
-                android:inputType="textPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
+            app:hintTextColor="@color/turquoise" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -63,7 +57,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/buttonRegister"
+                android:id="@+id/btnSignUpLogin"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -74,7 +68,7 @@
                 android:textColor="#0000FF" />
 
             <Button
-                android:id="@+id/buttonPasswordForgotten"
+                android:id="@+id/btnPasswordForgotten"
                 style="?android:attr/borderlessButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -86,7 +80,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/buttonLogin"
+            android:id="@+id/btnLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"

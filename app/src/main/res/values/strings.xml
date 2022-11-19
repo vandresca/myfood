@@ -13,8 +13,6 @@
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_main2">MainActivity2</string>
 
-    <string name="database_path">/data/user/0/com.example.myfood/databases/myfood.db</string>
-
     <string name="productDescription">Product image</string>
     <string name="Change">Change</string>
     <string name="OCR">OCR</string>

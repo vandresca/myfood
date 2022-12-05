@@ -1,33 +1,53 @@
 package com.example.myfood.mvp.main
 
 import android.os.Bundle
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.myfood.R
+import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databinding.ActivityMainBinding
 import com.example.myfood.mvp.config.ConfigFragment
-import com.example.myfood.mvp.expiration.ExpirationFragment
-import com.example.myfood.mvp.purchaselist.PurchaseListFragment
-import com.example.myfood.mvp.recipe.RecipeFragment
+import com.example.myfood.mvp.expiration.ExpirationListFragment
+import com.example.myfood.mvp.pantrylist.PantryListFragment
+import com.example.myfood.mvp.recipelist.RecipeListFragment
 import com.example.myfood.mvp.shoplist.ShopListFragment
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var header: TextView
-    private lateinit var bottomNav: BottomNavigationView
-
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initialize()
     }
 
     private fun initialize() {
-        header = findViewById(R.id.title_header)
-        bottomNav = findViewById(R.id.bottom_navigation)
-        loadFragment(PurchaseListFragment())
-        header.text = "Purchase List"
+        MainModel.getInstance(this)
+        MainModel.getCurrentLanguage(this)
+    }
+
+    fun onCurrentLanguageLoaded(language: String) {
+        MainModel.getTranslations(this, Integer.parseInt(language))
+    }
+
+    fun onTranslationsLoaded(translations: List<Translation>) {
+        translations.forEach {
+            when (it.word) {
+                "menuPurchase" -> binding.bottomNavigation.menu.findItem(R.id.purchaseItem).title =
+                    it.text
+                "menuShopping" -> binding.bottomNavigation.menu.findItem(R.id.shopListItem).title =
+                    it.text
+                "menuExpiration" -> binding.bottomNavigation.menu.findItem(R.id.expirationItem).title =
+                    it.text
+                "menuRecipe" -> binding.bottomNavigation.menu.findItem(R.id.recipeItem).title =
+                    it.text
+                "menuConfig" -> binding.bottomNavigation.menu.findItem(R.id.configItem).title =
+                    it.text
+
+            }
+        }
+        loadFragment(PantryListFragment())
         navigate()
     }
 
@@ -40,31 +60,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun navigate() {
-        bottomNav.setOnItemSelectedListener {
+        binding.bottomNavigation.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.purchaseItem -> {
-                    loadFragment(PurchaseListFragment())
-                    header.text = "Purchase List"
+                    loadFragment(PantryListFragment())
                     true
                 }
                 R.id.shopListItem -> {
                     loadFragment(ShopListFragment())
-                    header.text = "Compra"
                     true
                 }
                 R.id.expirationItem -> {
-                    loadFragment(ExpirationFragment())
-                    header.text = "Caducidad"
+                    loadFragment(ExpirationListFragment())
                     true
                 }
                 R.id.recipeItem -> {
-                    loadFragment(RecipeFragment())
-                    header.text = "Recetas"
+                    loadFragment(RecipeListFragment())
                     true
                 }
                 R.id.configItem -> {
-                    loadFragment(ConfigFragment())
-                    header.text = "Configuración"
+                    loadFragment(ConfigFragment(binding))
                     true
                 }
                 else -> {

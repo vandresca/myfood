@@ -4,39 +4,33 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.myfood.R
-import com.example.myfood.mvp.addpurchaseproduc.AddPurchaseFragment
+import com.example.myfood.databinding.OptionAddPurchaseProductBinding
+import com.example.myfood.mvp.addpantryproduct.AddPantryFragment
 
 
 class OptionAddPurchaseFragment : Fragment() {
-    lateinit var buttonOptionBarcode: ImageButton
-    lateinit var buttonOptionKeyboard: ImageButton
-    lateinit var header: TextView
+    private var _binding: OptionAddPurchaseProductBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.option_add_purchase_product, container, false)
+        _binding = OptionAddPurchaseProductBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        buttonOptionBarcode = view.findViewById(R.id.buttonOptionBarCode)
-        buttonOptionKeyboard = view.findViewById(R.id.buttonOptionKeyboard)
-        header = (requireActivity()).findViewById(R.id.title_header)
-
-        buttonOptionBarcode.setOnClickListener {
-            loadFragment(AddPurchaseFragment(AddPurchaseFragment.MODE_ADD))
-            header.text = "Add Purchase"
+        binding.header.titleHeader.text = "Add Purchase"
+        binding.btnOptionBarCode.setOnClickListener {
+            loadFragment(AddPantryFragment(AddPantryFragment.MODE_SCAN))
         }
-        buttonOptionKeyboard.setOnClickListener {
-            loadFragment(AddPurchaseFragment(AddPurchaseFragment.MODE_ADD))
-            header.text = "Add Purchase"
+        binding.btnOptionKeyboard.setOnClickListener {
+            loadFragment(AddPantryFragment(AddPantryFragment.MODE_ADD))
         }
     }
 

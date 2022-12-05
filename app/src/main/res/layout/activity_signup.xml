@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.myfood.mvp.addpurchaseproduc.login.LoginActivity">
+    tools:context="com.example.myfood.mvp.signup.SignUpActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,98 +14,61 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints">
+        app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/editNameSignUp"
-            android:layout_width="295dp"
+        <EditText
+            android:id="@+id/etNameSignUp"
+            android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:hint="Name"
-            android:textColorHint="@color/turquoise"
+            android:hint="@string/Name"
+            android:inputType="text"
             app:boxBackgroundColor="@color/white"
-            app:hintTextColor="@color/turquoise">
+            app:hintTextColor="@color/turquoise" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="295dp"
-                android:layout_height="60dp"
-                android:inputType="textPersonName" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/editSurnamesSignUp"
-            android:layout_width="295dp"
+        <EditText
+            android:id="@+id/etSurnamesSignUp"
+            android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:hint="Surname"
-            android:textColorHint="@color/turquoise"
+            android:hint="@string/Surnames"
+            android:inputType="text"
             app:boxBackgroundColor="@color/white"
-            app:hintTextColor="@color/turquoise">
+            app:hintTextColor="@color/turquoise" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="295dp"
-                android:layout_height="60dp"
-                android:inputType="textPersonName" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/editEmailSignUp"
-            android:layout_width="295dp"
+        <EditText
+            android:id="@+id/etEmailSignUp"
+            android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:hint="Email"
-            android:textColorHint="@color/turquoise"
+            android:hint="@string/Email"
+            android:inputType="textEmailAddress"
             app:boxBackgroundColor="@color/white"
-            app:hintTextColor="@color/turquoise">
+            app:hintTextColor="@color/turquoise" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="295dp"
-                android:layout_height="60dp"
-                android:inputType="textEmailAddress" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/editPasswordLogin"
-            android:layout_width="295dp"
+        <EditText
+            android:id="@+id/etPasswordSignup"
+            android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:hint="Password"
-            android:textColorHint="@color/turquoise"
+            android:hint="@string/Password"
+            android:inputType="textPassword"
             app:boxBackgroundColor="@color/white"
-            app:endIconMode="password_toggle"
-            app:endIconTint="@color/turquoise"
-            app:hintTextColor="@color/turquoise">
+            app:hintTextColor="@color/turquoise" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="295dp"
-                android:layout_height="60dp"
-                android:inputType="textPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/editConfirmPasswordSignUp"
-            android:layout_width="295dp"
+        <EditText
+            android:id="@+id/etConfirmPasswordSignUp"
+            android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:hint="Confirm Password"
-            android:textColorHint="@color/turquoise"
+            android:hint="@string/ConfPass"
+            android:inputType="textPassword"
             app:boxBackgroundColor="@color/white"
-            app:endIconMode="password_toggle"
-            app:endIconTint="@color/turquoise"
-            app:hintTextColor="@color/turquoise">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="295dp"
-                android:layout_height="60dp"
-                android:inputType="textPassword" />
-        </com.google.android.material.textfield.TextInputLayout>
+            app:hintTextColor="@color/turquoise" />
 
         <Button
-            android:id="@+id/buttonLogin"
+            android:id="@+id/btnSignUp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_gravity="end"
             android:layout_marginTop="15dp"
             android:backgroundTint="@color/turquoise"
-            android:text="Sign up"
+            android:text="@string/SignUp"
             android:textAllCaps="false" />
-
-
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

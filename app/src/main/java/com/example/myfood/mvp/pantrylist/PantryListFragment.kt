@@ -1,4 +1,4 @@
-package com.example.myfood.mvp.purchaselist
+package com.example.myfood.mvp.pantrylist
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,13 +10,14 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myfood.R
 import com.example.myfood.databinding.PurchaseListFragmentBinding
-import com.example.myfood.mvp.addpurchaseproduc.AddPurchaseFragment
+import com.example.myfood.mvp.addpantryproduct.AddPantryFragment
 import com.example.myfood.mvp.optionaddpurchase.OptionAddPurchaseFragment
 
-class PurchaseListFragment : Fragment(), PurchaseListContract.View {
+class PantryListFragment : Fragment(), PantryListContract.View {
     private var _binding: PurchaseListFragmentBinding? = null
     private val binding get() = _binding!!
     private lateinit var header: TextView
+    private lateinit var purchaseListPresenter: PantryListPresenter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,27 +32,37 @@ class PurchaseListFragment : Fragment(), PurchaseListContract.View {
         initialize()
     }
 
-    override fun showUpdatePurchaseScreen() {
-        loadFragment(AddPurchaseFragment(AddPurchaseFragment.MODE_UPDATE))
-        header.text = "Update Purchase"
+    override fun showUpdatePurchaseScreen(idPurchase: String) {
+        loadFragment(AddPantryFragment(AddPantryFragment.MODE_UPDATE, idPurchase))
     }
 
     private fun initialize() {
-        header = (requireActivity()).findViewById(R.id.title_header)
-        PurchaseListPresenter(this, PurchaseListModel()).initData()
+        binding.header.titleHeader.text = "Purchase List"
+        val pantryListModel = PantryListModel()
+        pantryListModel.getInstance(requireContext())
+        pantryListModel.getUserId(this)
+    }
+
+    override fun onUserIdLoaded(idUser: String) {
+        purchaseListPresenter = PantryListPresenter(this, PantryListModel(), idUser)
         initAddPurchaseClick()
         initSearcher()
     }
 
+
     private fun initSearcher() {
         binding.etFilterPL.addTextChangedListener { watchText ->
-            PurchaseListPresenter(this, PurchaseListModel()).doFilter(watchText)
+            purchaseListPresenter.doFilter(watchText)
         }
     }
 
-    override fun initRecyclerView(purchaseAdapter: PurchaseListAdapter) {
+    override fun initRecyclerView(purchaseAdapter: PantryListAdapter) {
         binding.rvPL.layoutManager = LinearLayoutManager(this.context)
         binding.rvPL.adapter = purchaseAdapter
+        binding.tvPricePLProduct.text = String.format("%.2f", purchaseAdapter.getTotalPrice())
+        binding.tvTotalPLProduct.visibility = View.VISIBLE
+        binding.tvPricePLProduct.visibility = View.VISIBLE
+        binding.tvCurrencyPLProduct.visibility = View.VISIBLE
     }
 
     private fun initAddPurchaseClick() {

@@ -5,29 +5,29 @@
     <item
         android:id="@+id/purchaseItem"
         android:icon="@drawable/list_selected_alpha"
-        android:title="Despensa"
+        android:title="Purchase"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/shopListItem"
         android:icon="@drawable/cart_selected_alpha"
-        android:title="Compra"
+        android:title="Shopping"
         app:showAsAction="always" />
     <item
         android:id="@+id/expirationItem"
         android:icon="@drawable/expired_selected_alpha"
-        android:title="Caducidad"
+        android:title="Expiration"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/recipeItem"
         android:icon="@drawable/recipebook_selected_alpha"
-        android:title="Recetas"
+        android:title="Recipe"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/configItem"
         android:icon="@drawable/gear_selected_alpha"
-        android:title="Config."
+        android:title="Config"
         app:showAsAction="always" />
 </menu>

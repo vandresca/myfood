@@ -9,4 +9,9 @@
     <color name="white">#FFFFFF</color>
     <color name="turquoise">#009691</color>
     <color name="orange">#F44336</color>
+    <color name="blue">#2196F3</color>
+    <color name="red">#F32121</color>
+    <color name="yellow">#FFC107</color>
+    <color name="green">#1ABA09</color>
+    <color name="grayDark">#4F514E</color>
 </resources>

@@ -11,8 +11,16 @@
         android:layout_height="match_parent"
         android:background="@color/white">
 
+        <include
+            android:id="@+id/header"
+            layout="@layout/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <ImageButton
-            android:id="@+id/buttonOptionKeyboard"
+            android:id="@+id/btnOptionBarCode"
             android:layout_width="0dp"
             android:layout_height="124dp"
             android:layout_marginStart="50dp"
@@ -25,7 +33,7 @@
             app:layout_constraintVertical_bias="0.3" />
 
         <ImageButton
-            android:id="@+id/buttonOptionBarCode"
+            android:id="@+id/btnOptionKeyboard"
             android:layout_width="0dp"
             android:layout_height="124dp"
             android:layout_marginStart="50dp"
@@ -34,7 +42,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/buttonOptionKeyboard"
+            app:layout_constraintTop_toBottomOf="@+id/btnOptionBarCode"
             app:layout_constraintVertical_bias="0.3" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

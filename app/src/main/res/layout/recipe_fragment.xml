@@ -1,125 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:background="@color/white">
 
-            <TextView
-                android:layout_width="wrap_content"
+            <include
+                android:id="@+id/header"
+                layout="@layout/header"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO I"
-                android:textColor="#FFEB3B"
-                android:textSize="20sp" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO II"
-                android:textColor="#FFEB3B"
-                android:textSize="20sp" />
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@id/header">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO III"
-                android:textColor="#FFEB3B"
-                android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/tvRIName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:paddingBottom="10dp"
+                    android:text="Name Recipe"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:visibility="invisible" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO IV"
-                android:textColor="#FFEB3B"
-                android:textSize="20sp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="10dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO V"
-                android:textColor="#FFEB3B"
-                android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/lRIPortions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="10dp"
+                        android:text="Portions:"
+                        android:textStyle="bold"
+                        android:visibility="invisible" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO VI"
-                android:textColor="#FFEB3B"
-                android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/tvRIPortions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="10dp"
+                        android:text="3"
+                        android:visibility="invisible" />
+                </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO VII"
-                android:textColor="#FFEB3B"
-                android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/tvRIIngredientsLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:paddingBottom="10dp"
+                    android:text="Ingredients"
+                    android:textStyle="bold"
+                    android:visibility="invisible" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO VIII"
-                android:textColor="#FFEB3B"
-                android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/tvRIngredients"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start|top"
+                    android:inputType="textMultiLine"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="10dp"
+                    android:text="2 aubergines\n3 artichokes"
+                    android:visibility="invisible" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO IX"
-                android:textColor="#FFEB3B"
-                android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/tvRIElaborationLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:paddingBottom="10dp"
+                    android:text="Elaboration"
+                    android:textStyle="bold"
+                    android:visibility="invisible" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO X"
-                android:textColor="#FFEB3B"
-                android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/tvRIElaboration"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start|top"
+                    android:inputType="textMultiLine"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="10dp"
+                    android:text="1) Chop artichokes\n2)Heat on the oven"
+                    android:visibility="invisible" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO XI"
-                android:textColor="#FFEB3B"
-                android:textSize="20sp" />
+                <TextView
+                    android:id="@+id/space"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="70dp"
+                    android:text="" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="35dp"
-                android:layout_marginBottom="35dp"
-                android:text=""
-                android:textColor="#FFEB3B"
-                android:textSize="20sp" />
-        </LinearLayout>
+
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </FrameLayout>

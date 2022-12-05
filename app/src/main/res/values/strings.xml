@@ -5,13 +5,16 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="title_activity_shop_list">ShopListActivity</string>
-
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_login">LoginActivity</string>
-    <string name="title_activity_main2">MainActivity2</string>
+    <string name="Name">Name</string>
+    <string name="Password">Password</string>
+    <string name="Surnames">Surnames</string>
+    <string name="Email">Email</string>
+    <string name="ConfPass">Confirm Password</string>
+    <string name="SignUp">Sign Up</string>
+    <string name="forgotPass">I forgot my password</string>
+    <string name="Login">Login</string>
+    <string name="forgotPasswordText">Enter your email and we will send you a link to reset your password</string>
+    <string name="SendLink">Send Link</string>
 
     <string name="productDescription">Product image</string>
     <string name="Change">Change</string>
@@ -19,6 +22,8 @@
     <string name="ProductName">Product Name</string>
     <string name="BarCode">Barcode</string>
     <string name="Scan">Scan</string>
+    <string name="Brand">Brand</string>
+    <string name="Price">Price</string>
     <string name="Quantity">Quantity</string>
     <string name="QuantityUnit">Quantity Unit</string>
     <string name="Weight">Weight</string>
@@ -27,10 +32,4 @@
     <string name="PreferenceDate">Preference Date</string>
     <string name="Add">Add</string>
 
-    <string-array name="simple_items">
-        <item>Java</item>
-        <item>Kotlin</item>
-        <item>Python</item>
-        <item>CPP</item>
-    </string-array>
 </resources>

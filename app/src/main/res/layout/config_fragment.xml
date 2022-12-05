@@ -2,124 +2,107 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/white">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingEnd="10dp"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/header"
+            layout="@layout/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_marginStart="10dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/lLanguageConfig"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="Language" />
+
+            <Spinner
+                android:id="@+id/sLanguageConfig"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO I"
-                android:textColor="#000000"
-                android:textSize="20sp" />
+                android:spinnerMode="dropdown" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/lCurrencyConfig"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO II"
-                android:textColor="#000000"
-                android:textSize="20sp" />
+                android:layout_marginTop="10dp"
+                android:text="Currency" />
 
-            <TextView
+            <Spinner
+                android:id="@+id/sCurrencyConfig"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO III"
-                android:textColor="#000000"
-                android:textSize="20sp" />
+                android:spinnerMode="dropdown" />
 
-            <TextView
+            <Button
+                android:id="@+id/btnChangeLangAndCurrency"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO IV"
-                android:textColor="#000000"
-                android:textSize="20sp" />
+                android:layout_gravity="end"
+                android:backgroundTint="@color/turquoise"
+                android:text="Change Language and Currency"
+                android:textAllCaps="false" />
 
-            <TextView
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/etConfigEmail"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO V"
-                android:textColor="#000000"
-                android:textSize="20sp" />
+                android:hint="Email"
+                android:inputType="text" />
 
-            <TextView
+            <Button
+                android:id="@+id/btnChangeEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO VI"
-                android:textColor="#000000"
-                android:textSize="20sp" />
+                android:layout_gravity="end"
+                android:backgroundTint="@color/turquoise"
+                android:text="Change Email"
+                android:textAllCaps="false" />
 
-            <TextView
+            <Button
+                android:id="@+id/btnConfigChangePassword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO VII"
-                android:textColor="#000000"
-                android:textSize="20sp" />
+                android:layout_gravity="start"
+                android:layout_marginTop="40dp"
+                android:backgroundTint="@color/turquoise"
+                android:text="Change Password"
+                android:textAllCaps="false" />
 
-            <TextView
+            <Button
+                android:id="@+id/btnConfigStorePlaces"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO VIII"
-                android:textColor="#000000"
-                android:textSize="20sp" />
+                android:layout_gravity="start"
+                android:backgroundTint="@color/turquoise"
+                android:text="Store PLaces"
+                android:textAllCaps="false" />
 
-            <TextView
+            <Button
+                android:id="@+id/btnConfigQuantityUnit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO IX"
-                android:textColor="#000000"
-                android:textSize="20sp" />
+                android:layout_gravity="start"
+                android:backgroundTint="@color/turquoise"
+                android:text="Quantity Units"
+                android:textAllCaps="false" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO X"
-                android:textColor="#000000"
-                android:textSize="20sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:text="POLO XI"
-                android:textColor="#000000"
-                android:textSize="20sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="35dp"
-                android:layout_marginBottom="35dp"
-                android:text=""
-                android:textColor="#000000"
-                android:textSize="20sp" />
         </LinearLayout>
-    </ScrollView>
+    </LinearLayout>
 </FrameLayout>

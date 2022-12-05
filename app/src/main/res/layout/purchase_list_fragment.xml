@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.myfood.mvp.purchaselist.PurchaseListFragment">
+    tools:context="com.example.myfood.mvp.pantrylist.PantryListFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,6 +16,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top">
+            <!-- Header aligned to top -->
+            <include
+                android:id="@+id/header"
+                layout="@layout/header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@id/etFilterPL"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
                 android:id="@+id/etFilterPL"
@@ -30,7 +39,7 @@
                 android:singleLine="true"
                 app:layout_constraintEnd_toStartOf="@id/addPLItem"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/header"
                 app:layout_constraintWidth_percent="0.75" />
 
             <ImageButton
@@ -42,7 +51,7 @@
                 android:src="@drawable/ic_baseline_add_box_24"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/etFilterPL"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/header" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -55,6 +64,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TOTAL: "
+                android:visibility="invisible"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/tvPricePLProduct"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -63,6 +73,7 @@
                 android:id="@+id/tvPricePLProduct"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="invisible"
                 android:text="22,34"
                 app:layout_constraintEnd_toStartOf="@+id/tvCurrencyPLProduct"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -73,6 +84,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
                 android:text="€"
+                android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -80,12 +92,13 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvPL"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:itemCount="8"
+            android:paddingBottom="?attr/actionBarSize"
+            tools:itemCount="1"
             tools:listitem="@layout/element_purchase_list" />
     </LinearLayout>
 </FrameLayout>

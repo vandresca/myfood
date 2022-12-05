@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <ImageButton
+        android:id="@+id/btnDeleteSP"
+        android:layout_width="30dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/examName"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="7dp"
+        android:backgroundTint="@color/white"
+        app:srcCompat="@drawable/ic_baseline_delete_24" />
+
+    <ImageButton
+        android:id="@+id/btnUpdateSP"
+        android:layout_width="30dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/examName"
+        android:layout_marginTop="7dp"
+        android:backgroundTint="@color/white"
+        app:srcCompat="@drawable/ic_baseline_edit_note_24" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/itemViewSL"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_marginEnd="20dp"
+        android:clickable="true">
+
+        <TextView
+            android:id="@+id/tvSPName"
+            android:layout_width="135dp"
+            android:layout_height="47dp"
+            android:layout_gravity="center"
+            android:gravity="left|center_vertical"
+            android:paddingStart="5dp"
+            android:text="Item 1"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvSPQuantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:paddingEnd="5dp"
+            android:text="2"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tvSPQuantityUnit"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvSPQuantityUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Unidad"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</LinearLayout>

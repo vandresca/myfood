@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull
 
 @Entity
 data class QuantityUnit(
-
     @PrimaryKey
     @NotNull
     val idQuantityUnit: Int,

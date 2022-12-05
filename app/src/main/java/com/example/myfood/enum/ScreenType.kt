@@ -9,5 +9,6 @@ enum class ScreenType(val int: Int) {
     SHOPPING_LIST(6),
     EXPIRATION(7),
     RECIPES(8),
-    CONFIG(9)
+    CONFIG(9),
+    MENU(10)
 }

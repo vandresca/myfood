@@ -1,5 +1,6 @@
 package com.example.myfood.mvp.pantrylist
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +17,7 @@ class PantryListAdapter(
         val layoutInflater = LayoutInflater.from(parent.context)
         return PantryListViewHolder(
             layoutInflater.inflate(
-                R.layout.element_purchase_list,
+                R.layout.element_pantry_list,
                 parent,
                 false
             )
@@ -34,6 +35,7 @@ class PantryListAdapter(
         return purchaseList.sumOf { purchase -> purchase.price.toDouble() }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun updatePurchaseList(updatedPurchaseList: List<PantryList>) {
         this.purchaseList = updatedPurchaseList
         notifyDataSetChanged()

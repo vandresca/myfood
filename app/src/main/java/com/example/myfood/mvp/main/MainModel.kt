@@ -16,7 +16,7 @@ class MainModel {
 
         fun getTranslations(application: MainActivity, language: Int = LanguageType.ENGLISH.int) {
             val values: LiveData<List<Translation>> =
-                db.sqliteDao().getTranslations(language, ScreenType.PURCHASE_LIST.int)
+                db.sqliteDao().getTranslations(language, ScreenType.PANTRY_LIST.int)
             values.observe(
                 application,
                 Observer<List<Translation>> { application.onTranslationsLoaded(it) })

@@ -7,6 +7,7 @@
     tools:context="com.example.myfood.mvp.shoplist.ShopListFragment">
 
     <LinearLayout
+        android:id="@+id/layoutExpiration"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
@@ -115,7 +116,7 @@
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/groupBtnsEL">
+                    app:layout_constraintTop_toBottomOf="parent">
 
                     <Button
                         android:id="@+id/btnRemoveAlLExpired"
@@ -136,24 +137,24 @@
             android:layout_marginTop="2dp">
 
             <TextView
-                android:id="@+id/tvTotalPLProduct"
+                android:id="@+id/lELTotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="TOTAL: "
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/tvPricePLProduct"
+                app:layout_constraintEnd_toStartOf="@+id/tvELPrice"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tvPricePLProduct"
+                android:id="@+id/tvELPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="22,34"
-                app:layout_constraintEnd_toStartOf="@+id/tvCurrencyPLProduct"
+                app:layout_constraintEnd_toStartOf="@+id/tvELCurrency"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tvCurrencyPLProduct"
+                android:id="@+id/tvELCurrency"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="20dp"
@@ -168,7 +169,7 @@
             android:layout_marginTop="2dp">
 
             <TextView
-                android:id="@+id/tvPriceLabel"
+                android:id="@+id/lELPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingEnd="30dp"
@@ -178,13 +179,13 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/tvRemainLabel"
+                android:id="@+id/lELRemain"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingEnd="30dp"
                 android:text="Remain"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/tvPriceLabel"
+                app:layout_constraintEnd_toStartOf="@id/lELPrice"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 

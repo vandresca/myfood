@@ -14,11 +14,11 @@ class PantryListPresenter(
     private var purchasesMutableList: MutableList<PantryList> = mutableListOf()
 
     init {
-        purchaseListModel.getPantryList(this, idUser)
+        purchaseListModel.getPantryList(idUser) { data -> loadData(data) }
     }
 
     override fun loadData(response: String?) {
-        val json = JSONObject(response)
+        val json = JSONObject(response!!)
         val products = json.getJSONArray("products")
         val purchaseList: ArrayList<PantryList> = ArrayList()
         for (i in 0 until products.length()) {

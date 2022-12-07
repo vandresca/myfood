@@ -7,6 +7,7 @@
     tools:context="com.example.myfood.mvp.signup.SignUpActivity">
 
     <LinearLayout
+        android:id="@+id/layoutSignUp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"

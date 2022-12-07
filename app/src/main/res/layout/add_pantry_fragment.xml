@@ -7,9 +7,9 @@
     android:orientation="vertical">
 
     <ScrollView
-        android:id="@+id/svAddPurchase"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/layoutAddPantry"
         android:background="@color/white">
 
         <LinearLayout
@@ -22,7 +22,7 @@
                 layout="@layout/header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@id/svAddPurchase"
+                app:layout_constraintBottom_toTopOf="@+id/layoutAddPantry"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

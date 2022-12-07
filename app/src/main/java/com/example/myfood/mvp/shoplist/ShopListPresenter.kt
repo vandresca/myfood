@@ -3,6 +3,7 @@ package com.example.myfood.mvp.shoplist
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
+import com.example.myfood.constants.Constant
 import org.json.JSONObject
 
 class ShopListPresenter(
@@ -14,21 +15,21 @@ class ShopListPresenter(
     private var shopMutableList: MutableList<ShopList> = mutableListOf()
 
     init {
-        shopListModel.getShopList(this, idUser)
+        shopListModel.getShopList(idUser) { data -> loadData(data) }
     }
 
     override fun loadData(response: String?) {
-        val json = JSONObject(response)
-        val products = json.getJSONArray("products")
+        val json = JSONObject(response!!)
+        val products = json.getJSONArray(Constant.JSON_PRODUCTS)
         val shopList: ArrayList<ShopList> = ArrayList()
         for (i in 0 until products.length()) {
             val item = products.get(i) as JSONObject
             shopList.add(
                 ShopList(
-                    item.get("id").toString(),
-                    item.get("name").toString(),
-                    item.get("quantity").toString(),
-                    item.get("quantityUnit").toString()
+                    item.get(Constant.JSON_ID).toString(),
+                    item.get(Constant.JSON_NAME).toString(),
+                    item.get(Constant.JSON_QUANTITY).toString(),
+                    item.get(Constant.JSON_QUANTITY_UNIT).toString()
                 )
             )
         }

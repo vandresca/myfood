@@ -8,6 +8,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myfood.R
+import com.example.myfood.databasesqlite.entity.Translation
 import com.example.myfood.databinding.ExpirationListFragmentBinding
 import com.example.myfood.popup.Popup
 
@@ -16,6 +17,8 @@ class ExpirationListFragment : Fragment(), ExpirationListContract.View {
     private var _binding: ExpirationListFragmentBinding? = null
     private val binding get() = _binding!!
     private lateinit var expirationListPresenter: ExpirationListPresenter
+    private lateinit var expirationListModel: ExpirationListModel
+    private lateinit var mutableTranslations: MutableMap<String, Translation>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,10 +35,11 @@ class ExpirationListFragment : Fragment(), ExpirationListContract.View {
     }
 
     private fun initialize() {
-        binding.header.titleHeader.text = "Expiration List"
-        val expirationListModel = ExpirationListModel()
+        binding.layoutExpiration.visibility = View.INVISIBLE
+        expirationListModel = ExpirationListModel()
         expirationListModel.getInstance(requireContext())
         expirationListModel.getUserId(this)
+        expirationListModel.getCurrentLanguage(this)
     }
 
     override fun onUserIdLoaded(idUser: String) {
@@ -49,7 +53,9 @@ class ExpirationListFragment : Fragment(), ExpirationListContract.View {
             Popup.showConfirm(
                 requireContext(),
                 resources,
-                "¿Deseas eliminar todos los productos caducados en despensa?"
+                mutableTranslations["removeAllExpiredQuestion"]!!.text,
+                mutableTranslations["yes"]!!.text,
+                mutableTranslations["no"]!!.text
             )
             { expirationListPresenter.removeExpired() }
         }
@@ -71,5 +77,31 @@ class ExpirationListFragment : Fragment(), ExpirationListContract.View {
         transaction.add(R.id.container, fragment)
         transaction.addToBackStack(null)
         transaction.commit()
+    }
+
+    override fun onTranslationsLoaded(translations: List<Translation>) {
+        mutableTranslations = mutableMapOf<String, Translation>()
+        translations.forEach {
+            mutableTranslations.put(it.word, it)
+        }
+        setTranslations()
+    }
+
+    private fun setTranslations() {
+        binding.layoutExpiration.visibility = View.VISIBLE
+        binding.header.titleHeader.text = mutableTranslations["expirationTitle"]!!.text
+        binding.etFilterEL.hint = mutableTranslations["search"]!!.text
+        binding.lELTotal.text = mutableTranslations["total"]!!.text + ": "
+        binding.lELPrice.text = mutableTranslations["price"]!!.text
+        binding.lELRemain.text = mutableTranslations["remain"]!!.text
+        binding.btnAllEL.text = mutableTranslations["all"]!!.text
+        binding.btnExpiredEL.text = mutableTranslations["expirated"]!!.text
+        binding.btnZeroToTenEL.text = mutableTranslations["zeroToTenDays"]!!.text
+        binding.btnMoreThanTenEL.text = mutableTranslations["moreThanTenDays"]!!.text
+        binding.btnRemoveAlLExpired.text = mutableTranslations["removeAllExpired"]!!.text
+    }
+
+    override fun onCurrentLanguageLoaded(language: String) {
+        expirationListModel.getTranslations(this, language.toInt())
     }
 }

@@ -4,10 +4,8 @@ import com.example.myfood.mvp.addpantryproduct.AddPantryFragment
 import com.example.myfood.mvp.addshopproduct.AddShopFragment
 import com.example.myfood.mvp.config.ConfigFragment
 import com.example.myfood.mvp.expiration.ExpirationListPresenter
-import com.example.myfood.mvp.pantrylist.PantryListPresenter
 import com.example.myfood.mvp.recipe.RecipePresenter
 import com.example.myfood.mvp.recipelist.RecipeListPresenter
-import com.example.myfood.mvp.shoplist.ShopListPresenter
 
 class MySQLREST {
     companion object {
@@ -67,14 +65,10 @@ class MySQLREST {
          **/
 
         fun getPantryList(
-            application: PantryListPresenter,
-            idUser: String
+            idUser: String,
+            callback: (String?) -> Unit
         ) {
-            RESTRequest.request("$PANTRY_GET_LIST_URL?u=$idUser") { response ->
-                application.loadData(
-                    response
-                )
-            }
+            RESTRequest.request("$PANTRY_GET_LIST_URL?u=$idUser") { response -> callback(response) }
         }
 
         fun deletePantry(id: String) {
@@ -109,12 +103,9 @@ class MySQLREST {
             RESTRequest.request(url) { response -> application.onUpdatedProduct(response) }
         }
 
-        fun getPantryProduct(application: AddPantryFragment, idPantry: String) {
-            RESTRequest.request("$GET_PANTRY_PRODUCT_ITEM_URL?id=$idPantry") { response ->
-                application.onLoadPantryToUpdate(
-                    response
-                )
-            }
+        fun getPantryProduct(idPantry: String, callback: (String?) -> Unit) {
+            RESTRequest.request("$GET_PANTRY_PRODUCT_ITEM_URL?id=$idPantry")
+            { response -> callback(response) }
         }
 
         fun insertShop(
@@ -145,24 +136,17 @@ class MySQLREST {
             }
         }
 
-        fun getShopList(application: ShopListPresenter, userId: String) {
-            RESTRequest.request("$SHOP_GET_LIST_URL?u=$userId") { response ->
-                application.loadData(
-                    response
-                )
-            }
+        fun getShopList(userId: String, callback: (String?) -> Unit) {
+            RESTRequest.request("$SHOP_GET_LIST_URL?u=$userId") { response -> callback(response) }
         }
 
         fun deleteShop(idShop: String) {
             RESTRequest.request("$SHOP_DELETE_ITEM_URL?id=$idShop") {}
         }
 
-        fun getShopProduct(application: AddShopFragment, idShop: String) {
-            RESTRequest.request("$GET_SHOP_PRODUCT_ITEM_URL?id=$idShop") { response ->
-                application.onLoadShopToUpdate(
-                    response
-                )
-            }
+        fun getShopProduct(idShop: String, callback: (String?) -> Unit) {
+            RESTRequest.request("$GET_SHOP_PRODUCT_ITEM_URL?id=$idShop")
+            { response -> callback(response) }
         }
 
         fun getExpirationList(

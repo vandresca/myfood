@@ -2,11 +2,11 @@ package com.example.myfood.mvp.pantrylist
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myfood.databinding.ElementPurchaseListBinding
+import com.example.myfood.databinding.ElementPantryListBinding
 
 
 class PantryListViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-    val binding = ElementPurchaseListBinding.bind(view)
+    val binding = ElementPantryListBinding.bind(view)
 
     fun render(
         purchaseListModel: PantryList,

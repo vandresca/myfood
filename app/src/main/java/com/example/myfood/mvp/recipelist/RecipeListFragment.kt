@@ -8,12 +8,16 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myfood.R
+import com.example.myfood.databasesqlite.entity.Translation
 import com.example.myfood.databinding.RecipeListFragmentBinding
 
 class RecipeListFragment : Fragment(), RecipeListContract.View {
     private var _binding: RecipeListFragmentBinding? = null
     private val binding get() = _binding!!
     private lateinit var recipeListPresenter: RecipeListPresenter
+    private lateinit var recipeListModel: RecipeListModel
+    private lateinit var mutableTranslations: MutableMap<String, Translation>
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,10 +34,11 @@ class RecipeListFragment : Fragment(), RecipeListContract.View {
     }
 
     private fun initialize() {
-        binding.header.titleHeader.text = "Recipe List"
-        val recipeListModel = RecipeListModel()
+        binding.layoutRecipeList.visibility = View.INVISIBLE
+        recipeListModel = RecipeListModel()
         recipeListModel.getInstance(requireContext())
         recipeListModel.getUserId(this)
+        recipeListModel.getCurrentLanguage(this)
     }
 
     override fun onUserIdLoaded(idUser: String) {
@@ -44,7 +49,7 @@ class RecipeListFragment : Fragment(), RecipeListContract.View {
     }
 
     private fun initSearcher() {
-        binding.etFilterEL.addTextChangedListener { watchText ->
+        binding.etFilterRL.addTextChangedListener { watchText ->
             recipeListPresenter.doFilter(watchText)
         }
     }
@@ -59,5 +64,25 @@ class RecipeListFragment : Fragment(), RecipeListContract.View {
         transaction.add(R.id.container, fragment)
         transaction.addToBackStack(null)
         transaction.commit()
+    }
+
+    override fun onTranslationsLoaded(translations: List<Translation>) {
+        mutableTranslations = mutableMapOf<String, Translation>()
+        translations.forEach {
+            mutableTranslations.put(it.word, it)
+        }
+        setTranslations()
+    }
+
+    private fun setTranslations() {
+        binding.layoutRecipeList.visibility = View.VISIBLE
+        binding.header.titleHeader.text = mutableTranslations["recipeTitle"]!!.text
+        binding.etFilterRL.hint = mutableTranslations["search"]!!.text
+        binding.btnRLAll.text = mutableTranslations["all"]!!.text
+        binding.btnRLSuggestions.text = mutableTranslations["suggestions"]!!.text
+    }
+
+    override fun onCurrentLanguageLoaded(language: String) {
+        recipeListModel.getTranslations(this, language.toInt())
     }
 }

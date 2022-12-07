@@ -28,21 +28,16 @@ class RecipeFragment(private val recipe: RecipeList) : Fragment(), RecipeContrac
     }
 
     private fun initialize() {
-        binding.header.titleHeader.text = "Recipe"
+        binding.layoutRecipe.visibility = View.INVISIBLE
         recipePresenter = RecipePresenter(this, RecipeModel(), recipe.id)
     }
 
     override fun showRecipe(recipe: Recipe) {
+        binding.layoutRecipe.visibility = View.VISIBLE
+        binding.header.titleHeader.text = "Receta"
         binding.tvRIName.text = recipe.title
         binding.tvRIPortions.text = recipe.portion
         binding.tvRIngredients.text = recipe.ingredients
         binding.tvRIElaboration.text = recipe.elaboration
-        binding.tvRIName.visibility = View.VISIBLE
-        binding.tvRIPortions.visibility = View.VISIBLE
-        binding.lRIPortions.visibility = View.VISIBLE
-        binding.tvRIngredients.visibility = View.VISIBLE
-        binding.tvRIIngredientsLabel.visibility = View.VISIBLE
-        binding.tvRIElaboration.visibility = View.VISIBLE
-        binding.tvRIElaborationLabel.visibility = View.VISIBLE
     }
 }

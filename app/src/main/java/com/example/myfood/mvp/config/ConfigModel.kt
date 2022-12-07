@@ -6,6 +6,7 @@ import androidx.lifecycle.Observer
 import com.example.myfood.databasesqlite.RoomSingleton
 import com.example.myfood.databasesqlite.entity.Translation
 import com.example.myfood.enum.ScreenType
+import com.example.myfood.mvp.login.LoginActivity
 import com.example.myfood.rest.MySQLREST
 
 class ConfigModel : ConfigContract.Model {
@@ -16,10 +17,17 @@ class ConfigModel : ConfigContract.Model {
 
     override fun getTranslationsMenu(application: ConfigFragment, language: Int) {
         val values: LiveData<List<Translation>> =
-            dbSQLite.sqliteDao().getTranslations(language, ScreenType.PURCHASE_LIST.int)
+            dbSQLite.sqliteDao().getTranslations(language, ScreenType.PANTRY_LIST.int)
         values.observe(
             application,
             Observer<List<Translation>> { application.onTranslationsMenuLoaded(it) })
+    }
+
+    override fun getCurrentLanguage(application: LoginActivity) {
+        val values: LiveData<String> = dbSQLite.sqliteDao().getCurrentLanguage()
+        values.observe(
+            application,
+            Observer<String> { application.onCurrentLanguageLoaded(it) })
     }
 
     override fun getTranslations(application: ConfigFragment, language: Int) {

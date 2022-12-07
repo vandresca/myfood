@@ -3,6 +3,8 @@ package com.example.myfood.databasesqlite
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
+import com.example.myfood.databasesqlite.entity.QuantityUnit
+import com.example.myfood.databasesqlite.entity.StorePlace
 import com.example.myfood.databasesqlite.entity.Translation
 
 @Dao
@@ -36,11 +38,14 @@ interface SQLiteDao {
     @Query("SELECT language FROM Language")
     fun getLanguages(): LiveData<List<String>>
 
-    @Query("SELECT quantityUnit FROM QuantityUnit")
-    fun getQuantitiesUnit(): LiveData<List<String>>
+    @Query("SELECT * FROM QuantityUnit")
+    fun getQuantitiesUnit(): LiveData<List<QuantityUnit>>
 
-    @Query("SELECT storePlace FROM StorePlace")
-    fun getStorePlaces(): LiveData<List<String>>
+    @Query("SELECT * FROM StorePlace")
+    fun getStorePlaces(): LiveData<List<StorePlace>>
+
+    @Query("INSERT INTO StorePlace(storePlace) values(:place)")
+    fun addPlace(place: String)
 
     @Query(
         "SELECT symbol " +

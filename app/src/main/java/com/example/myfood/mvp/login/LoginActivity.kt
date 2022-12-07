@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import com.example.myfood.constants.Constant
 import com.example.myfood.databasesqlite.entity.Translation
 import com.example.myfood.databinding.ActivityLoginBinding
 import com.example.myfood.mvp.forgotpassword.ForgotPasswordActivity
@@ -16,13 +17,10 @@ import org.json.JSONObject
 
 
 class LoginActivity : AppCompatActivity(), LoginContract.View {
-    companion object {
-        private const val INCORRECT_LOGIN = "KO"
-    }
-
     private lateinit var binding: ActivityLoginBinding
     private lateinit var spinnerAdapter: ArrayAdapter<String>
     private lateinit var loginModel: LoginModel
+    private lateinit var mutableTranslations: MutableMap<String, Translation>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,8 +29,8 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
 
         loginModel = LoginModel()
         loginModel.getInstance(this)
-        loginModel.getLanguages(this)
-        loginModel.getTranslations(this)
+        loginModel.getLanguages(this) { languages -> onLanguagesLoaded(languages) }
+        loginModel.getTranslations(this) { translations -> onTranslationsLoaded(translations) }
 
         binding.btnPasswordForgotten.setOnClickListener {
             val intent = Intent(this, ForgotPasswordActivity::class.java)
@@ -52,10 +50,10 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
         loginModel.login(name, password) { response -> onLogged(response) }
     }
 
-    private fun onLogged(result: String?) {
-        val response = JSONObject(result).get("response")
-        if (response == INCORRECT_LOGIN) {
-            Popup.showInfo(this, resources, "Nombre de usuario o contraseña incorrecto")
+    override fun onLogged(result: String?) {
+        val response = JSONObject(result!!).get(Constant.JSON_RESPONSE)
+        if (response == Constant.KO) {
+            Popup.showInfo(this, resources, mutableTranslations[Constant.INCORRECT_LOGIN]!!.text)
         } else {
             loginModel.updateUserId(response.toString())
             val intent = Intent(this, MainActivity::class.java)
@@ -64,16 +62,19 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
     }
 
     override fun onTranslationsLoaded(translations: List<Translation>) {
+        mutableTranslations = mutableMapOf()
         translations.forEach {
-            when (it.word) {
-                "name" -> binding.etNameLogin.hint = it.text
-                "password" -> binding.etPasswordLogin.hint = it.text
-                "signUp" -> binding.btnSignUpLogin.text = it.text
-                "forgotPass" -> binding.btnPasswordForgotten.text = it.text
-                "login" -> binding.btnLogin.text = it.text
-
-            }
+            mutableTranslations[it.word] = it
         }
+        setTranslations()
+    }
+
+    private fun setTranslations() {
+        binding.etNameLogin.hint = mutableTranslations[Constant.NAME]!!.text
+        binding.etPasswordLogin.hint = mutableTranslations[Constant.PASSWORD]!!.text
+        binding.btnSignUpLogin.text = mutableTranslations[Constant.SIGN_UP]!!.text
+        binding.btnPasswordForgotten.text = mutableTranslations[Constant.FORGOTTEN_PASSWORD]!!.text
+        binding.btnLogin.text = mutableTranslations[Constant.BTN_LOGIN]!!.text
     }
 
     override fun onCurrentLanguageLoaded(language: String) {
@@ -84,17 +85,21 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
         spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, languages)
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.sLanguageLogin.adapter = spinnerAdapter
-        loginModel.getCurrentLanguage(this)
+        loginModel.getCurrentLanguage(this) { currentLanguage ->
+            onCurrentLanguageLoaded(
+                currentLanguage
+            )
+        }
         initOnItemSelectedListener()
     }
 
     override fun updateLanguage(position: Int) {
         val pos = position + 1
-        loginModel.getTranslations(this, pos)
+        loginModel.getTranslations(this, pos) { translations -> onTranslationsLoaded(translations) }
         loginModel.updateCurrencyLanguage(pos.toString())
     }
 
-    fun initOnItemSelectedListener() {
+    private fun initOnItemSelectedListener() {
         binding.sLanguageLogin.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(

@@ -8,6 +8,7 @@
     android:orientation="vertical">
 
     <ScrollView
+        android:id="@+id/layoutRecipe"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -38,8 +39,7 @@
                     android:paddingBottom="10dp"
                     android:text="Name Recipe"
                     android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:visibility="invisible" />
+                    android:textStyle="bold" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -53,16 +53,14 @@
                         android:layout_height="wrap_content"
                         android:paddingStart="10dp"
                         android:text="Portions:"
-                        android:textStyle="bold"
-                        android:visibility="invisible" />
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/tvRIPortions"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingStart="10dp"
-                        android:text="3"
-                        android:visibility="invisible" />
+                        android:text="3" />
                 </LinearLayout>
 
                 <TextView
@@ -72,8 +70,7 @@
                     android:paddingStart="10dp"
                     android:paddingBottom="10dp"
                     android:text="Ingredients"
-                    android:textStyle="bold"
-                    android:visibility="invisible" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvRIngredients"
@@ -84,8 +81,7 @@
                     android:paddingStart="20dp"
                     android:paddingEnd="10dp"
                     android:paddingBottom="10dp"
-                    android:text="2 aubergines\n3 artichokes"
-                    android:visibility="invisible" />
+                    android:text="2 aubergines\n3 artichokes" />
 
                 <TextView
                     android:id="@+id/tvRIElaborationLabel"
@@ -94,8 +90,7 @@
                     android:paddingStart="10dp"
                     android:paddingBottom="10dp"
                     android:text="Elaboration"
-                    android:textStyle="bold"
-                    android:visibility="invisible" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvRIElaboration"
@@ -106,8 +101,7 @@
                     android:paddingStart="20dp"
                     android:paddingEnd="10dp"
                     android:paddingBottom="10dp"
-                    android:text="1) Chop artichokes\n2)Heat on the oven"
-                    android:visibility="invisible" />
+                    android:text="1) Chop artichokes\n2)Heat on the oven" />
 
                 <TextView
                     android:id="@+id/space"

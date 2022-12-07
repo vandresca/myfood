@@ -11,6 +11,10 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import com.example.myfood.R
+import com.example.myfood.constants.Constant.Companion.CONST_OK
+import com.example.myfood.constants.Constant.Companion.MODE_ADD
+import com.example.myfood.databasesqlite.entity.QuantityUnit
+import com.example.myfood.databasesqlite.entity.Translation
 import com.example.myfood.databinding.AddShopFragmentBinding
 import com.example.myfood.mvp.shoplist.ShopListFragment
 import com.example.myfood.popup.Popup
@@ -24,18 +28,13 @@ class AddShopFragment(private val mode: Int, private var idShop: String = "") : 
     private val binding get() = _binding!!
     private lateinit var userId: String
     private lateinit var addShopModel: AddShopModel
-    private lateinit var quantitiesUnit: List<String>
-
-    companion object {
-        const val MODE_UPDATE = 1
-        const val MODE_ADD = 0
-        private const val CONST_OK = "OK"
-    }
+    private lateinit var quantitiesUnitMutable: MutableList<String>
+    private lateinit var mutableTranslations: MutableMap<String, Translation>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = AddShopFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -43,33 +42,24 @@ class AddShopFragment(private val mode: Int, private var idShop: String = "") : 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.header.titleHeader.text = "Add Shop"
+        binding.layoutAddShop.visibility = View.INVISIBLE
         addShopModel = AddShopModel()
-        this.context?.let { addShopModel.getInstance(it) }
-        addShopModel.getUserId(this)
-        addShopModel.getQuantitiesUnit(this)
-        binding.btnAddShopProduct.setOnClickListener { addUpdateShopToDB() }
-        setMode()
-    }
-
-
-    private fun setMode() {
-        if (mode == MODE_ADD) {
-            binding.btnAddShopProduct.text = "Add"
-        } else {
-            binding.btnAddShopProduct.text = "Update"
-            addShopModel.getShopProduct(this, idShop)
-        }
+        addShopModel.getInstance(requireContext())
+        addShopModel.getUserId(this) { userId -> onUserIdLoaded(userId) }
+        addShopModel.getQuantitiesUnit(this) { quantities -> onQuantitiesLoaded(quantities) }
+        addShopModel.getCurrentLanguage(this)
+        { currentLanguage -> onCurrentLanguageLoaded(currentLanguage) }
+        binding.btnASProduct.setOnClickListener { addUpdateShopToDB() }
     }
 
     override fun onLoadShopToUpdate(response: String?) {
-        val json = JSONObject(response)
+        val json = JSONObject(response!!)
         if (json.get("response") == CONST_OK) {
             Handler(Looper.getMainLooper()).post {
                 binding.etASName.setText(json.get("name").toString())
                 binding.etASQuantity.text = SpannableStringBuilder(json.get("quantity").toString())
-                binding.sSPQuantityUnit.setSelection(
-                    quantitiesUnit.indexOf(
+                binding.sASQuantityUnit.setSelection(
+                    quantitiesUnitMutable.indexOf(
                         json.get("quantityUnit").toString()
                     )
                 )
@@ -77,19 +67,22 @@ class AddShopFragment(private val mode: Int, private var idShop: String = "") : 
         }
     }
 
-    fun onQuantitiesLoaded(quantitiesUnit: List<String>) {
-        this.quantitiesUnit = quantitiesUnit
+    override fun onQuantitiesLoaded(quantitiesUnit: List<QuantityUnit>) {
+        quantitiesUnitMutable = mutableListOf()
+        quantitiesUnit.forEach {
+            this.quantitiesUnitMutable.add(it.quantityUnit)
+        }
         this.context?.let {
             ArrayAdapter(
                 it,
                 android.R.layout.simple_spinner_item,
-                quantitiesUnit
+                quantitiesUnitMutable
             ).also { adapter ->
                 // Specify the layout to use when the list of choices appears
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 // Apply the adapter to the spinner
-                binding.sSPQuantityUnit.adapter = adapter
-                binding.sSPQuantityUnit.onItemSelectedListener =
+                binding.sASQuantityUnit.adapter = adapter
+                binding.sASQuantityUnit.onItemSelectedListener =
                     object : AdapterView.OnItemSelectedListener {
                         override fun onItemSelected(
                             parent: AdapterView<*>?,
@@ -111,11 +104,11 @@ class AddShopFragment(private val mode: Int, private var idShop: String = "") : 
         userId = id
     }
 
-    fun addUpdateShopToDB() {
+    private fun addUpdateShopToDB() {
         val name = binding.etASName.text.toString()
         val quantity = binding.etASQuantity.text.toString()
-        val quantityUnit = binding.sSPQuantityUnit.selectedItem.toString()
-        if (!name.isEmpty()) {
+        val quantityUnit = binding.sASQuantityUnit.selectedItem.toString()
+        if (name.isNotEmpty()) {
             if (mode == MODE_ADD) {
                 addShopModel.insertShop(this, name, quantity, quantityUnit, userId)
             } else {
@@ -123,11 +116,7 @@ class AddShopFragment(private val mode: Int, private var idShop: String = "") : 
             }
             loadFragment(ShopListFragment())
         } else {
-            Popup.showInfo(
-                requireContext(),
-                resources,
-                "Debes introducir un nombre para añadir el producto"
-            )
+            Popup.showInfo(requireContext(), resources, mutableTranslations["requiredName"]!!.text)
         }
     }
 
@@ -139,5 +128,33 @@ class AddShopFragment(private val mode: Int, private var idShop: String = "") : 
         transaction.add(R.id.container, fragment)
         transaction.addToBackStack(null)
         transaction.commit()
+    }
+
+    override fun onTranslationsLoaded(translations: List<Translation>) {
+        mutableTranslations = mutableMapOf()
+        translations.forEach {
+            mutableTranslations[it.word] = it
+        }
+        setTranslations()
+    }
+
+    private fun setTranslations() {
+        binding.layoutAddShop.visibility = View.VISIBLE
+        binding.lASName.text = mutableTranslations["name"]!!.text
+        binding.lASQuantity.text = mutableTranslations["quantity"]!!.text
+        binding.lASQuantityUnit.text = mutableTranslations["quantityUnit"]!!.text
+        if (mode == MODE_ADD) {
+            binding.header.titleHeader.text = mutableTranslations["addShopListTitle"]!!.text
+            binding.btnASProduct.text = mutableTranslations["addShopListBtn"]!!.text
+        } else {
+            binding.header.titleHeader.text = mutableTranslations["updateShopListTitle"]!!.text
+            binding.btnASProduct.text = mutableTranslations["updateShopListBtn"]!!.text
+            addShopModel.getShopProduct(idShop) { data -> onLoadShopToUpdate(data) }
+        }
+    }
+
+    override fun onCurrentLanguageLoaded(language: String) {
+        addShopModel.getTranslations(this, language.toInt())
+        { translations -> onTranslationsLoaded(translations) }
     }
 }

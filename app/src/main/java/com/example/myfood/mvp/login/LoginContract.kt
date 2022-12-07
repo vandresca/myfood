@@ -1,23 +1,19 @@
 package com.example.myfood.mvp.login
 
-import com.example.myfood.databasesqlite.entity.Translation
-import com.example.myfood.enum.LanguageType
+import android.content.Context
+import androidx.lifecycle.LifecycleOwner
+import com.example.myfood.interfaces.Translatable
 
 interface LoginContract {
-    interface View {
+    interface View : Translatable.View {
         fun onLanguagesLoaded(languages: List<String>)
-        fun onTranslationsLoaded(translations: List<Translation>)
-        fun onCurrentLanguageLoaded(language: String)
         fun updateLanguage(position: Int)
+        fun onLogged(result: String?)
     }
 
-    interface Presenter
-
-    interface Model {
-        fun getInstance(application: LoginActivity)
-        fun getTranslations(application: LoginActivity, language: Int = LanguageType.ENGLISH.int)
-        fun getLanguages(application: LoginActivity)
-        fun getCurrentLanguage(application: LoginActivity)
+    interface Model : Translatable.Model {
+        fun getInstance(application: Context)
+        fun getLanguages(application: LifecycleOwner, callback: (List<String>) -> Unit)
         fun updateCurrencyLanguage(language: String)
         fun updateUserId(userId: String)
         fun login(name: String, password: String, callback: (String?) -> Unit)

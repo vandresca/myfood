@@ -1,22 +1,12 @@
 package com.example.myfood.mvp.signup
 
-import com.example.myfood.databasesqlite.entity.Translation
-import com.example.myfood.enum.LanguageType
+import android.content.Context
+import com.example.myfood.interfaces.Translatable
 
 interface SignUpContract {
-    interface View {
-        fun onLanguagesLoaded(languages: List<String>)
-        fun onTranslationsLoaded(translations: List<Translation>)
-        fun onCurrentLanguageLoaded(language: String)
-        fun updateLanguage(position: Int)
-        fun onLogged(response: String?)
-
-    }
-
-    interface Presenter
-
-    interface Model {
-        fun getInstance(application: SignUpActivity)
+    interface View : Translatable.View
+    interface Model : Translatable.Model {
+        fun getInstance(application: Context)
         fun insertUser(
             name: String,
             surnames: String,
@@ -24,7 +14,5 @@ interface SignUpContract {
             password: String,
             callback: (String?) -> Unit
         )
-
-        fun getTranslations(application: SignUpActivity, language: Int = LanguageType.ENGLISH.int)
     }
 }

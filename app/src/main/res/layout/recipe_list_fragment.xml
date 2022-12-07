@@ -7,6 +7,7 @@
     tools:context="com.example.myfood.mvp.shoplist.ShopListFragment">
 
     <LinearLayout
+        android:id="@+id/layoutRecipeList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white"
@@ -26,7 +27,7 @@
             android:layout_gravity="top">
 
             <EditText
-                android:id="@+id/etFilterEL"
+                android:id="@+id/etFilterRL"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:drawableEnd="@drawable/ic_baseline_search_24"
@@ -42,18 +43,18 @@
                 app:layout_constraintWidth_percent="0.95" />
 
             <LinearLayout
-                android:id="@+id/groupBtnsEL"
+                android:id="@+id/groupBtnRL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/etFilterEL">
+                app:layout_constraintTop_toBottomOf="@id/etFilterRL">
 
                 <Button
                     android:id="@+id/btnRLAll"
-                    android:layout_width="60dp"
-                    android:layout_height="40dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:backgroundTint="@color/turquoise"
                     android:text="All"
@@ -61,8 +62,8 @@
 
                 <Button
                     android:id="@+id/btnRLSuggestions"
-                    android:layout_width="200dp"
-                    android:layout_height="40dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:backgroundTint="@color/turquoise"
                     android:text="Suggestions"

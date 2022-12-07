@@ -37,17 +37,19 @@ class Popup {
             context: Context,
             resources: Resources,
             msg: String,
+            yesBtn: String,
+            noBtn: String,
             okBtnFun: (() -> Unit)? = null
         ) {
             Handler(Looper.getMainLooper()).post {
                 val dialog = AlertDialog.Builder(context)
                     .setTitle("")
                     .setMessage(msg)
-                    .setPositiveButton("Si") { view, _ ->
+                    .setPositiveButton(yesBtn) { view, _ ->
                         view.dismiss()
                         okBtnFun?.invoke()
                     }
-                    .setNegativeButton("No") { view, _ ->
+                    .setNegativeButton(noBtn) { view, _ ->
                         view.dismiss()
                     }
                     .setCancelable(false)

@@ -3,6 +3,7 @@ package com.example.myfood.mvp.config
 import android.content.Context
 import com.example.myfood.databasesqlite.entity.Translation
 import com.example.myfood.enum.LanguageType
+import com.example.myfood.mvp.login.LoginActivity
 
 interface ConfigContract {
     interface View {
@@ -21,6 +22,8 @@ interface ConfigContract {
 
     interface Model {
         fun getInstance(application: Context)
+        fun getCurrentLanguage(application: ConfigFragment)
+        fun getCurrentLanguage(application: LoginActivity)
         fun getTranslationsMenu(
             application: ConfigFragment,
             language: Int = LanguageType.ENGLISH.int
@@ -32,7 +35,6 @@ interface ConfigContract {
         fun getUserId(application: ConfigFragment)
         fun changeEmail(application: ConfigFragment, email: String, user: String)
         fun getEmail(application: ConfigFragment, user: String)
-        fun getCurrentLanguage(application: ConfigFragment)
         fun getCurrentCurrency(application: ConfigFragment)
         fun updateCurrentLanguage(language: String)
         fun updateCurrentCurrency(currency: String)

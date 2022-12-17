@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull
 data class ConfigProfile(
     @PrimaryKey
     @NotNull
+    val idConfigProfile: Int,
+    @NotNull
     val parameter: String,
     @NotNull
     val value: String

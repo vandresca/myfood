@@ -1,24 +1,15 @@
 package com.example.myfood.mvp.optionaddpantry
 
 import android.content.Context
-import com.example.myfood.databasesqlite.entity.Translation
-import com.example.myfood.enum.LanguageType
+import com.example.myfood.interfaces.Translatable
 
 interface OptionAddPantryContract {
-    interface View {
-        fun onTranslationsLoaded(translations: List<Translation>)
-        fun onCurrentLanguageLoaded(language: String)
+    interface View : Translatable.View {
+        fun setTranslations()
     }
 
-    interface Presenter
-
-    interface Model {
+    interface Presenter : Translatable.Presenter
+    interface Model : Translatable.Model {
         fun getInstance(application: Context)
-        fun getTranslations(
-            application: OptionAddPantryFragment,
-            language: Int = LanguageType.ENGLISH.int
-        )
-
-        fun getCurrentLanguage(application: OptionAddPantryFragment)
     }
 }

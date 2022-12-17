@@ -1,15 +1,22 @@
 package com.example.myfood.mvp.recipe
 
+import android.content.Context
+import androidx.lifecycle.MutableLiveData
+import com.example.myfood.interfaces.Translatable
+import com.example.myfood.mvvm.data.model.RecipeEntity
+
 interface RecipeContract {
-    interface View {
-        fun showRecipe(recipe: Recipe)
+    interface View : Translatable.View {
+        fun onRecipeLoaded(recipeEntity: RecipeEntity)
+        fun setTranslations()
     }
 
-    interface Presenter {
-        fun loadData(response: String?)
+    interface Presenter : Translatable.Presenter {
+        fun getRecipe(idRecipe: String, idLanguage: String): MutableLiveData<RecipeEntity>
     }
 
-    interface Model {
-        fun getRecipe(application: RecipePresenter, idRecipe: String, language: String)
+    interface Model : Translatable.Model {
+        fun getInstance(application: Context)
+        fun getRecipe(idRecipe: String, language: String): MutableLiveData<RecipeEntity>
     }
 }

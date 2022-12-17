@@ -10,7 +10,8 @@ class ExpirationListViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     val binding = ElementExpirationListBinding.bind(view)
 
     fun render(
-        expirationListModel: ExpirationList
+        expirationListModel: ExpirationList,
+        currency: String
     ) {
         binding.tvEPName.text = expirationListModel.name
         binding.tvEPDays.text = expirationListModel.days
@@ -30,5 +31,6 @@ class ExpirationListViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
         }
         binding.tvEPPrice.text = expirationListModel.price
+        binding.tvEPCurrency.text = currency
     }
 }

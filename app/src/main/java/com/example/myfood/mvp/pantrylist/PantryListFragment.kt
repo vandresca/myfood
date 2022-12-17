@@ -14,13 +14,14 @@ import com.example.myfood.databasesqlite.entity.Translation
 import com.example.myfood.databinding.PantryListFragmentBinding
 import com.example.myfood.mvp.addpantryproduct.AddPantryFragment
 import com.example.myfood.mvp.optionaddpantry.OptionAddPantryFragment
+import com.example.myfood.mvp.pantryfeature.PantryFeatureFragment
 
 class PantryListFragment : Fragment(), PantryListContract.View {
     private var _binding: PantryListFragmentBinding? = null
     private val binding get() = _binding!!
     private lateinit var pantryListPresenter: PantryListPresenter
     private lateinit var pantryListModel: PantryListModel
-    private lateinit var mutableTranslations: MutableMap<String, Translation>
+    private var mutableTranslations: MutableMap<String, Translation>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,14 +43,23 @@ class PantryListFragment : Fragment(), PantryListContract.View {
     private fun initialize() {
         binding.layoutPantryList.visibility = View.INVISIBLE
         pantryListModel = PantryListModel()
-        pantryListModel.getInstance(requireContext())
-        pantryListModel.getUserId(this) { userId -> onUserIdLoaded(userId) }
-        pantryListModel.getCurrentLanguage(this)
-        { currentLanguage -> onCurrentLanguageLoaded(currentLanguage) }
+        pantryListPresenter = PantryListPresenter(
+            this,
+            pantryListModel, this, requireContext()
+        )
+        val idUser = pantryListPresenter.getUserId()
+        pantryListPresenter.setIdUser(idUser)
+        initAddPurchaseClick()
+        initSearcher()
+        val currentLanguage = pantryListPresenter.getCurrentLanguage()
+        this.mutableTranslations = pantryListPresenter.getTranslations(currentLanguage.toInt())
+        setTranslations()
+
+
     }
 
-    override fun onUserIdLoaded(idUser: String) {
-        pantryListPresenter = PantryListPresenter(this, PantryListModel(), idUser)
+    override fun onUserIdLoaded(idUser: String?) {
+        pantryListPresenter.setIdUser(idUser!!)
         initAddPurchaseClick()
         initSearcher()
     }
@@ -83,25 +93,19 @@ class PantryListFragment : Fragment(), PantryListContract.View {
         transaction.commit()
     }
 
-    override fun onTranslationsLoaded(translations: List<Translation>) {
-        mutableTranslations = mutableMapOf()
-        translations.forEach {
-            mutableTranslations[it.word] = it
-        }
-        setTranslations()
-    }
-
 
     @SuppressLint("SetTextI18n")
-    private fun setTranslations() {
+    override fun setTranslations() {
         binding.layoutPantryList.visibility = View.VISIBLE
-        binding.header.titleHeader.text = mutableTranslations[Constant.PANTRY_LIST_TITLE]!!.text
-        binding.etFilterPL.hint = mutableTranslations[Constant.SEARCH]!!.text
-        binding.tvTotalPLProduct.text = "${mutableTranslations[Constant.TOTAL]!!.text}:"
+        binding.header.titleHeader.text =
+            mutableTranslations?.get(Constant.TITLE_PANTRY_LIST)!!.text
+        binding.etFilterPL.hint = mutableTranslations?.get(Constant.FIELD_SEARCH)!!.text
+        binding.tvTotalPLProduct.text =
+            "${mutableTranslations?.get(Constant.LABEL_TOTAL)!!.text}:  "
+        binding.tvCurrencyPLProduct.text = " ${pantryListPresenter.getCurrentCurrency()}"
     }
 
-    override fun onCurrentLanguageLoaded(language: String) {
-        pantryListModel.getTranslations(this, language.toInt())
-        { translations -> onTranslationsLoaded(translations) }
+    override fun showPantryProduct(idPantry: String) {
+        loadFragment(PantryFeatureFragment(idPantry))
     }
 }

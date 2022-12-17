@@ -1,16 +1,22 @@
 package com.example.myfood.mvp.forgotpassword
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myfood.constants.Constant
 import com.example.myfood.databasesqlite.entity.Translation
 import com.example.myfood.databinding.ActivityForgotPasswordBinding
+import com.example.myfood.mvp.login.LoginActivity
+import com.example.myfood.mvvm.data.model.SimpleResponseEntity
+import com.example.myfood.popup.Popup
 
 class ForgotPasswordActivity : AppCompatActivity(), ForgotPasswordContract.View {
     private lateinit var binding: ActivityForgotPasswordBinding
     private lateinit var forgotPasswordModel: ForgotPasswordModel
-    private lateinit var mutableTranslations: MutableMap<String, Translation>
+    private var mutableTranslations: MutableMap<String, Translation>? = null
+    private lateinit var idLanguage: String
+    private lateinit var forgotPasswordPresenter: ForgotPasswordPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,33 +24,48 @@ class ForgotPasswordActivity : AppCompatActivity(), ForgotPasswordContract.View 
         setContentView(binding.root)
         binding.layoutForgotPassword.visibility = View.INVISIBLE
         forgotPasswordModel = ForgotPasswordModel()
-        forgotPasswordModel.getInstance(this)
-        forgotPasswordModel.getCurrentLanguage(this)
-        { currentLanguage -> onCurrentLanguageLoaded(currentLanguage) }
-    }
-
-    override fun onTranslationsLoaded(translations: List<Translation>) {
-        mutableTranslations = mutableMapOf()
-        translations.forEach {
-            mutableTranslations[it.word] = it
-        }
+        forgotPasswordPresenter = ForgotPasswordPresenter(this, forgotPasswordModel, this)
+        idLanguage = forgotPasswordPresenter.getCurrentLanguage()
+        this.mutableTranslations = forgotPasswordPresenter.getTranslations(idLanguage.toInt())
         setTranslations()
+        initButtons()
     }
 
-    private fun setTranslations() {
+    private fun initButtons() {
+        binding.btnSendLink.setOnClickListener {
+            val email = binding.etEmailForgotPass.text.toString()
+            forgotPasswordPresenter.sendLink(idLanguage, email).observe(this)
+            { response -> onSendLink(response) }
+        }
+        binding.btnBack.setOnClickListener {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+
+    override fun setTranslations() {
         binding.layoutForgotPassword.visibility = View.VISIBLE
         binding.tvForgotPasswordTitle.text =
-            mutableTranslations[Constant.FORGOTTEN_PASSWORD_TITLE]!!.text
+            mutableTranslations?.get(Constant.TITLE_FORGOTTEN_PASSWORD)!!.text
         binding.tvForgotPasswordText.text =
-            mutableTranslations[Constant.FORGOTTEN_PASSWORD_TEXT]!!.text
-        binding.etEmailForgotPass.hint = mutableTranslations[Constant.EMAIL]!!.text
+            mutableTranslations?.get(Constant.MSG_FORGOTTEN_PASSWORD_TEXT)!!.text
+        binding.etEmailForgotPass.hint = mutableTranslations?.get(Constant.FIELD_EMAIL)!!.text
         binding.btnSendLink.text =
-            mutableTranslations[Constant.BTN_SEND_LINK_FORGOTTEN_PASSWORD]!!.text
-        //"forgotPasswordSended"->{}
+            mutableTranslations?.get(Constant.BTN_SEND_LINK_FORGOTTEN_PASSWORD)!!.text
     }
 
-    override fun onCurrentLanguageLoaded(language: String) {
-        forgotPasswordModel.getTranslations(this, language.toInt())
-        { translations -> onTranslationsLoaded(translations) }
+    override fun onSendLink(result: SimpleResponseEntity) {
+        if (result.status == Constant.OK) {
+            Popup.showInfo(
+                this, resources,
+                mutableTranslations?.get(Constant.MSG_FORGOTTEN_PASSWORD_TEXT_OK)!!.text
+            )
+        } else {
+            Popup.showInfo(
+                this, resources,
+                mutableTranslations?.get(Constant.MSG_FORGOTTEN_PASSWORD_TEXT_KO)!!.text
+            )
+        }
     }
 }

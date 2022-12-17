@@ -10,7 +10,8 @@ class PantryListAdapter(
     private var purchaseList: List<PantryList>,
     private val onClickListener: (PantryList) -> Unit,
     private val onClickDelete: (Int, PantryList) -> Unit,
-    private val onClickUpdate: (PantryList) -> Unit
+    private val onClickUpdate: (PantryList) -> Unit,
+    private val currency: String
 ) : RecyclerView.Adapter<PantryListViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PantryListViewHolder {
@@ -26,18 +27,18 @@ class PantryListAdapter(
 
     override fun onBindViewHolder(holder: PantryListViewHolder, position: Int) {
         val item = purchaseList[position]
-        holder.render(item, onClickListener, onClickDelete, onClickUpdate)
+        holder.render(item, onClickListener, onClickDelete, onClickUpdate, currency)
     }
 
     override fun getItemCount(): Int = purchaseList.size
 
     fun getTotalPrice(): Double {
-        return purchaseList.sumOf { purchase -> purchase.price.toDouble() }
+        return purchaseList.sumOf { pantry -> pantry.price.toDouble() }
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updatePurchaseList(updatedPurchaseList: List<PantryList>) {
-        this.purchaseList = updatedPurchaseList
+    fun updatePantryList(updatedPantryList: List<PantryList>) {
+        this.purchaseList = updatedPantryList
         notifyDataSetChanged()
     }
 }

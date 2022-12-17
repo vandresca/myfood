@@ -11,11 +11,14 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import com.example.myfood.R
+import com.example.myfood.constants.Constant
 import com.example.myfood.databasesqlite.entity.Translation
 import com.example.myfood.databinding.ActivityMainBinding
 import com.example.myfood.databinding.ConfigFragmentBinding
-import com.example.myfood.mvp.place.PlaceListFragment
 import com.example.myfood.mvp.quantityunit.QuantityUnitListFragment
+import com.example.myfood.mvp.storeplace.StorePlaceListFragment
+import com.example.myfood.mvvm.data.model.OneValueEntity
+import com.example.myfood.mvvm.data.model.SimpleResponseEntity
 import com.example.myfood.popup.Popup
 
 class ConfigFragment(private var activityMainBinding: ActivityMainBinding) : Fragment(),
@@ -29,18 +32,15 @@ class ConfigFragment(private var activityMainBinding: ActivityMainBinding) : Fra
     private lateinit var idUser: String
     private lateinit var languages: List<String>
     private lateinit var currencies: List<String>
-    private val thisClass: ConfigFragment = this
     private var languageSelected: Int = 0
-    private lateinit var mutableTranslations: MutableMap<String, Translation>
+    private var mutableTranslations: MutableMap<String, Translation>? = null
+    private lateinit var configPresenter: ConfigPresenter
 
-    companion object {
-        private const val CONST_OK = "OK"
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = ConfigFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -50,114 +50,123 @@ class ConfigFragment(private var activityMainBinding: ActivityMainBinding) : Fra
         binding.layoutConfig.visibility = View.INVISIBLE
         this.context?.let { contextt = it }
         configModel = ConfigModel()
-        configModel.getInstance(contextt)
-        configModel.getLanguages(this)
-        configModel.getUserId(this)
+        configPresenter = ConfigPresenter(this, configModel, requireContext())
+        initLanguages()
+        initTranslations()
+        initUser()
+        initOnItemSelectedListenerLanguage()
         initClickButtons()
     }
 
-    private fun initClickButtons() {
-        binding.btnChangeEmail.setOnClickListener {
-            val email = binding.etConfigEmail.text.toString()
-            val EMAIL_REGEX = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})"
-            if (email.isEmpty()) {
-                Popup.showInfo(
-                    requireContext(),
-                    resources,
-                    mutableTranslations["emptyEmail"]!!.text
-                )
-            } else if (!EMAIL_REGEX.toRegex().matches(email)) {
-                Popup.showInfo(
-                    requireContext(),
-                    resources,
-                    mutableTranslations["formatEmail"]!!.text
-                )
-            } else {
-                configModel.changeEmail(this, email, idUser)
-            }
-        }
-        binding.btnChangeLangAndCurrency.setOnClickListener {
-            configModel.updateCurrentLanguage((languages.indexOf(binding.sLanguageConfig.selectedItem) + 1).toString())
-            configModel.updateCurrentCurrency(binding.sCurrencyConfig.selectedItem as String)
-            configModel.getTranslationsMenu(this, languageSelected)
-            configModel.getTranslations(this, languageSelected)
-
-            Popup.showInfo(
-                requireContext(),
-                resources,
-                mutableTranslations["langAndCurrUpdated"]!!.text
-            )
-        }
-        binding.btnConfigStorePlaces.setOnClickListener { loadFragment(PlaceListFragment()) }
-        binding.btnConfigQuantityUnit.setOnClickListener { loadFragment(QuantityUnitListFragment()) }
-    }
-
-
-    override fun onLanguagesLoaded(languages: List<String>) {
+    private fun initLanguages() {
+        val languages = configPresenter.getLanguages()
         this.languages = languages
         spinnerAdapterLanguage =
             ArrayAdapter(contextt, android.R.layout.simple_spinner_item, languages)
         spinnerAdapterLanguage.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.sLanguageConfig.adapter = spinnerAdapterLanguage
-        configModel.getCurrentLanguage(this)
-        initOnItemSelectedListenerLanguage()
+        val currentLanguage = configPresenter.getCurrentLanguage()
+        binding.sLanguageConfig.setSelection(currentLanguage.toInt() - 1)
     }
 
-    override fun onCurrentLanguageLoaded(language: String) {
-        binding.sLanguageConfig.setSelection(language.toInt() - 1)
+    private fun initTranslations() {
+        val currentLanguage = configPresenter.getCurrentLanguage()
+        this.mutableTranslations = configPresenter.getTranslations(currentLanguage.toInt())
+        setTranslations()
     }
 
-    override fun onCurrenciesLoaded(currencies: List<String>) {
+    private fun initUser() {
+        val idUser = configPresenter.getUserId()
+        this.idUser = idUser
+        configPresenter.getEmail(idUser)
+            .observe(this.viewLifecycleOwner) { response -> onGottenEmail(response) }
+        configPresenter.getPassword(idUser)
+            .observe(this.viewLifecycleOwner) { response -> onGottenPassword(response) }
+    }
+
+    private fun initClickButtons() {
+        binding.btnChangeEmail.setOnClickListener {
+            val email = binding.etConfigEmail.text.toString()
+            val emailREGEX = "^[A-Za-z](.*)([@])(.+)(\\.)(.+)"
+            if (email.isEmpty()) {
+                Popup.showInfo(
+                    requireContext(),
+                    resources,
+                    mutableTranslations?.get(Constant.MSG_EMAIL_REQUIRED_CONF)!!.text
+                )
+            } else if (!emailREGEX.toRegex().matches(email)) {
+                Popup.showInfo(
+                    requireContext(),
+                    resources,
+                    mutableTranslations?.get(Constant.MSG_EMAIL_FORMAT_INCORRECT_CONF)!!.text
+                )
+            } else {
+                configPresenter.changeEmail(email, idUser).observe(this.viewLifecycleOwner)
+                { response -> onChangeEmail(response) }
+            }
+        }
+        binding.btnChangePassword.setOnClickListener {
+            val password = binding.etConfigPassword.text.toString()
+            configPresenter.changePassword(password, idUser).observe(this.viewLifecycleOwner)
+            { response -> onChangePassword(response) }
+        }
+        binding.btnChangeLangAndCurrency.setOnClickListener {
+            configPresenter.updateCurrentLanguage((languages.indexOf(binding.sLanguageConfig.selectedItem) + 1).toString())
+            configPresenter.updateCurrentCurrency(binding.sCurrencyConfig.selectedItem as String)
+            this.mutableTranslations = configPresenter.getTranslations(languageSelected)
+            setTranslations()
+            setTranslationsMenu(configPresenter.getTranslationsMenu(languageSelected))
+            Popup.showInfo(
+                requireContext(),
+                resources,
+                mutableTranslations?.get(Constant.MSG_LANG_AND_CURR_UPDATED)!!.text
+            )
+        }
+        binding.btnConfigStorePlaces.setOnClickListener { loadFragment(StorePlaceListFragment()) }
+        binding.btnConfigQuantityUnit.setOnClickListener { loadFragment(QuantityUnitListFragment()) }
+    }
+
+
+    private fun setCurrencies(currencies: List<String>) {
         this.currencies = currencies
         spinnerAdapterCurrency =
             ArrayAdapter(contextt, android.R.layout.simple_spinner_item, currencies)
         spinnerAdapterCurrency.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.sCurrencyConfig.adapter = spinnerAdapterCurrency
-        configModel.getCurrentCurrency(this)
+        val currentCurrency = configPresenter.getCurrentCurrency()
+        binding.sCurrencyConfig.setSelection(currencies.indexOf(currentCurrency))
         initOnItemSelectedListenerCurrency()
     }
 
-    override fun onUserIdLoaded(idUser: String) {
-        this.idUser = idUser
-        configModel.getEmail(this, idUser)
+    private fun setTranslationsMenu(translationsMenu: MutableMap<String, Translation>?) {
+        activityMainBinding.bottomNavigation.menu.findItem(R.id.purchaseItem).title =
+            translationsMenu?.get(Constant.MENU_PANTRY)!!.text
+        activityMainBinding.bottomNavigation.menu.findItem(R.id.shopListItem).title =
+            translationsMenu[Constant.MENU_SHOPPING]!!.text
+        activityMainBinding.bottomNavigation.menu.findItem(R.id.expirationItem).title =
+            translationsMenu[Constant.MENU_EXPIRATION]!!.text
+        activityMainBinding.bottomNavigation.menu.findItem(R.id.recipeItem).title =
+            translationsMenu[Constant.MENU_RECIPE]!!.text
+        activityMainBinding.bottomNavigation.menu.findItem(R.id.configItem).title =
+            translationsMenu[Constant.MENU_CONFIG]!!.text
     }
 
-    override fun onCurrentCurrencyLoaded(currency: String) {
-        binding.sCurrencyConfig.setSelection(currencies.indexOf(currency))
-    }
-
-    override fun onTranslationsMenuLoaded(translations: List<Translation>) {
-        var mutableTranslationsMenu = mutableMapOf<String, Translation>()
-        translations.forEach {
-            mutableTranslationsMenu.put(it.word, it)
-        }
-        activityMainBinding.bottomNavigation.menu.findItem(com.example.myfood.R.id.purchaseItem).title =
-            mutableTranslationsMenu["menuPurchase"]!!.text
-        activityMainBinding.bottomNavigation.menu.findItem(com.example.myfood.R.id.shopListItem).title =
-            mutableTranslationsMenu["menuShopping"]!!.text
-        activityMainBinding.bottomNavigation.menu.findItem(com.example.myfood.R.id.expirationItem).title =
-            mutableTranslationsMenu["menuExpiration"]!!.text
-        activityMainBinding.bottomNavigation.menu.findItem(com.example.myfood.R.id.recipeItem).title =
-            mutableTranslationsMenu["menuRecipe"]!!.text
-        activityMainBinding.bottomNavigation.menu.findItem(com.example.myfood.R.id.configItem).title =
-            mutableTranslationsMenu["menuConfig"]!!.text
-    }
-
-    override fun onTranslationsLoaded(translations: List<Translation>) {
-        mutableTranslations = mutableMapOf<String, Translation>()
-        translations.forEach {
-            mutableTranslations.put(it.word, it)
-        }
+    override fun setTranslations() {
         binding.layoutConfig.visibility = View.VISIBLE
-        binding.header.titleHeader.text = mutableTranslations["configTitle"]!!.text
-        binding.lLanguageConfig.text = mutableTranslations["language"]!!.text
-        binding.lCurrencyConfig.text = mutableTranslations["currency"]!!.text
-        binding.etConfigEmail.hint = mutableTranslations["Email"]!!.text
-        binding.btnChangeLangAndCurrency.text = mutableTranslations["changeLangAndCurrency"]!!.text
-        binding.btnChangeEmail.text = mutableTranslations["changeEmail"]!!.text
-        binding.btnConfigChangePassword.text = mutableTranslations["changePassword"]!!.text
-        binding.btnConfigStorePlaces.text = mutableTranslations["places"]!!.text
-        binding.btnConfigQuantityUnit.text = mutableTranslations["quantitUnitsConfig"]!!.text
+        binding.header.titleHeader.text = mutableTranslations?.get(Constant.TITLE_CONFIG)!!.text
+        binding.lLanguageConfig.text = mutableTranslations?.get(Constant.LABEL_LANGUAGE)!!.text
+        binding.lCurrencyConfig.text = mutableTranslations?.get(Constant.LABEL_CURRENCY)!!.text
+        binding.etConfigEmail.hint = mutableTranslations?.get(Constant.FIELD_EMAIL)!!.text
+        binding.etConfigPassword.hint = mutableTranslations?.get(Constant.FIELD_PASSWORD)!!.text
+        binding.btnChangeLangAndCurrency.text =
+            mutableTranslations?.get(Constant.BTN_LANG_AND_CURR)!!.text
+        binding.btnChangeEmail.text = mutableTranslations?.get(Constant.BTN_CHANGE_EMAIL)!!.text
+        binding.btnChangePassword.text =
+            mutableTranslations?.get(Constant.BTN_CHANGE_PASSWORD)!!.text
+        binding.btnConfigStorePlaces.text =
+            mutableTranslations?.get(Constant.BTN_STORE_PLACES)!!.text
+        binding.btnConfigQuantityUnit.text =
+            mutableTranslations?.get(Constant.BTN_QUANTITY_UNIT)!!.text
     }
 
     private fun initOnItemSelectedListenerLanguage() {
@@ -169,11 +178,8 @@ class ConfigFragment(private var activityMainBinding: ActivityMainBinding) : Fra
                     position: Int,
                     id: Long
                 ) {
-                    if (languageSelected == 0) {
-                        configModel.getTranslations(thisClass, position + 1)
-                    }
                     languageSelected = position + 1
-                    configModel.getCurrencies(thisClass, position + 1)
+                    setCurrencies(configPresenter.getCurrencies(position + 1))
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -195,18 +201,36 @@ class ConfigFragment(private var activityMainBinding: ActivityMainBinding) : Fra
             }
     }
 
-    override fun onGottenEmail(response: String?) {
-        Handler(Looper.getMainLooper()).post {
-            binding.etConfigEmail.setText(response)
+    override fun onGottenEmail(result: OneValueEntity) {
+        if (result.status == Constant.OK) {
+            Handler(Looper.getMainLooper()).post {
+                binding.etConfigEmail.setText(result.value)
+            }
         }
     }
 
-    override fun onChangeEmail(response: String?) {
-        var msgResult = ""
-        if (response.equals(CONST_OK)) {
-            msgResult = mutableTranslations["emailUpdated"]!!.text
+    override fun onGottenPassword(result: OneValueEntity) {
+        if (result.status == Constant.OK) {
+            Handler(Looper.getMainLooper()).post {
+                binding.etConfigPassword.setText(result.value)
+            }
+        }
+    }
+
+    override fun onChangeEmail(result: SimpleResponseEntity) {
+        val msgResult = if (result.status == Constant.OK) {
+            mutableTranslations?.get(Constant.MSG_EMAIL_UPDATED)!!.text
         } else {
-            msgResult = mutableTranslations["emailNotUpdated"]!!.text
+            mutableTranslations?.get(Constant.MSG_EMAIL_NOT_UPDATED)!!.text
+        }
+        Popup.showInfo(requireContext(), resources, msgResult)
+    }
+
+    override fun onChangePassword(result: SimpleResponseEntity) {
+        val msgResult = if (result.status == Constant.OK) {
+            mutableTranslations?.get(Constant.MSG_PASSWORD_UPDATED)!!.text
+        } else {
+            mutableTranslations?.get(Constant.MSG_PASSWORD_NOT_UPDATED)!!.text
         }
         Popup.showInfo(requireContext(), resources, msgResult)
     }

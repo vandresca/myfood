@@ -76,12 +76,18 @@
                 android:text="Change Email"
                 android:textAllCaps="false" />
 
+            <EditText
+                android:id="@+id/etConfigPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Password"
+                android:inputType="textPassword" />
+
             <Button
-                android:id="@+id/btnConfigChangePassword"
+                android:id="@+id/btnChangePassword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginTop="40dp"
+                android:layout_gravity="end"
                 android:backgroundTint="@color/turquoise"
                 android:text="Change Password"
                 android:textAllCaps="false" />
@@ -91,6 +97,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
+                android:layout_marginTop="40dp"
                 android:backgroundTint="@color/turquoise"
                 android:text="Store PLaces"
                 android:textAllCaps="false" />

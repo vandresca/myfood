@@ -1,23 +1,29 @@
 package com.example.myfood.mvp.addshopproduct
 
-import androidx.lifecycle.LifecycleOwner
+import android.content.Context
+import androidx.lifecycle.MutableLiveData
 import com.example.myfood.databasesqlite.entity.QuantityUnit
 import com.example.myfood.interfaces.Translatable
+import com.example.myfood.mvvm.data.model.ShopProductEntity
 
 interface AddShopContract {
     interface View : Translatable.View {
-        fun onInsertedShop(response: String?)
-        fun onUpdatedShop(response: String?)
-        fun onLoadShopToUpdate(response: String?)
-        fun onQuantitiesLoaded(quantitiesUnit: List<QuantityUnit>)
+        fun onLoadShopToUpdate(shopProductEntity: ShopProductEntity)
+        fun setTranslations()
+    }
+
+    interface Presenter : Translatable.Presenter {
+        fun getUserId(): String
+        fun getQuantitiesUnit(): List<QuantityUnit>
+        fun getShopProduct(idShop: String): MutableLiveData<ShopProductEntity>
     }
 
     interface Model : Translatable.Model {
-        fun getShopProduct(idShop: String, callback: (String?) -> Unit)
-        fun getQuantitiesUnit(application: LifecycleOwner, callback: (List<QuantityUnit>) -> Unit)
-        fun getUserId(application: LifecycleOwner, callback: (String) -> Unit)
+        fun getInstance(application: Context)
+        fun getShopProduct(idShop: String): MutableLiveData<ShopProductEntity>
+        fun getQuantitiesUnit(): List<QuantityUnit>
+        fun getUserId(): String
         fun insertShop(
-            application: AddShopFragment,
             name: String,
             quantity: String,
             quantityUnit: String,
@@ -25,7 +31,6 @@ interface AddShopContract {
         )
 
         fun updateShop(
-            application: AddShopFragment,
             name: String,
             quantity: String,
             quantityUnit: String,

@@ -1,6 +1,5 @@
 package com.example.myfood.databasesqlite
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import com.example.myfood.databasesqlite.entity.QuantityUnit
@@ -18,10 +17,10 @@ interface SQLiteDao {
                 "and sw.idScreen=:screen " +
                 "and wt.idLanguage=:language"
     )
-    fun getTranslations(language: Int, screen: Int): LiveData<List<Translation>>
+    fun getTranslations(language: Int, screen: Int): List<Translation>
 
     @Query("SELECT value FROM ConfigProfile WHERE parameter='language'")
-    fun getCurrentLanguage(): LiveData<String>
+    fun getCurrentLanguage(): String
 
     @Query("UPDATE ConfigProfile SET value =:language WHERE parameter='language'")
     fun updateCurrentLanguage(language: String)
@@ -33,28 +32,50 @@ interface SQLiteDao {
     fun updateUserId(userId: String)
 
     @Query("SELECT value FROM ConfigProfile WHERE parameter='userId'")
-    fun getUserId(): LiveData<String>
+    fun getUserId(): String
 
     @Query("SELECT language FROM Language")
-    fun getLanguages(): LiveData<List<String>>
+    fun getLanguages(): List<String>
+
 
     @Query("SELECT * FROM QuantityUnit")
-    fun getQuantitiesUnit(): LiveData<List<QuantityUnit>>
+    fun getQuantitiesUnit(): List<QuantityUnit>
 
     @Query("SELECT * FROM StorePlace")
-    fun getStorePlaces(): LiveData<List<StorePlace>>
+    fun getStorePlaces(): List<StorePlace>
 
     @Query("INSERT INTO StorePlace(storePlace) values(:place)")
-    fun addPlace(place: String)
+    fun addStorePlace(place: String)
+
+    @Query(
+        "UPDATE StorePlace SET storePlace=:storePlace " +
+                "WHERE idStorePlace = :id"
+    )
+    fun updateStorePlace(storePlace: String, id: String)
+
+    @Query("DELETE FROM StorePlace WHERE idStorePlace = :id")
+    fun deleteStorePlace(id: String)
+
+    @Query("INSERT INTO QuantityUnit(quantityUnit) values(:quantityUnit)")
+    fun addQuantityUnit(quantityUnit: String)
+
+    @Query(
+        "UPDATE QuantityUnit SET quantityUnit=:quantityUnit" +
+                " WHERE idQuantityUnit=:id"
+    )
+    fun updateQuantityUnit(quantityUnit: String, id: String)
+
+    @Query("DELETE FROM QuantityUnit WHERE idQuantityUnit = :id")
+    fun deleteQuantityUnit(id: String)
 
     @Query(
         "SELECT symbol " +
                 "FROM CurrencyTranslation " +
                 "WHERE idLanguage = :language"
     )
-    fun getCurrencies(language: Int): LiveData<List<String>>
+    fun getCurrencies(language: Int): List<String>
 
     @Query("SELECT value FROM ConfigProfile WHERE parameter='symbol'")
-    fun getCurrentCurrency(): LiveData<String>
+    fun getCurrentCurrency(): String
 
 }

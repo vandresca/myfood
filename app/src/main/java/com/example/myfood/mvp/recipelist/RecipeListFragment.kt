@@ -8,6 +8,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myfood.R
+import com.example.myfood.constants.Constant
 import com.example.myfood.databasesqlite.entity.Translation
 import com.example.myfood.databinding.RecipeListFragmentBinding
 
@@ -16,13 +17,13 @@ class RecipeListFragment : Fragment(), RecipeListContract.View {
     private val binding get() = _binding!!
     private lateinit var recipeListPresenter: RecipeListPresenter
     private lateinit var recipeListModel: RecipeListModel
-    private lateinit var mutableTranslations: MutableMap<String, Translation>
+    private var mutableTranslations: MutableMap<String, Translation>? = null
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = RecipeListFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -36,27 +37,24 @@ class RecipeListFragment : Fragment(), RecipeListContract.View {
     private fun initialize() {
         binding.layoutRecipeList.visibility = View.INVISIBLE
         recipeListModel = RecipeListModel()
-        recipeListModel.getInstance(requireContext())
-        recipeListModel.getUserId(this)
-        recipeListModel.getCurrentLanguage(this)
-    }
-
-    override fun onUserIdLoaded(idUser: String) {
-        recipeListPresenter = RecipeListPresenter(this, RecipeListModel(), idUser)
+        recipeListPresenter = RecipeListPresenter(this, RecipeListModel(), this, requireContext())
+        val currentLanguage = recipeListPresenter.getCurrentLanguage()
+        this.mutableTranslations = recipeListPresenter.getTranslations(currentLanguage.toInt())
+        setTranslations()
+        recipeListPresenter.loadData(
+            currentLanguage,
+            mutableTranslations?.get(Constant.TITLE_RECIPE)!!.text
+        )
         initSearcher()
         binding.btnRLAll.setOnClickListener { recipeListPresenter.filterAll() }
         binding.btnRLSuggestions.setOnClickListener { recipeListPresenter.filterSuggested() }
+
+
     }
 
-    private fun initSearcher() {
-        binding.etFilterRL.addTextChangedListener { watchText ->
-            recipeListPresenter.doFilter(watchText)
-        }
-    }
-
-    override fun initRecyclerView(recipeAdapter: RecipeListAdapter) {
+    override fun initRecyclerView(recipeListAdapter: RecipeListAdapter) {
         binding.rvEL.layoutManager = LinearLayoutManager(this.context)
-        binding.rvEL.adapter = recipeAdapter
+        binding.rvEL.adapter = recipeListAdapter
     }
 
     override fun loadFragment(fragment: Fragment) {
@@ -66,23 +64,18 @@ class RecipeListFragment : Fragment(), RecipeListContract.View {
         transaction.commit()
     }
 
-    override fun onTranslationsLoaded(translations: List<Translation>) {
-        mutableTranslations = mutableMapOf<String, Translation>()
-        translations.forEach {
-            mutableTranslations.put(it.word, it)
-        }
-        setTranslations()
-    }
-
-    private fun setTranslations() {
+    override fun setTranslations() {
         binding.layoutRecipeList.visibility = View.VISIBLE
-        binding.header.titleHeader.text = mutableTranslations["recipeTitle"]!!.text
-        binding.etFilterRL.hint = mutableTranslations["search"]!!.text
-        binding.btnRLAll.text = mutableTranslations["all"]!!.text
-        binding.btnRLSuggestions.text = mutableTranslations["suggestions"]!!.text
+        binding.header.titleHeader.text =
+            mutableTranslations?.get(Constant.TITLE_RECIPE_LIST)!!.text
+        binding.etFilterRL.hint = mutableTranslations?.get(Constant.FIELD_SEARCH)!!.text
+        binding.btnRLAll.text = mutableTranslations?.get(Constant.BTN_ALL)!!.text
+        binding.btnRLSuggestions.text = mutableTranslations?.get(Constant.BTN_SUGGESTIONS)!!.text
     }
 
-    override fun onCurrentLanguageLoaded(language: String) {
-        recipeListModel.getTranslations(this, language.toInt())
+    private fun initSearcher() {
+        binding.etFilterRL.addTextChangedListener { watchText ->
+            recipeListPresenter.doFilter(watchText)
+        }
     }
 }

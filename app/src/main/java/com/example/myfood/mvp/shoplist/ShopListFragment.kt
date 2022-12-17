@@ -18,7 +18,7 @@ class ShopListFragment : Fragment(), ShopListContract.View {
     private val binding get() = _binding!!
     private lateinit var shopListPresenter: ShopListPresenter
     private lateinit var shopListModel: ShopListModel
-    private lateinit var mutableTranslations: MutableMap<String, Translation>
+    private var mutableTranslations: MutableMap<String, Translation>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,16 +42,14 @@ class ShopListFragment : Fragment(), ShopListContract.View {
     private fun initialize() {
         binding.layoutShopList.visibility = View.INVISIBLE
         shopListModel = ShopListModel()
-        shopListModel.getInstance(requireContext())
-        shopListModel.getUserId(this) { userId -> onUserIdLoaded(userId) }
-        shopListModel.getCurrentLanguage(this)
-        { currentLanguage -> onCurrentLanguageLoaded(currentLanguage) }
-    }
-
-    override fun onUserIdLoaded(idUser: String) {
-        shopListPresenter = ShopListPresenter(this, ShopListModel(), idUser)
+        shopListPresenter = ShopListPresenter(this, ShopListModel(), requireContext())
+        val idUser = shopListPresenter.getUserId()
+        shopListPresenter.setIdUser(this, idUser)
+        val currentLanguage = shopListPresenter.getCurrentLanguage()
+        this.mutableTranslations = shopListPresenter.getTranslations(currentLanguage.toInt())
         initAddShopProductClick()
         initSearcher()
+        setTranslations()
     }
 
     private fun initSearcher() {
@@ -78,23 +76,10 @@ class ShopListFragment : Fragment(), ShopListContract.View {
         transaction.commit()
     }
 
-    override fun onTranslationsLoaded(translations: List<Translation>) {
-        mutableTranslations = mutableMapOf()
-        translations.forEach {
-            mutableTranslations[it.word] = it
-        }
-        setTranslations()
-    }
-
-
-    private fun setTranslations() {
+    override fun setTranslations() {
         binding.layoutShopList.visibility = View.VISIBLE
-        binding.header.titleHeader.text = mutableTranslations["shoppingList"]!!.text
-        binding.etFilterSL.hint = mutableTranslations["search"]!!.text
-    }
-
-    override fun onCurrentLanguageLoaded(language: String) {
-        shopListModel.getTranslations(this, language.toInt())
-        { translations -> onTranslationsLoaded(translations) }
+        binding.header.titleHeader.text =
+            mutableTranslations?.get(Constant.TITLE_SHOPPING_LIST)!!.text
+        binding.etFilterSL.hint = mutableTranslations?.get(Constant.FIELD_SEARCH)!!.text
     }
 }

@@ -1,40 +1,32 @@
 package com.example.myfood.mvp.shoplist
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
+import androidx.lifecycle.LifecycleOwner
 import com.example.myfood.constants.Constant
-import org.json.JSONObject
+import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.mvvm.data.model.ShopListEntity
 
 class ShopListPresenter(
     private val shopListView: ShopListContract.View,
     private val shopListModel: ShopListContract.Model,
-    idUser: String
+    context: Context
 ) : ShopListContract.Presenter {
     private lateinit var shopAdapter: ShopListAdapter
+    private lateinit var idUser: String
     private var shopMutableList: MutableList<ShopList> = mutableListOf()
 
     init {
-        shopListModel.getShopList(idUser) { data -> loadData(data) }
+        shopListModel.getInstance(context)
     }
 
-    override fun loadData(response: String?) {
-        val json = JSONObject(response!!)
-        val products = json.getJSONArray(Constant.JSON_PRODUCTS)
-        val shopList: ArrayList<ShopList> = ArrayList()
-        for (i in 0 until products.length()) {
-            val item = products.get(i) as JSONObject
-            shopList.add(
-                ShopList(
-                    item.get(Constant.JSON_ID).toString(),
-                    item.get(Constant.JSON_NAME).toString(),
-                    item.get(Constant.JSON_QUANTITY).toString(),
-                    item.get(Constant.JSON_QUANTITY_UNIT).toString()
-                )
-            )
+    override fun loadData(shopListEntity: ShopListEntity) {
+        if (shopListEntity.status == Constant.OK) {
+            shopMutableList = shopListEntity.toMVP().toMutableList()
+            initData()
         }
-        shopMutableList = shopList.toMutableList()
-        initData()
     }
 
     override fun initData() {
@@ -56,6 +48,23 @@ class ShopListPresenter(
         shopAdapter.updateShopList(shopFiltered)
     }
 
+    override fun getCurrentLanguage(): String {
+        return shopListModel.getCurrentLanguage()
+    }
+
+    override fun getTranslations(language: Int): MutableMap<String, Translation> {
+        val mutableTranslations: MutableMap<String, Translation> = mutableMapOf()
+        val translations = shopListModel.getTranslations(language)
+        translations.forEach {
+            mutableTranslations[it.word] = it
+        }
+        return mutableTranslations
+    }
+
+    override fun getUserId(): String {
+        return shopListModel.getUserId()
+    }
+
     private fun onItemSelected(shopList: ShopList) {
         print(shopList.name)
     }
@@ -68,6 +77,11 @@ class ShopListPresenter(
 
     private fun onUpdateItem(shopList: ShopList) {
         shopListView.showUpdateShopProductScreen(shopList.id)
+    }
+
+    fun setIdUser(lifecycleOwner: LifecycleOwner, idUser: String) {
+        this.idUser = idUser
+        shopListModel.getShopList(idUser).observe(lifecycleOwner) { data -> loadData(data) }
     }
 
 }

@@ -3,7 +3,6 @@ package com.example.myfood.mvp.addshopproduct
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,14 +10,14 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import com.example.myfood.R
-import com.example.myfood.constants.Constant.Companion.CONST_OK
+import com.example.myfood.constants.Constant
 import com.example.myfood.constants.Constant.Companion.MODE_ADD
 import com.example.myfood.databasesqlite.entity.QuantityUnit
 import com.example.myfood.databasesqlite.entity.Translation
 import com.example.myfood.databinding.AddShopFragmentBinding
 import com.example.myfood.mvp.shoplist.ShopListFragment
+import com.example.myfood.mvvm.data.model.ShopProductEntity
 import com.example.myfood.popup.Popup
-import org.json.JSONObject
 
 
 class AddShopFragment(private val mode: Int, private var idShop: String = "") : Fragment(),
@@ -28,8 +27,9 @@ class AddShopFragment(private val mode: Int, private var idShop: String = "") : 
     private val binding get() = _binding!!
     private lateinit var userId: String
     private lateinit var addShopModel: AddShopModel
+    private lateinit var addShopPresenter: AddShopPresenter
     private lateinit var quantitiesUnitMutable: MutableList<String>
-    private lateinit var mutableTranslations: MutableMap<String, Translation>
+    private var mutableTranslations: MutableMap<String, Translation>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,30 +44,28 @@ class AddShopFragment(private val mode: Int, private var idShop: String = "") : 
         super.onViewCreated(view, savedInstanceState)
         binding.layoutAddShop.visibility = View.INVISIBLE
         addShopModel = AddShopModel()
-        addShopModel.getInstance(requireContext())
-        addShopModel.getUserId(this) { userId -> onUserIdLoaded(userId) }
-        addShopModel.getQuantitiesUnit(this) { quantities -> onQuantitiesLoaded(quantities) }
-        addShopModel.getCurrentLanguage(this)
-        { currentLanguage -> onCurrentLanguageLoaded(currentLanguage) }
+        addShopPresenter = AddShopPresenter(this, addShopModel, requireContext())
+        userId = addShopPresenter.getUserId()
+        setQuantities(addShopPresenter.getQuantitiesUnit())
+        val currentLanguage = addShopPresenter.getCurrentLanguage()
+        this.mutableTranslations = addShopPresenter.getTranslations(currentLanguage.toInt())
+        setTranslations()
         binding.btnASProduct.setOnClickListener { addUpdateShopToDB() }
     }
 
-    override fun onLoadShopToUpdate(response: String?) {
-        val json = JSONObject(response!!)
-        if (json.get("response") == CONST_OK) {
+    override fun onLoadShopToUpdate(shopProductEntity: ShopProductEntity) {
+        if (shopProductEntity.status == Constant.OK) {
             Handler(Looper.getMainLooper()).post {
-                binding.etASName.setText(json.get("name").toString())
-                binding.etASQuantity.text = SpannableStringBuilder(json.get("quantity").toString())
+                binding.etASName.setText(shopProductEntity.name)
+                binding.etASQuantity.setText(shopProductEntity.quantity)
                 binding.sASQuantityUnit.setSelection(
-                    quantitiesUnitMutable.indexOf(
-                        json.get("quantityUnit").toString()
-                    )
+                    quantitiesUnitMutable.indexOf(shopProductEntity.quantityUnit)
                 )
             }
         }
     }
 
-    override fun onQuantitiesLoaded(quantitiesUnit: List<QuantityUnit>) {
+    private fun setQuantities(quantitiesUnit: List<QuantityUnit>) {
         quantitiesUnitMutable = mutableListOf()
         quantitiesUnit.forEach {
             this.quantitiesUnitMutable.add(it.quantityUnit)
@@ -99,62 +97,49 @@ class AddShopFragment(private val mode: Int, private var idShop: String = "") : 
         }
     }
 
-
-    fun onUserIdLoaded(id: String) {
-        userId = id
-    }
-
     private fun addUpdateShopToDB() {
         val name = binding.etASName.text.toString()
         val quantity = binding.etASQuantity.text.toString()
         val quantityUnit = binding.sASQuantityUnit.selectedItem.toString()
         if (name.isNotEmpty()) {
             if (mode == MODE_ADD) {
-                addShopModel.insertShop(this, name, quantity, quantityUnit, userId)
+                addShopModel.insertShop(name, quantity, quantityUnit, userId)
             } else {
-                addShopModel.updateShop(this, name, quantity, quantityUnit, idShop)
+                addShopModel.updateShop(name, quantity, quantityUnit, idShop)
             }
             loadFragment(ShopListFragment())
         } else {
-            Popup.showInfo(requireContext(), resources, mutableTranslations["requiredName"]!!.text)
+            Popup.showInfo(
+                requireContext(),
+                resources,
+                mutableTranslations?.get(Constant.MSG_NAME_REQUIRED)!!.text
+            )
         }
     }
 
-    override fun onInsertedShop(response: String?) {}
-    override fun onUpdatedShop(response: String?) {}
+    override fun setTranslations() {
+        binding.layoutAddShop.visibility = View.VISIBLE
+        binding.lASName.text = mutableTranslations?.get(Constant.LABEL_NAME)!!.text
+        binding.lASQuantity.text = mutableTranslations?.get(Constant.LABEL_QUANTITY)!!.text
+        binding.lASQuantityUnit.text = mutableTranslations?.get(Constant.LABEL_QUANTITY_UNIT)!!.text
+        if (mode == MODE_ADD) {
+            binding.header.titleHeader.text =
+                mutableTranslations?.get(Constant.TITLE_ADD_SHOPPING)!!.text
+            binding.btnASProduct.text = mutableTranslations?.get(Constant.BTN_ADD_SHOPPING)!!.text
+        } else {
+            binding.header.titleHeader.text =
+                mutableTranslations?.get(Constant.TITLE_UPDATE_SHOPPING)!!.text
+            binding.btnASProduct.text =
+                mutableTranslations?.get(Constant.BTN_UPDATE_SHOPPING)!!.text
+            addShopPresenter.getShopProduct(idShop).observe(this.viewLifecycleOwner)
+            { data -> onLoadShopToUpdate(data) }
+        }
+    }
 
     fun loadFragment(fragment: Fragment) {
         val transaction = parentFragmentManager.beginTransaction()
         transaction.add(R.id.container, fragment)
         transaction.addToBackStack(null)
         transaction.commit()
-    }
-
-    override fun onTranslationsLoaded(translations: List<Translation>) {
-        mutableTranslations = mutableMapOf()
-        translations.forEach {
-            mutableTranslations[it.word] = it
-        }
-        setTranslations()
-    }
-
-    private fun setTranslations() {
-        binding.layoutAddShop.visibility = View.VISIBLE
-        binding.lASName.text = mutableTranslations["name"]!!.text
-        binding.lASQuantity.text = mutableTranslations["quantity"]!!.text
-        binding.lASQuantityUnit.text = mutableTranslations["quantityUnit"]!!.text
-        if (mode == MODE_ADD) {
-            binding.header.titleHeader.text = mutableTranslations["addShopListTitle"]!!.text
-            binding.btnASProduct.text = mutableTranslations["addShopListBtn"]!!.text
-        } else {
-            binding.header.titleHeader.text = mutableTranslations["updateShopListTitle"]!!.text
-            binding.btnASProduct.text = mutableTranslations["updateShopListBtn"]!!.text
-            addShopModel.getShopProduct(idShop) { data -> onLoadShopToUpdate(data) }
-        }
-    }
-
-    override fun onCurrentLanguageLoaded(language: String) {
-        addShopModel.getTranslations(this, language.toInt())
-        { translations -> onTranslationsLoaded(translations) }
     }
 }

@@ -15,6 +15,7 @@
     <string name="Login">Login</string>
     <string name="forgotPasswordText">Enter your email and we will send you a link to reset your password</string>
     <string name="SendLink">Send Link</string>
+    <string name="Back">Back</string>
 
     <string name="productDescription">Product image</string>
     <string name="Change">Change</string>
@@ -31,5 +32,8 @@
     <string name="ExpirationDate">Expiration Date</string>
     <string name="PreferenceDate">Preference Date</string>
     <string name="Add">Add</string>
+    <string name="Nutrients">Nutrients</string>
+    <string name="GroupNutrients">Group Nutrients</string>
 
+    <string name="StorePlace">Store Place</string>
 </resources>

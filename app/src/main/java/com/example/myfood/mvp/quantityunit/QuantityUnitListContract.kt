@@ -1,31 +1,26 @@
 package com.example.myfood.mvp.quantityunit
 
+import android.content.Context
 import android.text.Editable
 import com.example.myfood.databasesqlite.entity.QuantityUnit
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.interfaces.Translatable
 
 interface QuantityUnitListContract {
-    interface View {
-        fun loadData(places: List<QuantityUnit>)
-        fun showUpdateShopProductScreen(idShop: String)
-        fun initRecyclerView(placeListAdapter: QuantityUnitListAdapter)
-        fun onTranslationsLoaded(translations: List<Translation>)
-        fun onCurrentLanguageLoaded(language: String)
+    interface View : Translatable.View {
+        fun showUpdateQuantityUnitScreen(quantityUnitToUpdate: QuantityUnit)
+        fun initRecyclerView(quantityUnitAdapter: QuantityUnitListAdapter)
+        fun setTranslations()
     }
 
-    interface Presenter {
-        fun loadData(places: List<QuantityUnit>)
+    interface Presenter : Translatable.Presenter {
+        fun loadData()
         fun initData()
-        fun doFilter(watchText: Editable?)
+        fun doFilter(userFilter: Editable?)
     }
 
-    interface Model {
-        fun getQuantityUnitList(application: QuantityUnitListFragment)
+    interface Model : Translatable.Model {
+        fun getInstance(application: Context)
+        fun getQuantityUnits(): List<QuantityUnit>
         fun deleteQuantityUnit(idQuantityUnit: String)
-        fun updateQuantityUnit(idQuantityUnit: String)
-        fun addQuantityUnit(quantityUnit: String)
-        fun getCurrentLanguage(application: QuantityUnitListFragment)
-        fun getTranslations(application: QuantityUnitListFragment, language: Int)
-
     }
 }

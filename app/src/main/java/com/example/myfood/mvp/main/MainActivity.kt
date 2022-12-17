@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.myfood.R
+import com.example.myfood.constants.Constant
 import com.example.myfood.databasesqlite.entity.Translation
 import com.example.myfood.databinding.ActivityMainBinding
 import com.example.myfood.mvp.config.ConfigFragment
@@ -12,8 +13,9 @@ import com.example.myfood.mvp.pantrylist.PantryListFragment
 import com.example.myfood.mvp.recipelist.RecipeListFragment
 import com.example.myfood.mvp.shoplist.ShopListFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainContract.View {
     private lateinit var binding: ActivityMainBinding
+    private lateinit var mainPresenter: MainPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,28 +25,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initialize() {
-        MainModel.getInstance(this)
-        MainModel.getCurrentLanguage(this)
+        mainPresenter = MainPresenter(this, MainModel(), this)
+        val currentLanguage = mainPresenter.getCurrentLanguage()
+        setTranslations(mainPresenter.getTranslations(currentLanguage.toInt()))
     }
 
-    fun onCurrentLanguageLoaded(language: String) {
-        MainModel.getTranslations(this, Integer.parseInt(language))
-    }
-
-    fun onTranslationsLoaded(translations: List<Translation>) {
-        translations.forEach {
+    override fun setTranslations(translations: MutableMap<String, Translation>?) {
+        translations!!.values.forEach {
             when (it.word) {
-                "menuPurchase" -> binding.bottomNavigation.menu.findItem(R.id.purchaseItem).title =
+                Constant.MENU_PANTRY -> binding.bottomNavigation.menu.findItem(R.id.purchaseItem).title =
                     it.text
-                "menuShopping" -> binding.bottomNavigation.menu.findItem(R.id.shopListItem).title =
+                Constant.MENU_SHOPPING -> binding.bottomNavigation.menu.findItem(R.id.shopListItem).title =
                     it.text
-                "menuExpiration" -> binding.bottomNavigation.menu.findItem(R.id.expirationItem).title =
+                Constant.MENU_EXPIRATION -> binding.bottomNavigation.menu.findItem(R.id.expirationItem).title =
                     it.text
-                "menuRecipe" -> binding.bottomNavigation.menu.findItem(R.id.recipeItem).title =
+                Constant.MENU_RECIPE -> binding.bottomNavigation.menu.findItem(R.id.recipeItem).title =
                     it.text
-                "menuConfig" -> binding.bottomNavigation.menu.findItem(R.id.configItem).title =
+                Constant.MENU_CONFIG -> binding.bottomNavigation.menu.findItem(R.id.configItem).title =
                     it.text
-
             }
         }
         loadFragment(PantryListFragment())

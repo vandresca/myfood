@@ -1,57 +1,41 @@
 package com.example.myfood.mvp.recipelist
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
+import com.example.myfood.constants.Constant
+import com.example.myfood.databasesqlite.entity.Translation
 import com.example.myfood.mvp.recipe.RecipeFragment
-import org.json.JSONObject
+import com.example.myfood.mvvm.data.model.RecipeListEntity
 
 class RecipeListPresenter(
     private val recipeListView: RecipeListContract.View,
     private val recipeListModel: RecipeListContract.Model,
-    private var idUser: String
+    private val recipeListFragment: RecipeListFragment,
+    context: Context
 ) : RecipeListContract.Presenter {
     private lateinit var recipeAdapter: RecipeListAdapter
     private var recipeMutableList: MutableList<RecipeList> = mutableListOf()
+    private lateinit var recipeTitle: String
+    private lateinit var idLanguage: String
+    fun loadData(idLanguage: String?, recipeTitle: String) {
+        this.recipeTitle = recipeTitle
+        this.idLanguage = idLanguage!!
+        recipeListModel.getRecipeList(idLanguage)
+            .observe(recipeListFragment) { data -> loadRecipes(data) }
+    }
 
     init {
-        recipeListModel.getRecipeList(this, "1")
+        recipeListModel.getInstance(context)
     }
 
-    override fun loadData(response: String?) {
-        val json = JSONObject(response)
-        val products = json.getJSONArray("recipes")
-        val recipeList: ArrayList<RecipeList> = ArrayList()
-        for (i in 0 until products.length()) {
-            val item = products.get(i) as JSONObject
-            recipeList.add(
-                RecipeList(
-                    item.get("id").toString(),
-                    item.get("title").toString(),
-                )
-            )
+    override fun loadRecipes(result: RecipeListEntity) {
+        if (result.status == Constant.OK) {
+            recipeMutableList = result.toMVP().toMutableList()
+            initData()
         }
-        recipeMutableList = recipeList.toMutableList()
-        initData()
     }
-
-    override fun loadSuggested(response: String?) {
-        val json = JSONObject(response)
-        val products = json.getJSONArray("recipes")
-        val recipeList: ArrayList<RecipeList> = ArrayList()
-        for (i in 0 until products.length()) {
-            val item = products.get(i) as JSONObject
-            recipeList.add(
-                RecipeList(
-                    item.get("id").toString(),
-                    item.get("title").toString(),
-                )
-            )
-        }
-        recipeMutableList = recipeList.toMutableList()
-        initData()
-    }
-
 
     override fun initData() {
         recipeAdapter = RecipeListAdapter(
@@ -63,12 +47,27 @@ class RecipeListPresenter(
         }
     }
 
+    override fun getCurrentLanguage(): String {
+        return recipeListModel.getCurrentLanguage()
+    }
+
+    override fun getTranslations(language: Int): MutableMap<String, Translation> {
+        val mutableTranslations: MutableMap<String, Translation> = mutableMapOf()
+        val translations = recipeListModel.getTranslations(language)
+        translations.forEach {
+            mutableTranslations[it.word] = it
+        }
+        return mutableTranslations
+    }
+
     fun filterAll() {
-        recipeListModel.getRecipeList(this, "1")
+        recipeListModel.getRecipeList(idLanguage)
+            .observe(recipeListFragment) { data -> loadRecipes(data) }
     }
 
     fun filterSuggested() {
-        recipeListModel.getRecipesSuggested(this, "1")
+        recipeListModel.getRecipesSuggested(idLanguage)
+            .observe(recipeListFragment) { data -> loadRecipes(data) }
     }
 
     override fun doFilter(userFilter: Editable?) {
@@ -79,7 +78,8 @@ class RecipeListPresenter(
     }
 
     private fun onItemSelected(recipeList: RecipeList) {
-        recipeListView.loadFragment(RecipeFragment(recipeList))
-        //print(recipeList.name)
+        recipeListView.loadFragment(
+            RecipeFragment(recipeList.id, idLanguage)
+        )
     }
 }

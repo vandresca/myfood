@@ -64,7 +64,7 @@
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/tvRIIngredientsLabel"
+                    android:id="@+id/lRIIngredients"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingStart="10dp"
@@ -84,7 +84,7 @@
                     android:text="2 aubergines\n3 artichokes" />
 
                 <TextView
-                    android:id="@+id/tvRIElaborationLabel"
+                    android:id="@+id/lRIElaboration"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingStart="10dp"

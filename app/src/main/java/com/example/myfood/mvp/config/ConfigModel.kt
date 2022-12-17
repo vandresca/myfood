@@ -1,76 +1,55 @@
 package com.example.myfood.mvp.config
 
 import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
+import androidx.lifecycle.MutableLiveData
 import com.example.myfood.databasesqlite.RoomSingleton
 import com.example.myfood.databasesqlite.entity.Translation
 import com.example.myfood.enum.ScreenType
-import com.example.myfood.mvp.login.LoginActivity
-import com.example.myfood.rest.MySQLREST
+import com.example.myfood.mvvm.core.RetrofitHelper
+import com.example.myfood.mvvm.data.model.OneValueEntity
+import com.example.myfood.mvvm.data.model.SimpleResponseEntity
+import com.example.myfood.mvvm.data.network.MySQLApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Retrofit
 
 class ConfigModel : ConfigContract.Model {
     lateinit var dbSQLite: RoomSingleton
+    lateinit var dbMySQL: Retrofit
+
     override fun getInstance(application: Context) {
         dbSQLite = RoomSingleton.getInstance(application)
+        dbMySQL = RetrofitHelper.getRetrofit()
     }
 
-    override fun getTranslationsMenu(application: ConfigFragment, language: Int) {
-        val values: LiveData<List<Translation>> =
-            dbSQLite.sqliteDao().getTranslations(language, ScreenType.PANTRY_LIST.int)
-        values.observe(
-            application,
-            Observer<List<Translation>> { application.onTranslationsMenuLoaded(it) })
+    override fun getTranslationsMenu(language: Int): List<Translation> {
+        return dbSQLite.sqliteDao().getTranslations(language, ScreenType.PANTRY_LIST.int)
     }
 
-    override fun getCurrentLanguage(application: LoginActivity) {
-        val values: LiveData<String> = dbSQLite.sqliteDao().getCurrentLanguage()
-        values.observe(
-            application,
-            Observer<String> { application.onCurrentLanguageLoaded(it) })
+    override fun getCurrentLanguage(): String {
+        return dbSQLite.sqliteDao().getCurrentLanguage()
     }
 
-    override fun getTranslations(application: ConfigFragment, language: Int) {
-        val values: LiveData<List<Translation>> =
-            dbSQLite.sqliteDao().getTranslations(language, ScreenType.CONFIG.int)
-        values.observe(
-            application,
-            Observer<List<Translation>> { application.onTranslationsLoaded(it) })
+    override fun getTranslations(language: Int): List<Translation> {
+        return dbSQLite.sqliteDao().getTranslations(language, ScreenType.CONFIG.int)
     }
 
-    override fun getLanguages(application: ConfigFragment) {
-        val values: LiveData<List<String>> = dbSQLite.sqliteDao().getLanguages()
-        values.observe(
-            application,
-            Observer<List<String>> { application.onLanguagesLoaded(it) })
+    override fun getLanguages(): List<String> {
+        return dbSQLite.sqliteDao().getLanguages()
     }
 
-    override fun getCurrencies(application: ConfigFragment, language: Int) {
-        val values: LiveData<List<String>> = dbSQLite.sqliteDao().getCurrencies(language)
-        values.observe(
-            application,
-            Observer<List<String>> { application.onCurrenciesLoaded(it) })
+    override fun getCurrencies(language: Int): List<String> {
+        return dbSQLite.sqliteDao().getCurrencies(language)
     }
 
-    override fun getUserId(application: ConfigFragment) {
-        val values: LiveData<String> = dbSQLite.sqliteDao().getUserId()
-        values.observe(
-            application,
-            Observer<String> { application.onUserIdLoaded(it) })
+    override fun getUserId(): String {
+        return dbSQLite.sqliteDao().getUserId()
     }
 
-    override fun getCurrentLanguage(application: ConfigFragment) {
-        val values: LiveData<String> = dbSQLite.sqliteDao().getCurrentLanguage()
-        values.observe(
-            application,
-            Observer<String> { application.onCurrentLanguageLoaded(it) })
-    }
-
-    override fun getCurrentCurrency(application: ConfigFragment) {
-        val values: LiveData<String> = dbSQLite.sqliteDao().getCurrentCurrency()
-        values.observe(
-            application,
-            Observer<String> { application.onCurrentCurrencyLoaded(it) })
+    override fun getCurrentCurrency(): String {
+        return dbSQLite.sqliteDao().getCurrentCurrency()
     }
 
     override fun updateCurrentLanguage(language: String) {
@@ -81,11 +60,55 @@ class ConfigModel : ConfigContract.Model {
         dbSQLite.sqliteDao().updateCurrentCurrency(currency)
     }
 
-    override fun changeEmail(application: ConfigFragment, email: String, user: String) {
-        MySQLREST.changeEmail(application, email, user)
+
+    override fun changeEmail(email: String, user: String): MutableLiveData<SimpleResponseEntity> {
+        val mutable: MutableLiveData<SimpleResponseEntity> = MutableLiveData()
+        CoroutineScope(Dispatchers.IO).launch {
+            val value = withContext(Dispatchers.IO) {
+                val response = dbMySQL.create(MySQLApi::class.java).changeEmail(email, user)
+                response.body() ?: SimpleResponseEntity("KO")
+            }
+            mutable.postValue(value)
+        }
+        return mutable
     }
 
-    override fun getEmail(application: ConfigFragment, user: String) {
-        MySQLREST.getEmail(application, user)
+    override fun getEmail(user: String): MutableLiveData<OneValueEntity> {
+        val mutable: MutableLiveData<OneValueEntity> = MutableLiveData()
+        CoroutineScope(Dispatchers.IO).launch {
+            val value = withContext(Dispatchers.IO) {
+                val response = dbMySQL.create(MySQLApi::class.java).getEmail(user)
+                response.body() ?: OneValueEntity("KO", "")
+            }
+            mutable.postValue(value)
+        }
+        return mutable
+    }
+
+    override fun changePassword(
+        password: String,
+        user: String
+    ): MutableLiveData<SimpleResponseEntity> {
+        val mutable: MutableLiveData<SimpleResponseEntity> = MutableLiveData()
+        CoroutineScope(Dispatchers.IO).launch {
+            val value = withContext(Dispatchers.IO) {
+                val response = dbMySQL.create(MySQLApi::class.java).changePassword(password, user)
+                response.body() ?: SimpleResponseEntity("KO")
+            }
+            mutable.postValue(value)
+        }
+        return mutable
+    }
+
+    override fun getPassword(user: String): MutableLiveData<OneValueEntity> {
+        val mutable: MutableLiveData<OneValueEntity> = MutableLiveData()
+        CoroutineScope(Dispatchers.IO).launch {
+            val value = withContext(Dispatchers.IO) {
+                val response = dbMySQL.create(MySQLApi::class.java).getPassword(user)
+                response.body() ?: OneValueEntity("KO", "")
+            }
+            mutable.postValue(value)
+        }
+        return mutable
     }
 }

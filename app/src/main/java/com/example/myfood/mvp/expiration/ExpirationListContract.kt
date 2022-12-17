@@ -1,38 +1,36 @@
 package com.example.myfood.mvp.expiration
 
+import android.content.Context
 import android.text.Editable
-import com.example.myfood.databasesqlite.entity.Translation
-import com.example.myfood.enum.LanguageType
+import androidx.lifecycle.MutableLiveData
+import com.example.myfood.interfaces.Translatable
+import com.example.myfood.mvvm.data.model.ExpirationListEntity
+import com.example.myfood.mvvm.data.model.SimpleResponseEntity
 
 interface ExpirationListContract {
-    interface View {
-        fun onUserIdLoaded(idUser: String)
+    interface View : Translatable.View {
         fun initRecyclerView(expirationListAdapter: ExpirationListAdapter)
-        fun onTranslationsLoaded(translations: List<Translation>)
-        fun onCurrentLanguageLoaded(language: String)
+        fun setTranslations()
     }
 
-    interface Presenter {
-        fun loadData(response: String?)
+    interface Presenter : Translatable.Presenter {
         fun initData()
-        fun doFilter(watchText: Editable?)
-        fun onRemovedExpired(response: String?)
+        fun loadData(expirationListEntity: ExpirationListEntity)
+        fun doFilter(userFilter: Editable?)
+        fun onRemovedExpired(result: SimpleResponseEntity)
+        fun getCurrentCurrency(): String
+        fun getUserId(): String
     }
 
-    interface Model {
-        fun getUserId(application: ExpirationListFragment)
-        fun getCurrentLanguage(application: ExpirationListFragment)
-        fun getTranslations(
-            application: ExpirationListFragment,
-            language: Int = LanguageType.ENGLISH.int
-        )
-
+    interface Model : Translatable.Model {
+        fun getInstance(application: Context)
+        fun getUserId(): String
+        fun getCurrentCurrency(): String
         fun getExpirationList(
-            application: ExpirationListPresenter,
             expiration: String,
             idUser: String
-        )
+        ): MutableLiveData<ExpirationListEntity>
 
-        fun removeExpired(application: ExpirationListPresenter, idUser: String)
+        fun removeExpired(idUser: String): MutableLiveData<SimpleResponseEntity>
     }
 }

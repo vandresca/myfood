@@ -1,72 +1,80 @@
 package com.example.myfood.mvp.addshopproduct
 
 import android.content.Context
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.myfood.databasesqlite.RoomSingleton
 import com.example.myfood.databasesqlite.entity.QuantityUnit
 import com.example.myfood.databasesqlite.entity.Translation
 import com.example.myfood.enum.ScreenType
-import com.example.myfood.rest.MySQLREST
+import com.example.myfood.mvvm.core.RetrofitHelper
+import com.example.myfood.mvvm.data.model.ShopProductEntity
+import com.example.myfood.mvvm.data.network.MySQLApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Retrofit
 
 class AddShopModel : AddShopContract.Model {
     lateinit var dbSQLite: RoomSingleton
-    fun getInstance(application: Context) {
+    lateinit var dbMySQL: Retrofit
+
+    override fun getInstance(application: Context) {
         dbSQLite = RoomSingleton.getInstance(application)
+        dbMySQL = RetrofitHelper.getRetrofit()
     }
 
-    override fun getCurrentLanguage(application: LifecycleOwner, callback: (String) -> Unit) {
-        val values: LiveData<String> = dbSQLite.sqliteDao().getCurrentLanguage()
-        values.observe(application) { callback(it) }
+    override fun getCurrentLanguage(): String {
+        return dbSQLite.sqliteDao().getCurrentLanguage()
     }
 
-    override fun getTranslations(
-        application: LifecycleOwner,
-        language: Int,
-        callback: (List<Translation>) -> Unit
-    ) {
-        val values: LiveData<List<Translation>> =
-            dbSQLite.sqliteDao().getTranslations(language, ScreenType.SHOPPING_LIST.int)
-        values.observe(application) { callback(it) }
+    override fun getTranslations(language: Int): List<Translation> {
+        return dbSQLite.sqliteDao().getTranslations(language, ScreenType.SHOPPING_LIST.int)
     }
 
-    override fun getQuantitiesUnit(
-        application: LifecycleOwner,
-        callback: (List<QuantityUnit>) -> Unit
-    ) {
-        val values: LiveData<List<QuantityUnit>> = dbSQLite.sqliteDao().getQuantitiesUnit()
-        values.observe(application) { callback(it) }
+    override fun getQuantitiesUnit(): List<QuantityUnit> {
+        return dbSQLite.sqliteDao().getQuantitiesUnit()
     }
 
-    override fun getUserId(application: LifecycleOwner, callback: (String) -> Unit) {
-        val values: LiveData<String> = dbSQLite.sqliteDao().getUserId()
-        values.observe(application) { callback(it) }
+    override fun getUserId(): String {
+        return dbSQLite.sqliteDao().getUserId()
     }
 
-    override fun getShopProduct(
-        idShop: String,
-        callback: (String?) -> Unit
-    ) {
-        MySQLREST.getShopProduct(idShop, callback)
+    override fun getShopProduct(idShop: String): MutableLiveData<ShopProductEntity> {
+        val mutable: MutableLiveData<ShopProductEntity> = MutableLiveData()
+        CoroutineScope(Dispatchers.IO).launch {
+            val value = withContext(Dispatchers.IO) {
+                val response = dbMySQL.create(MySQLApi::class.java).getShopProduct(idShop)
+                response.body() ?: ShopProductEntity(
+                    "KO",
+                    "", "", ""
+                )
+            }
+            mutable.postValue(value)
+        }
+        return mutable
     }
 
     override fun insertShop(
-        application: AddShopFragment,
         name: String,
         quantity: String,
         quantityUnit: String,
         userId: String
     ) {
-        MySQLREST.insertShop(application, name, quantity, quantityUnit, userId)
+        CoroutineScope(Dispatchers.IO).launch {
+            dbMySQL.create(MySQLApi::class.java)
+                .insertShop(name, quantity, quantityUnit, userId)
+        }
     }
 
     override fun updateShop(
-        application: AddShopFragment,
         name: String,
         quantity: String,
         quantityUnit: String,
         idShop: String
     ) {
-        MySQLREST.updateShop(application, name, quantity, quantityUnit, idShop)
+        CoroutineScope(Dispatchers.IO).launch {
+            dbMySQL.create(MySQLApi::class.java).updateShop(name, quantity, quantityUnit, idShop)
+        }
     }
 }

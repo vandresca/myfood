@@ -1,30 +1,28 @@
 package com.example.myfood.mvp.recipelist
 
+import android.content.Context
 import android.text.Editable
 import androidx.fragment.app.Fragment
-import com.example.myfood.databasesqlite.entity.Translation
+import androidx.lifecycle.MutableLiveData
+import com.example.myfood.interfaces.Translatable
+import com.example.myfood.mvvm.data.model.RecipeListEntity
 
 interface RecipeListContract {
-    interface View {
+    interface View : Translatable.View {
         fun initRecyclerView(recipeListAdapter: RecipeListAdapter)
         fun loadFragment(fragment: Fragment)
-        fun onUserIdLoaded(idUser: String)
-        fun onTranslationsLoaded(translations: List<Translation>)
-        fun onCurrentLanguageLoaded(language: String)
+        fun setTranslations()
     }
 
-    interface Presenter {
-        fun loadData(response: String?)
-        fun loadSuggested(response: String?)
+    interface Presenter : Translatable.Presenter {
+        fun loadRecipes(result: RecipeListEntity)
         fun initData()
-        fun doFilter(watchText: Editable?)
+        fun doFilter(userFilter: Editable?)
     }
 
-    interface Model {
-        fun getRecipeList(application: RecipeListPresenter, language: String)
-        fun getRecipesSuggested(application: RecipeListPresenter, language: String)
-        fun getUserId(application: RecipeListFragment)
-        fun getCurrentLanguage(application: RecipeListFragment)
-        fun getTranslations(application: RecipeListFragment, language: Int)
+    interface Model : Translatable.Model {
+        fun getInstance(application: Context)
+        fun getRecipeList(language: String): MutableLiveData<RecipeListEntity>
+        fun getRecipesSuggested(language: String): MutableLiveData<RecipeListEntity>
     }
 }

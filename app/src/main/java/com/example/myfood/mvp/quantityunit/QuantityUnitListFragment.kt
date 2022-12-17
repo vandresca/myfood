@@ -8,21 +8,24 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myfood.R
+import com.example.myfood.constants.Constant
+import com.example.myfood.constants.Constant.Companion.MODE_ADD
 import com.example.myfood.databasesqlite.entity.QuantityUnit
 import com.example.myfood.databasesqlite.entity.Translation
 import com.example.myfood.databinding.QuantityUnitListFragmentBinding
+import com.example.myfood.mvp.addquantityunit.AddQuantityUnitFragment
 
 class QuantityUnitListFragment : Fragment(), QuantityUnitListContract.View {
     private var _binding: QuantityUnitListFragmentBinding? = null
     private val binding get() = _binding!!
     private lateinit var quantityUnitListPresenter: QuantityUnitListPresenter
     private lateinit var quantityUnitListModel: QuantityUnitListModel
-    private lateinit var mutableTranslations: MutableMap<String, Translation>
+    private var mutableTranslations: MutableMap<String, Translation>? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = QuantityUnitListFragmentBinding.inflate(inflater, container, false)
         return binding.root
@@ -33,18 +36,19 @@ class QuantityUnitListFragment : Fragment(), QuantityUnitListContract.View {
         initialize()
     }
 
-
-    override fun showUpdateShopProductScreen(idquantityUnit: String) {
-        //loadFragment(AddShopFragment(AddShopFragment.MODE_UPDATE, idShop))
-    }
-
     private fun initialize() {
         binding.layoutQuantityUnitList.visibility = View.INVISIBLE
         quantityUnitListModel = QuantityUnitListModel()
-        quantityUnitListPresenter = QuantityUnitListPresenter(this, quantityUnitListModel)
-        quantityUnitListModel.getInstance(requireContext())
-        quantityUnitListModel.getCurrentLanguage(this)
-        quantityUnitListModel.getQuantityUnitList(this)
+        quantityUnitListPresenter = QuantityUnitListPresenter(
+            this,
+            quantityUnitListModel, requireContext()
+        )
+        val currentLanguage = quantityUnitListPresenter.getCurrentLanguage()
+        this.mutableTranslations =
+            quantityUnitListPresenter.getTranslations(currentLanguage.toInt())
+        setTranslations()
+        quantityUnitListPresenter.loadData()
+        initAddUpdateQuantityUnitClick()
         initSearcher()
     }
 
@@ -54,15 +58,31 @@ class QuantityUnitListFragment : Fragment(), QuantityUnitListContract.View {
         }
     }
 
+    override fun showUpdateQuantityUnitScreen(quantityUnitToUpdate: QuantityUnit) {
+        loadFragment(
+            AddQuantityUnitFragment(
+                Constant.MODE_UPDATE,
+                quantityUnitToUpdate
+            )
+        )
+    }
+
     override fun initRecyclerView(quantityUnitAdapter: QuantityUnitListAdapter) {
         binding.rvQU.layoutManager = LinearLayoutManager(this.context)
         binding.rvQU.adapter = quantityUnitAdapter
     }
 
-    private fun initAddquantityUnitClick() {
+    private fun initAddUpdateQuantityUnitClick() {
         binding.addQUItem.setOnClickListener {
-            // loadFragment(AddShopFragment(AddShopFragment.MODE_ADD))
+            loadFragment(AddQuantityUnitFragment(MODE_ADD))
         }
+    }
+
+    override fun setTranslations() {
+        binding.layoutQuantityUnitList.visibility = View.VISIBLE
+        binding.header.titleHeader.text =
+            mutableTranslations?.get(Constant.TITLE_QUANTITY_UNIT_LIST)!!.text
+
     }
 
     private fun loadFragment(fragment: Fragment) {
@@ -70,28 +90,5 @@ class QuantityUnitListFragment : Fragment(), QuantityUnitListContract.View {
         transaction.add(R.id.container, fragment)
         transaction.addToBackStack(null)
         transaction.commit()
-    }
-
-    override fun onTranslationsLoaded(translations: List<Translation>) {
-        mutableTranslations = mutableMapOf<String, Translation>()
-        translations.forEach {
-            mutableTranslations.put(it.word, it)
-        }
-        setTranslations()
-    }
-
-
-    private fun setTranslations() {
-        binding.layoutQuantityUnitList.visibility = View.VISIBLE
-        binding.header.titleHeader.text = mutableTranslations["quantityUnits"]!!.text
-        // binding.etFilterquantityUnitL.hint = mutableTranslations["search"]!!.text
-    }
-
-    override fun onCurrentLanguageLoaded(language: String) {
-        quantityUnitListModel.getTranslations(this, language.toInt())
-    }
-
-    override fun loadData(quantityUnits: List<QuantityUnit>) {
-        quantityUnitListPresenter.loadData(quantityUnits)
     }
 }

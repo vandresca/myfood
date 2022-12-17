@@ -1,21 +1,28 @@
 package com.example.myfood.mvp.quantityunit
 
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import com.example.myfood.databasesqlite.entity.QuantityUnit
+import com.example.myfood.databasesqlite.entity.Translation
 
 class QuantityUnitListPresenter(
     private val quantityUnitListView: QuantityUnitListContract.View,
     private val quantityUnitListModel: QuantityUnitListContract.Model,
+    context: Context
 ) : QuantityUnitListContract.Presenter {
     private lateinit var quantityUnitAdapter: QuantityUnitListAdapter
     private var quantityUnitMutableList: MutableList<QuantityUnit> = mutableListOf()
 
-    override fun loadData(QuantityUnits: List<QuantityUnit>) {
-        QuantityUnits.forEach {
-            quantityUnitMutableList.add(it)
-        }
+
+    init {
+        quantityUnitListModel.getInstance(context)
+    }
+
+
+    override fun loadData() {
+        quantityUnitMutableList = quantityUnitListModel.getQuantityUnits().toMutableList()
         initData()
     }
 
@@ -39,17 +46,30 @@ class QuantityUnitListPresenter(
         val shopFiltered = quantityUnitMutableList.filter { QuantityUnit ->
             QuantityUnit.quantityUnit.lowercase().contains(userFilter.toString().lowercase())
         }
-        quantityUnitAdapter.updateShopList(shopFiltered)
+        quantityUnitAdapter.updateQuantityUnitList(shopFiltered)
     }
 
-    private fun onDeleteItem(position: Int, QuantityUnit: QuantityUnit) {
-        quantityUnitListModel.deleteQuantityUnit(QuantityUnit.idQuantityUnit.toString())
+    override fun getCurrentLanguage(): String {
+        return quantityUnitListModel.getCurrentLanguage()
+    }
+
+    override fun getTranslations(language: Int): MutableMap<String, Translation> {
+        val mutableTranslations: MutableMap<String, Translation> = mutableMapOf()
+        val translations = quantityUnitListModel.getTranslations(language)
+        translations.forEach {
+            mutableTranslations[it.word] = it
+        }
+        return mutableTranslations
+    }
+
+    private fun onDeleteItem(position: Int, quantityUnit: QuantityUnit) {
+        quantityUnitListModel.deleteQuantityUnit(quantityUnit.idQuantityUnit.toString())
         quantityUnitMutableList.removeAt(position)
         quantityUnitAdapter.notifyItemRemoved(position)
     }
 
     private fun onUpdateItem(QuantityUnitList: QuantityUnit) {
-        quantityUnitListView.showUpdateShopProductScreen(QuantityUnitList.idQuantityUnit.toString())
+        quantityUnitListView.showUpdateQuantityUnitScreen(QuantityUnitList)
     }
 
 }

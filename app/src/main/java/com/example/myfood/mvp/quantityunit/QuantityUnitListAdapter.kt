@@ -1,5 +1,6 @@
 package com.example.myfood.mvp.quantityunit
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -30,7 +31,8 @@ class QuantityUnitListAdapter(
 
     override fun getItemCount(): Int = quantityUnitList.size
 
-    fun updateShopList(updatedQuantityUnitList: List<QuantityUnit>) {
+    @SuppressLint("NotifyDataSetChanged")
+    fun updateQuantityUnitList(updatedQuantityUnitList: List<QuantityUnit>) {
         this.quantityUnitList = updatedQuantityUnitList
         notifyDataSetChanged()
     }

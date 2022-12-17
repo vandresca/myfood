@@ -1,8 +1,6 @@
 package com.example.myfood.mvp.optionaddpantry
 
 import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import com.example.myfood.databasesqlite.RoomSingleton
 import com.example.myfood.databasesqlite.entity.Translation
 import com.example.myfood.enum.ScreenType
@@ -14,18 +12,11 @@ class OptionAddPantryModel : OptionAddPantryContract.Model {
         dbSQLite = RoomSingleton.getInstance(application)
     }
 
-    override fun getCurrentLanguage(application: OptionAddPantryFragment) {
-        val values: LiveData<String> = dbSQLite.sqliteDao().getCurrentLanguage()
-        values.observe(
-            application,
-            Observer<String> { application.onCurrentLanguageLoaded(it) })
+    override fun getCurrentLanguage(): String {
+        return dbSQLite.sqliteDao().getCurrentLanguage()
     }
 
-    override fun getTranslations(application: OptionAddPantryFragment, language: Int) {
-        val values: LiveData<List<Translation>> =
-            dbSQLite.sqliteDao().getTranslations(language, ScreenType.PANTRY_PRODUCT.int)
-        values.observe(
-            application,
-            Observer<List<Translation>> { application.onTranslationsLoaded(it) })
+    override fun getTranslations(language: Int): List<Translation> {
+        return dbSQLite.sqliteDao().getTranslations(language, ScreenType.PANTRY_LIST.int)
     }
 }

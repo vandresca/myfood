@@ -1,47 +1,58 @@
 package com.example.myfood.mvp.recipelist
 
 import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
+import androidx.lifecycle.MutableLiveData
 import com.example.myfood.databasesqlite.RoomSingleton
 import com.example.myfood.databasesqlite.entity.Translation
 import com.example.myfood.enum.ScreenType
-import com.example.myfood.rest.MySQLREST
+import com.example.myfood.mvvm.core.RetrofitHelper
+import com.example.myfood.mvvm.data.model.RecipeListEntity
+import com.example.myfood.mvvm.data.network.MySQLApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Retrofit
 
 class RecipeListModel : RecipeListContract.Model {
 
     lateinit var dbSQLite: RoomSingleton
-    fun getInstance(application: Context) {
+    lateinit var dbMySQL: Retrofit
+
+    override fun getInstance(application: Context) {
         dbSQLite = RoomSingleton.getInstance(application)
+        dbMySQL = RetrofitHelper.getRetrofit()
     }
 
-    override fun getCurrentLanguage(application: RecipeListFragment) {
-        val values: LiveData<String> = dbSQLite.sqliteDao().getCurrentLanguage()
-        values.observe(
-            application,
-            Observer<String> { application.onCurrentLanguageLoaded(it) })
+    override fun getCurrentLanguage(): String {
+        return dbSQLite.sqliteDao().getCurrentLanguage()
     }
 
-    override fun getTranslations(application: RecipeListFragment, language: Int) {
-        val values: LiveData<List<Translation>> =
-            dbSQLite.sqliteDao().getTranslations(language, ScreenType.RECIPES.int)
-        values.observe(
-            application,
-            Observer<List<Translation>> { application.onTranslationsLoaded(it) })
+    override fun getTranslations(language: Int): List<Translation> {
+        return dbSQLite.sqliteDao().getTranslations(language, ScreenType.RECIPES.int)
     }
 
-    override fun getUserId(application: RecipeListFragment) {
-        val values: LiveData<String> = dbSQLite.sqliteDao().getUserId()
-        values.observe(
-            application,
-            Observer<String> { application.onUserIdLoaded(it) })
+    override fun getRecipeList(language: String): MutableLiveData<RecipeListEntity> {
+        val mutable: MutableLiveData<RecipeListEntity> = MutableLiveData()
+        CoroutineScope(Dispatchers.IO).launch {
+            val value = withContext(Dispatchers.IO) {
+                val response = dbMySQL.create(MySQLApi::class.java).getRecipeList(language)
+                response.body() ?: RecipeListEntity("KO", emptyList())
+            }
+            mutable.postValue(value)
+        }
+        return mutable
     }
 
-    override fun getRecipeList(application: RecipeListPresenter, language: String) {
-        MySQLREST.getRecipeList(application, language)
-    }
-
-    override fun getRecipesSuggested(application: RecipeListPresenter, language: String) {
-        MySQLREST.getRecipesSuggested(application, language)
+    override fun getRecipesSuggested(language: String): MutableLiveData<RecipeListEntity> {
+        val mutable: MutableLiveData<RecipeListEntity> = MutableLiveData()
+        CoroutineScope(Dispatchers.IO).launch {
+            val value = withContext(Dispatchers.IO) {
+                val response = dbMySQL.create(MySQLApi::class.java).getRecipesSuggested(language)
+                response.body() ?: RecipeListEntity("KO", emptyList())
+            }
+            mutable.postValue(value)
+        }
+        return mutable
     }
 }

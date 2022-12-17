@@ -1,5 +1,6 @@
 package com.example.myfood.mvp.recipelist
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +29,7 @@ class RecipeListAdapter(
 
     override fun getItemCount(): Int = recipeList.size
 
+    @SuppressLint("NotifyDataSetChanged")
     fun updateExpirationList(updatedRecipeList: List<RecipeList>) {
         this.recipeList = updatedRecipeList
         notifyDataSetChanged()

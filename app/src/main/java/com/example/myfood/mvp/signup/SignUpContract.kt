@@ -21,7 +21,7 @@ interface SignUpContract {
     }
 
     interface Model : Translatable.Model {
-        fun getInstance(application: Context)
+        fun getInstance(context: Context)
         fun insertUser(
             name: String,
             surnames: String,

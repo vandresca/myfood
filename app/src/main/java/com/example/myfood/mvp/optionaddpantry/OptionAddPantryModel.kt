@@ -1,22 +1,22 @@
 package com.example.myfood.mvp.optionaddpantry
 
 import android.content.Context
-import com.example.myfood.databasesqlite.RoomSingleton
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.MyFoodRepository
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.enum.ScreenType
 
 class OptionAddPantryModel : OptionAddPantryContract.Model {
-    lateinit var dbSQLite: RoomSingleton
+    private val myFoodRepository = MyFoodRepository()
 
     override fun getInstance(application: Context) {
-        dbSQLite = RoomSingleton.getInstance(application)
+        myFoodRepository.getInstance(application)
     }
 
     override fun getCurrentLanguage(): String {
-        return dbSQLite.sqliteDao().getCurrentLanguage()
+        return myFoodRepository.getCurrentLanguage()
     }
 
     override fun getTranslations(language: Int): List<Translation> {
-        return dbSQLite.sqliteDao().getTranslations(language, ScreenType.PANTRY_LIST.int)
+        return myFoodRepository.getTranslations(language, ScreenType.PANTRY_LIST.int)
     }
 }

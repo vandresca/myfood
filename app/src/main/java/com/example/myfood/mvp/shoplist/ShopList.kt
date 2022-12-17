@@ -10,7 +10,7 @@ data class ShopList(
 )
 
 fun ShopListEntity.toMVP(): List<ShopList> {
-    var list: List<ShopList> = ArrayList()
+    val list: MutableList<ShopList> = mutableListOf()
     products.forEach {
         list += ShopList(it.id, it.name, it.quantity, it.quantityUnit)
     }

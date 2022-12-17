@@ -8,7 +8,7 @@ data class RecipeList(
 )
 
 fun RecipeListEntity.toMVP(): List<RecipeList> {
-    var list: List<RecipeList> = ArrayList()
+    val list: MutableList<RecipeList> = mutableListOf()
     recipes.forEach {
         list += RecipeList(it.id, it.title)
     }

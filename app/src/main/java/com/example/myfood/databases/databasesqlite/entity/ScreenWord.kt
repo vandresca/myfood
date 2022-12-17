@@ -1,16 +1,17 @@
-package com.example.myfood.databasesqlite.entity
+package com.example.myfood.databases.databasesqlite.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import org.jetbrains.annotations.NotNull
 
 @Entity
-data class ConfigProfile(
+data class ScreenWord(
+
     @PrimaryKey
     @NotNull
-    val idConfigProfile: Int,
+    val idScreenWord: Int,
     @NotNull
-    val parameter: String,
+    val idWord: Int,
     @NotNull
-    val value: String
+    val idScreen: Int
 )

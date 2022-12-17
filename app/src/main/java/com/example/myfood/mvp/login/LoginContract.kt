@@ -20,9 +20,7 @@ interface LoginContract {
     }
 
     interface Model : Translatable.Model {
-        fun getInstance(application: Context)
-
-        //fun login(name: String, password:String): MutableLiveData<String?>
+        fun getInstance(context: Context)
         fun login(name: String, password: String): MutableLiveData<LoginEntity>
         fun getLanguages(): List<String>
         fun updateCurrentLanguage(language: String)

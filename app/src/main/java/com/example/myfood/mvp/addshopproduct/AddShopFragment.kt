@@ -12,8 +12,8 @@ import androidx.fragment.app.Fragment
 import com.example.myfood.R
 import com.example.myfood.constants.Constant
 import com.example.myfood.constants.Constant.Companion.MODE_ADD
-import com.example.myfood.databasesqlite.entity.QuantityUnit
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.QuantityUnit
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.databinding.AddShopFragmentBinding
 import com.example.myfood.mvp.shoplist.ShopListFragment
 import com.example.myfood.mvvm.data.model.ShopProductEntity

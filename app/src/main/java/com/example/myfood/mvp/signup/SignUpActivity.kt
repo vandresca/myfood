@@ -6,7 +6,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myfood.constants.Constant
 import com.example.myfood.constants.Constant.Companion.FIELD_SIGN_UP
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.databinding.ActivitySignupBinding
 import com.example.myfood.mvp.login.LoginActivity
 import com.example.myfood.mvvm.data.model.SimpleResponseEntity

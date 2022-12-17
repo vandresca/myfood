@@ -17,7 +17,7 @@ interface PantryFeatureContract {
     }
 
     interface Model : Translatable.Model {
-        fun getInstance(application: Context)
+        fun getInstance(context: Context)
         fun getPantryProduct(idPantry: String): MutableLiveData<PantryProductEntity>
         fun deletePantry(id: String)
     }

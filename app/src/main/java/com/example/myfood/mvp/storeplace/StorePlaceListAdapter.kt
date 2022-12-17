@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myfood.R
-import com.example.myfood.databasesqlite.entity.StorePlace
+import com.example.myfood.databases.databasesqlite.entity.StorePlace
 
 class StorePlaceListAdapter(
     private var placeList: List<StorePlace>,

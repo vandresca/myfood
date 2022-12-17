@@ -3,8 +3,8 @@ package com.example.myfood.mvp.addpantryproduct
 import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.MutableLiveData
-import com.example.myfood.databasesqlite.entity.QuantityUnit
-import com.example.myfood.databasesqlite.entity.StorePlace
+import com.example.myfood.databases.databasesqlite.entity.QuantityUnit
+import com.example.myfood.databases.databasesqlite.entity.StorePlace
 import com.example.myfood.interfaces.Translatable
 import com.example.myfood.mvvm.data.model.OpenFoodEntity
 import com.example.myfood.mvvm.data.model.PantryProductEntity
@@ -39,7 +39,7 @@ interface AddPantryContract {
     }
 
     interface Model : Translatable.Model {
-        fun getInstance(application: Context)
+        fun getInstance(context: Context)
         fun getPantryProduct(idPantry: String): MutableLiveData<PantryProductEntity>
         fun getQuantitiesUnit(): List<QuantityUnit>
         fun getPlaces(): List<StorePlace>

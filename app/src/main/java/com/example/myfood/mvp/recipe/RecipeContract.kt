@@ -16,7 +16,7 @@ interface RecipeContract {
     }
 
     interface Model : Translatable.Model {
-        fun getInstance(application: Context)
+        fun getInstance(context: Context)
         fun getRecipe(idRecipe: String, language: String): MutableLiveData<RecipeEntity>
     }
 }

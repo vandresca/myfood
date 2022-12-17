@@ -1,6 +1,6 @@
 package com.example.myfood.interfaces
 
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.enum.LanguageType
 
 interface Translatable {

@@ -2,7 +2,7 @@ package com.example.myfood.mvp.addshopproduct
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.example.myfood.databasesqlite.entity.QuantityUnit
+import com.example.myfood.databases.databasesqlite.entity.QuantityUnit
 import com.example.myfood.interfaces.Translatable
 import com.example.myfood.mvvm.data.model.ShopProductEntity
 
@@ -19,7 +19,7 @@ interface AddShopContract {
     }
 
     interface Model : Translatable.Model {
-        fun getInstance(application: Context)
+        fun getInstance(context: Context)
         fun getShopProduct(idShop: String): MutableLiveData<ShopProductEntity>
         fun getQuantitiesUnit(): List<QuantityUnit>
         fun getUserId(): String

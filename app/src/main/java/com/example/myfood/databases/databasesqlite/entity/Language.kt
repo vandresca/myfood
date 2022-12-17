@@ -1,14 +1,14 @@
-package com.example.myfood.databasesqlite.entity
+package com.example.myfood.databases.databasesqlite.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import org.jetbrains.annotations.NotNull
 
 @Entity
-data class Screen(
+data class Language(
     @PrimaryKey
     @NotNull
-    val idScreen: Int,
+    val idLanguage: Int,
     @NotNull
-    val screen: String
+    val language: String
 )

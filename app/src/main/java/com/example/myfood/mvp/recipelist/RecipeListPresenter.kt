@@ -5,7 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import com.example.myfood.constants.Constant
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.mvp.recipe.RecipeFragment
 import com.example.myfood.mvvm.data.model.RecipeListEntity
 

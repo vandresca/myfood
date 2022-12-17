@@ -2,8 +2,8 @@ package com.example.myfood.mvp.addpantryproduct
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.example.myfood.databasesqlite.entity.QuantityUnit
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.QuantityUnit
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.mvvm.data.model.OpenFoodEntity
 import com.example.myfood.mvvm.data.model.PantryProductEntity
 

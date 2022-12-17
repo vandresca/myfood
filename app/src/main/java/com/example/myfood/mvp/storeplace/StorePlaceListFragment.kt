@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myfood.R
 import com.example.myfood.constants.Constant
-import com.example.myfood.databasesqlite.entity.StorePlace
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.StorePlace
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.databinding.StorePlaceListFragmentBinding
 import com.example.myfood.mvp.addplace.AddStorePlaceFragment
 
@@ -53,9 +53,9 @@ class StorePlaceListFragment : Fragment(), StorePlaceListContract.View {
         }
     }
 
-    override fun initRecyclerView(storePlaceAdapter: StorePlaceListAdapter) {
+    override fun initRecyclerView(storePlacesAdapter: StorePlaceListAdapter) {
         binding.rvPlaceL.layoutManager = LinearLayoutManager(this.context)
-        binding.rvPlaceL.adapter = storePlaceAdapter
+        binding.rvPlaceL.adapter = storePlacesAdapter
     }
 
     private fun initAddUpdateStorePlaceClick() {

@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.myfood.constants.Constant
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.databinding.RecipeFragmentBinding
 import com.example.myfood.mvvm.data.model.RecipeEntity
 

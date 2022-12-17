@@ -25,7 +25,7 @@ interface PantryListContract {
     }
 
     interface Model : Translatable.Model {
-        fun getInstance(application: Context)
+        fun getInstance(context: Context)
         fun getPantryList(idUser: String): MutableLiveData<PantryListEntity>
         fun getCurrentCurrency(): String
         fun deletePantry(id: String)

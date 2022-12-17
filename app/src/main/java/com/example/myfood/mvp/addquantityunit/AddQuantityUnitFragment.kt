@@ -9,8 +9,8 @@ import com.example.myfood.R
 import com.example.myfood.constants.Constant
 import com.example.myfood.constants.Constant.Companion.MODE_ADD
 import com.example.myfood.constants.Constant.Companion.MODE_UPDATE
-import com.example.myfood.databasesqlite.entity.QuantityUnit
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.QuantityUnit
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.databinding.AddQuantityUnitFragmentBinding
 import com.example.myfood.mvp.quantityunit.QuantityUnitListFragment
 import com.example.myfood.popup.Popup

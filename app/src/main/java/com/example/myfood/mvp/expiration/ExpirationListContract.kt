@@ -23,7 +23,7 @@ interface ExpirationListContract {
     }
 
     interface Model : Translatable.Model {
-        fun getInstance(application: Context)
+        fun getInstance(context: Context)
         fun getUserId(): String
         fun getCurrentCurrency(): String
         fun getExpirationList(

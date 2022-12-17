@@ -14,8 +14,8 @@ interface AddStorePlaceContract {
     }
 
     interface Model : Translatable.Model {
-        fun getInstance(application: Context)
-        fun addStorePLace(storePlace: String)
+        fun getInstance(context: Context)
+        fun addStorePlace(storePlace: String)
         fun updateStorePlace(storePlace: String, id: String)
     }
 }

@@ -14,7 +14,7 @@ interface AddQuantityUnitContract {
     }
 
     interface Model : Translatable.Model {
-        fun getInstance(application: Context)
+        fun getInstance(context: Context)
         fun addQuantityUnit(quantityUnit: String)
         fun updateQuantityUnit(quantityUnit: String, id: String)
     }

@@ -1,9 +1,9 @@
-package com.example.myfood.databasesqlite
+package com.example.myfood.databases.databasesqlite
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
-import com.example.myfood.databasesqlite.entity.*
+import com.example.myfood.databases.databasesqlite.entity.*
 
 
 @Database(

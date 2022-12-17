@@ -1,14 +1,14 @@
-package com.example.myfood.databasesqlite.entity
+package com.example.myfood.databases.databasesqlite.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import org.jetbrains.annotations.NotNull
 
 @Entity
-data class StorePlace(
+data class Word(
     @PrimaryKey
     @NotNull
-    val idStorePlace: Int,
+    val idWord: Int,
     @NotNull
-    val storePlace: String
+    val word: String
 )

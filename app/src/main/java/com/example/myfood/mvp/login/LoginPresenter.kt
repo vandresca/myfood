@@ -2,7 +2,7 @@ package com.example.myfood.mvp.login
 
 
 import androidx.lifecycle.MutableLiveData
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.mvvm.data.model.LoginEntity
 
 class LoginPresenter(

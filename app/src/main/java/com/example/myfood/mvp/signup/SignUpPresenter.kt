@@ -3,7 +3,7 @@ package com.example.myfood.mvp.signup
 
 import androidx.lifecycle.MutableLiveData
 import com.example.myfood.constants.Constant
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.mvvm.data.model.SimpleResponseEntity
 
 class SignUpPresenter(

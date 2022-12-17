@@ -1,10 +1,10 @@
-package com.example.myfood.databasesqlite
+package com.example.myfood.databases.databasesqlite
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.example.myfood.databasesqlite.entity.QuantityUnit
-import com.example.myfood.databasesqlite.entity.StorePlace
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.QuantityUnit
+import com.example.myfood.databases.databasesqlite.entity.StorePlace
+import com.example.myfood.databases.databasesqlite.entity.Translation
 
 @Dao
 interface SQLiteDao {

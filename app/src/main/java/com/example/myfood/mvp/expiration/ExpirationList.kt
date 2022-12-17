@@ -10,7 +10,7 @@ data class ExpirationList(
 )
 
 fun ExpirationListEntity.toMVP(): List<ExpirationList> {
-    var list: List<ExpirationList> = ArrayList()
+    val list: MutableList<ExpirationList> = mutableListOf()
     products.forEach {
         list += ExpirationList(it.name, it.days, it.expiration, it.price)
     }

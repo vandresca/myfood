@@ -1,7 +1,7 @@
 package com.example.myfood.mvp.optionaddpantry
 
 import android.content.Context
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.Translation
 
 
 class OptionAddPantryPresenter(

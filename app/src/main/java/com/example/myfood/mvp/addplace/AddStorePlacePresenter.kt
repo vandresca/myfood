@@ -1,7 +1,7 @@
 package com.example.myfood.mvp.addplace
 
 import android.content.Context
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.Translation
 
 class AddStorePlacePresenter(
     private val addStorePlaceView: AddStorePlaceContract.View,
@@ -26,7 +26,7 @@ class AddStorePlacePresenter(
     }
 
     override fun addStorePlace(storePlace: String) {
-        addStorePlaceModel.addStorePLace(storePlace)
+        addStorePlaceModel.addStorePlace(storePlace)
     }
 
     override fun updateStorePlace(storePlace: String, idStorePlace: String) {

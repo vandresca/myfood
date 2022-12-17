@@ -2,57 +2,38 @@ package com.example.myfood.mvp.addshopproduct
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.example.myfood.databasesqlite.RoomSingleton
-import com.example.myfood.databasesqlite.entity.QuantityUnit
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.MyFoodRepository
+import com.example.myfood.databases.databasesqlite.entity.QuantityUnit
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.enum.ScreenType
-import com.example.myfood.mvvm.core.RetrofitHelper
 import com.example.myfood.mvvm.data.model.ShopProductEntity
-import com.example.myfood.mvvm.data.network.MySQLApi
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
 
 class AddShopModel : AddShopContract.Model {
-    lateinit var dbSQLite: RoomSingleton
-    lateinit var dbMySQL: Retrofit
 
-    override fun getInstance(application: Context) {
-        dbSQLite = RoomSingleton.getInstance(application)
-        dbMySQL = RetrofitHelper.getRetrofit()
+    private val myFoodRepository = MyFoodRepository()
+
+    override fun getInstance(context: Context) {
+        myFoodRepository.getInstance(context)
     }
 
     override fun getCurrentLanguage(): String {
-        return dbSQLite.sqliteDao().getCurrentLanguage()
+        return myFoodRepository.getCurrentLanguage()
     }
 
     override fun getTranslations(language: Int): List<Translation> {
-        return dbSQLite.sqliteDao().getTranslations(language, ScreenType.SHOPPING_LIST.int)
+        return myFoodRepository.getTranslations(language, ScreenType.SHOPPING_LIST.int)
     }
 
     override fun getQuantitiesUnit(): List<QuantityUnit> {
-        return dbSQLite.sqliteDao().getQuantitiesUnit()
+        return myFoodRepository.getQuantitiesUnit()
     }
 
     override fun getUserId(): String {
-        return dbSQLite.sqliteDao().getUserId()
+        return myFoodRepository.getUserId()
     }
 
     override fun getShopProduct(idShop: String): MutableLiveData<ShopProductEntity> {
-        val mutable: MutableLiveData<ShopProductEntity> = MutableLiveData()
-        CoroutineScope(Dispatchers.IO).launch {
-            val value = withContext(Dispatchers.IO) {
-                val response = dbMySQL.create(MySQLApi::class.java).getShopProduct(idShop)
-                response.body() ?: ShopProductEntity(
-                    "KO",
-                    "", "", ""
-                )
-            }
-            mutable.postValue(value)
-        }
-        return mutable
+        return myFoodRepository.getShopProduct(idShop)
     }
 
     override fun insertShop(
@@ -61,10 +42,7 @@ class AddShopModel : AddShopContract.Model {
         quantityUnit: String,
         userId: String
     ) {
-        CoroutineScope(Dispatchers.IO).launch {
-            dbMySQL.create(MySQLApi::class.java)
-                .insertShop(name, quantity, quantityUnit, userId)
-        }
+        myFoodRepository.insertShop(name, quantity, quantityUnit, userId)
     }
 
     override fun updateShop(
@@ -73,8 +51,6 @@ class AddShopModel : AddShopContract.Model {
         quantityUnit: String,
         idShop: String
     ) {
-        CoroutineScope(Dispatchers.IO).launch {
-            dbMySQL.create(MySQLApi::class.java).updateShop(name, quantity, quantityUnit, idShop)
-        }
+        myFoodRepository.updateShop(name, quantity, quantityUnit, idShop)
     }
 }

@@ -2,7 +2,7 @@ package com.example.myfood.mvp.storeplace
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myfood.databasesqlite.entity.StorePlace
+import com.example.myfood.databases.databasesqlite.entity.StorePlace
 import com.example.myfood.databinding.ElementPlaceListBinding
 
 

@@ -4,8 +4,8 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
-import com.example.myfood.databasesqlite.entity.StorePlace
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.StorePlace
+import com.example.myfood.databases.databasesqlite.entity.Translation
 
 class StorePlaceListPresenter(
     private val placeListView: StorePlaceListContract.View,

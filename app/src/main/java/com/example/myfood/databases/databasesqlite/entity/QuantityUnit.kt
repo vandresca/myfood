@@ -1,14 +1,14 @@
-package com.example.myfood.databasesqlite.entity
+package com.example.myfood.databases.databasesqlite.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import org.jetbrains.annotations.NotNull
 
 @Entity
-data class Currency(
+data class QuantityUnit(
     @PrimaryKey
     @NotNull
-    val idCurrency: Int,
+    val idQuantityUnit: Int,
     @NotNull
-    val currency: String
+    val quantityUnit: String
 )

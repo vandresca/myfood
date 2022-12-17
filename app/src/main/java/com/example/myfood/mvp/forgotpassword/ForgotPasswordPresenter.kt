@@ -1,7 +1,7 @@
 package com.example.myfood.mvp.forgotpassword
 
 import androidx.lifecycle.MutableLiveData
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.mvvm.data.model.SimpleResponseEntity
 
 class ForgotPasswordPresenter(

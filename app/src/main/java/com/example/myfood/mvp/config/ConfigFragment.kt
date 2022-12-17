@@ -12,7 +12,7 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import com.example.myfood.R
 import com.example.myfood.constants.Constant
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.databinding.ActivityMainBinding
 import com.example.myfood.databinding.ConfigFragmentBinding
 import com.example.myfood.mvp.quantityunit.QuantityUnitListFragment

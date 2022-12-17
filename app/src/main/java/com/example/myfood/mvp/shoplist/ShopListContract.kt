@@ -22,7 +22,7 @@ interface ShopListContract {
     }
 
     interface Model : Translatable.Model {
-        fun getInstance(application: Context)
+        fun getInstance(context: Context)
         fun getUserId(): String
         fun getShopList(idUser: String): MutableLiveData<ShopListEntity>
         fun deleteShop(idShop: String)

@@ -2,7 +2,7 @@ package com.example.myfood.mvp.quantityunit
 
 import android.content.Context
 import android.text.Editable
-import com.example.myfood.databasesqlite.entity.QuantityUnit
+import com.example.myfood.databases.databasesqlite.entity.QuantityUnit
 import com.example.myfood.interfaces.Translatable
 
 interface QuantityUnitListContract {
@@ -19,7 +19,7 @@ interface QuantityUnitListContract {
     }
 
     interface Model : Translatable.Model {
-        fun getInstance(application: Context)
+        fun getInstance(context: Context)
         fun getQuantityUnits(): List<QuantityUnit>
         fun deleteQuantityUnit(idQuantityUnit: String)
     }

@@ -17,7 +17,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.myfood.R
 import com.example.myfood.constants.Constant
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.databinding.PantryNutrientFragmentBinding
 import com.example.myfood.mvp.addpantryproduct.AddPantryFragment
 import com.example.myfood.mvp.pantrylist.PantryListFragment

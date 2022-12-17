@@ -11,7 +11,7 @@ data class PantryList(
 )
 
 fun PantryListEntity.toMVP(): List<PantryList> {
-    var list: List<PantryList> = ArrayList()
+    val list: MutableList<PantryList> = mutableListOf()
     products.forEach {
         list += PantryList(it.id, it.name, it.quantity, it.quantityUnit, it.price)
     }

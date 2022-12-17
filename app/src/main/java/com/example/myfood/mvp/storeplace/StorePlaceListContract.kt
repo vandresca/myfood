@@ -2,7 +2,7 @@ package com.example.myfood.mvp.storeplace
 
 import android.content.Context
 import android.text.Editable
-import com.example.myfood.databasesqlite.entity.StorePlace
+import com.example.myfood.databases.databasesqlite.entity.StorePlace
 import com.example.myfood.interfaces.Translatable
 
 interface StorePlaceListContract {
@@ -19,7 +19,7 @@ interface StorePlaceListContract {
     }
 
     interface Model : Translatable.Model {
-        fun getInstance(application: Context)
+        fun getInstance(context: Context)
         fun getStorePlaces(): List<StorePlace>
         fun deleteStorePlace(idPlace: String)
     }

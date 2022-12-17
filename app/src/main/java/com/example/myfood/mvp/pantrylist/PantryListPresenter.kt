@@ -6,7 +6,7 @@ import android.os.Looper
 import android.text.Editable
 import androidx.lifecycle.MutableLiveData
 import com.example.myfood.constants.Constant
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.mvvm.data.model.PantryListEntity
 
 class PantryListPresenter(

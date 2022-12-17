@@ -5,17 +5,20 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.myfood.constants.Constant
+import com.example.myfood.databasesqlite.RoomSingleton
 import com.example.myfood.getOrAwaitValueTest
 import junit.framework.TestCase
 import kotlinx.coroutines.runBlocking
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
+import retrofit2.Retrofit
 
 @RunWith(AndroidJUnit4::class)
 class LoginModelTest : TestCase() {
     private lateinit var loginModel: LoginModel
     private lateinit var context: Context
+    private lateinit var db = Retrofit
 
 
     @Rule
@@ -27,6 +30,7 @@ class LoginModelTest : TestCase() {
         context = ApplicationProvider.getApplicationContext()
         loginModel = LoginModel()
         loginModel.getInstance(context)
+        db = RoomSingleton.invoke(context)
     }
 
     @Test
@@ -45,7 +49,7 @@ class LoginModelTest : TestCase() {
     }
 
     @Test
-    fun getCurrentLanguage() {
+    fun getCurrentLanguage_and_updateCurrentLanguage() {
         val currentLanguage = loginModel.getCurrentLanguage()
 
         loginModel.updateCurrentLanguage("1")
@@ -59,12 +63,17 @@ class LoginModelTest : TestCase() {
     }
 
     @Test
-    fun updateCurrentLanguage() {
-    }
-
-    @Test
     fun updateUserId() {
+        db
 
+        loginModel.updateCurrentUser("1")
+
+        val newCurrentLanguage = loginModel.getCurrentLanguage()
+        assertEquals(newCurrentLanguage, "1")
+
+        loginModel.updateCurrentLanguage(currentLanguage)
+        val currentLanguage2 = loginModel.getCurrentLanguage()
+        assertEquals(currentLanguage2, currentLanguage)
     }
 
     @Test

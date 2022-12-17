@@ -2,7 +2,7 @@ package com.example.myfood.mvp.quantityunit
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myfood.databasesqlite.entity.QuantityUnit
+import com.example.myfood.databases.databasesqlite.entity.QuantityUnit
 import com.example.myfood.databinding.ElementQuantityUnitListBinding
 
 

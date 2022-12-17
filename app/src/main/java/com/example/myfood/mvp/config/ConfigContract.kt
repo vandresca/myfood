@@ -2,7 +2,7 @@ package com.example.myfood.mvp.config
 
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.interfaces.Translatable
 import com.example.myfood.mvvm.data.model.OneValueEntity
 import com.example.myfood.mvvm.data.model.SimpleResponseEntity
@@ -31,7 +31,7 @@ interface ConfigContract {
     }
 
     interface Model : Translatable.Model {
-        fun getInstance(application: Context)
+        fun getInstance(context: Context)
         fun getTranslationsMenu(language: Int): List<Translation>
         fun getLanguages(): List<String>
         fun getCurrencies(language: Int): List<String>

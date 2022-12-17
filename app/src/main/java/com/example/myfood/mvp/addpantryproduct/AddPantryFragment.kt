@@ -15,9 +15,9 @@ import androidx.fragment.app.Fragment
 import com.example.myfood.R
 import com.example.myfood.constants.Constant
 import com.example.myfood.constants.Constant.Companion.IMAGE_CHOOSE
-import com.example.myfood.databasesqlite.entity.QuantityUnit
-import com.example.myfood.databasesqlite.entity.StorePlace
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.QuantityUnit
+import com.example.myfood.databases.databasesqlite.entity.StorePlace
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.databinding.AddPantryFragmentBinding
 import com.example.myfood.mvp.pantrylist.PantryListFragment
 import com.example.myfood.mvvm.data.model.OpenFoodEntity
@@ -140,23 +140,23 @@ class AddPantryFragment(private val mode: Int, private var idPantry: String = ""
 
     override fun onFillProductData(result: OpenFoodEntity) {
         if (result.status == Constant.OK_INT) {
-            var nameProduct: String
+            var nameProduct = String()
             var brand = String()
             var srcImage = String()
-            if (result.product.genericName.isNotEmpty()) {
+            if (!result.product.genericName.isNullOrEmpty()) {
                 nameProduct = result.product.genericName
-                if (nameProduct.trim().isNotEmpty())
-                    nameProduct = result.product.productName
             } else {
-                nameProduct = result.product.productName
+                if (!result.product.productName.isNullOrEmpty()) {
+                    nameProduct = result.product.productName
+                }
             }
             if (nameProduct.length > 28) {
                 nameProduct = nameProduct.substring(0, 25) + "..."
             }
-            if (result.product.brands.isNotEmpty()) {
+            if (!result.product.brands.isNullOrEmpty()) {
                 brand = result.product.brands
             }
-            if (result.product.image.isNotEmpty()) {
+            if (!result.product.image.isNullOrEmpty()) {
                 srcImage = result.product.image
             }
             binding.etProductName.setText(nameProduct)

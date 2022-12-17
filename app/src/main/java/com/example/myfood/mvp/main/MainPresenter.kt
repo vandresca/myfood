@@ -1,6 +1,6 @@
 package com.example.myfood.mvp.main
 
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.mvp.optionaddpantry.OptionAddPantryContract
 
 class MainPresenter(

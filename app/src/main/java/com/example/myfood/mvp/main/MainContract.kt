@@ -1,7 +1,7 @@
 package com.example.myfood.mvp.main
 
 import android.content.Context
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.interfaces.Translatable
 
 interface MainContract {

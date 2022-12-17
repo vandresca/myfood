@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myfood.constants.Constant
 import com.example.myfood.constants.Constant.Companion.FIELD_SIGN_UP
-import com.example.myfood.databasesqlite.entity.Translation
+import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.databinding.ActivityLoginBinding
 import com.example.myfood.mvp.forgotpassword.ForgotPasswordActivity
 import com.example.myfood.mvp.main.MainActivity

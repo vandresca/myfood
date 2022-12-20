@@ -1,5 +1,7 @@
 package com.example.myfood
 
+import android.os.Handler
+import android.os.Looper
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -29,7 +31,9 @@ fun <T> LiveData<T>.getOrAwaitValueTest(
             this@getOrAwaitValueTest.removeObserver(this)
         }
     }
-    this.observeForever(observer)
+    Handler(Looper.getMainLooper()).post {
+        this.observeForever(observer)
+    }
     try {
         afterObserve.invoke()
         // Don't wait indefinitely if the LiveData is not set.
@@ -37,7 +41,9 @@ fun <T> LiveData<T>.getOrAwaitValueTest(
             throw TimeoutException("LiveData value was never set.")
         }
     } finally {
-        this.removeObserver(observer)
+        Handler(Looper.getMainLooper()).post {
+            this.removeObserver(observer)
+        }
     }
 
     @Suppress("UNCHECKED_CAST")

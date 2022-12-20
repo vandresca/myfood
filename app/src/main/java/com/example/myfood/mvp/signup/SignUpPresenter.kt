@@ -4,7 +4,7 @@ package com.example.myfood.mvp.signup
 import androidx.lifecycle.MutableLiveData
 import com.example.myfood.constants.Constant
 import com.example.myfood.databases.databasesqlite.entity.Translation
-import com.example.myfood.mvvm.data.model.SimpleResponseEntity
+import com.example.myfood.mvvm.data.model.OneValueEntity
 
 class SignUpPresenter(
     private val signUpView: SignUpContract.View,
@@ -33,7 +33,7 @@ class SignUpPresenter(
         surnames: String,
         email: String,
         password: String
-    ): MutableLiveData<SimpleResponseEntity> {
+    ): MutableLiveData<OneValueEntity> {
         return signUpModel.insertUser(name, surnames, email, password)
     }
 

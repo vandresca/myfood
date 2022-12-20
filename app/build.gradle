@@ -18,6 +18,12 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    packagingOptions {
+        exclude 'META-INF/LICENSE.md'
+        exclude 'META-INF/LICENSE-notice.md'
+    }
+
+
     buildTypes {
         release {
             minifyEnabled false
@@ -43,6 +49,7 @@ configurations {
 }
 
 dependencies {
+    implementation 'androidx.activity:activity:1.6.1'
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.7.0'
@@ -58,15 +65,19 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
     implementation('com.journeyapps:zxing-android-embedded:4.1.0') { transitive = false }
+
+    //Okhttp
     implementation 'com.squareup.okhttp3:okhttp:3.14.9'
-    implementation 'com.squareup.picasso:picasso:2.5.2'
+
+    //Picasso
+    implementation 'com.squareup.picasso:picasso:2.71828'
 
     //Testing
-    testImplementation 'junit:junit:4.+'
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit5:1.7.20"
     testImplementation "io.mockk:mockk:1.12.2"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
     testImplementation "androidx.arch.core:core-testing:2.1.0"
-    androidTestImplementation "androidx.arch.core:core-testing:2.1.0"
+    androidTestImplementation "org.jetbrains.kotlin:kotlin-test-junit5:1.7.20"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -81,10 +92,6 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
     testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
-
-    //dagger hilt
-    //implementation "com.google.dagger:hilt-android:2.44"
-    //kapt "com.google.dagger:hilt-android-compiler:2.44"
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:2.9.0"

@@ -15,6 +15,10 @@ class RecipeListModel : RecipeListContract.Model {
         myFoodRepository.getInstance(context)
     }
 
+    override fun getUserId(): String {
+        return myFoodRepository.getUserId()
+    }
+
     override fun getCurrentLanguage(): String {
         return myFoodRepository.getCurrentLanguage()
     }
@@ -27,7 +31,10 @@ class RecipeListModel : RecipeListContract.Model {
         return myFoodRepository.getRecipeList(language)
     }
 
-    override fun getRecipesSuggested(language: String): MutableLiveData<RecipeListEntity> {
-        return myFoodRepository.getRecipesSuggested(language)
+    override fun getRecipesSuggested(
+        language: String,
+        user: String
+    ): MutableLiveData<RecipeListEntity> {
+        return myFoodRepository.getRecipesSuggested(language, user)
     }
 }

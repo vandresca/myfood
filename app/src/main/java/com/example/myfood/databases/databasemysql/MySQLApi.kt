@@ -3,9 +3,7 @@ package com.example.myfood.mvvm.data.network
 
 import com.example.myfood.mvvm.data.model.*
 import retrofit2.Response
-import retrofit2.http.GET
-import retrofit2.http.Query
-import retrofit2.http.Url
+import retrofit2.http.*
 
 interface MySQLApi {
 
@@ -24,45 +22,52 @@ interface MySQLApi {
         @Query("s") surnames: String,
         @Query("e") email: String,
         @Query("p") password: String,
+    ): Response<OneValueEntity>
+
+    @GET("/signup/deleteUser.php")
+    suspend fun deleteUser(
+        @Query("id") id: String
     ): Response<SimpleResponseEntity>
 
     @GET("/pantry/getPantryList.php")
     suspend fun getPantryList(@Query("u") idUser: String): Response<PantryListEntity>
 
-    @GET("/pantry/deletePantryProduct.php")
-    suspend fun deletePantry(@Query("id") idPantry: String)
+    @GET("/pantry/deletePantry.php")
+    suspend fun deletePantry(@Query("id") idPantry: String): Response<SimpleResponseEntity>
 
-    @GET("/pantry/insertPantry.php")
+    @FormUrlEncoded
+    @POST("/pantry/insertPantry.php")
     suspend fun insertPantry(
-        @Query("cb") barcode: String,
-        @Query("n") name: String,
-        @Query("q") quantity: String,
-        @Query("qu") quantityUnit: String,
-        @Query("p") place: String,
-        @Query("w") weight: String,
-        @Query("pr") price: String,
-        @Query("ed") expirationDate: String,
-        @Query("pd") preferenceDate: String,
-        @Query("i") image: String,
-        @Query("b") brand: String,
-        @Query("u") idUser: String
-    )
+        @Field("cb") barcode: String,
+        @Field("n") name: String,
+        @Field("q") quantity: String,
+        @Field("qu") quantityUnit: String,
+        @Field("p") place: String,
+        @Field("w") weight: String,
+        @Field("pr") price: String,
+        @Field("ed") expirationDate: String,
+        @Field("pd") preferenceDate: String,
+        @Field("i") image: String,
+        @Field("b") brand: String,
+        @Field("u") idUser: String
+    ): Response<OneValueEntity>
 
-    @GET("/pantry/updatePantry.php")
+    @FormUrlEncoded
+    @POST("/pantry/updatePantry.php")
     suspend fun updatePantry(
-        @Query("cb") barcode: String,
-        @Query("n") name: String,
-        @Query("q") quantity: String,
-        @Query("qu") quantityUnit: String,
-        @Query("p") place: String,
-        @Query("w") weight: String,
-        @Query("pr") price: String,
-        @Query("ed") expirationDate: String,
-        @Query("pd") preferenceDate: String,
-        @Query("i") image: String,
-        @Query("b") brand: String,
-        @Query("id") idPantry: String
-    )
+        @Field("cb") barcode: String,
+        @Field("n") name: String,
+        @Field("q") quantity: String,
+        @Field("qu") quantityUnit: String,
+        @Field("p") place: String,
+        @Field("w") weight: String,
+        @Field("pr") price: String,
+        @Field("ed") expirationDate: String,
+        @Field("pd") preferenceDate: String,
+        @Field("i") image: String,
+        @Field("b") brand: String,
+        @Field("id") idPantry: String
+    ): Response<SimpleResponseEntity>
 
     @GET("/pantry/getPantryProduct.php")
     suspend fun getPantryProduct(@Query("id") idPantry: String):
@@ -74,7 +79,7 @@ interface MySQLApi {
         @Query("q") quantity: String,
         @Query("qu") quantityUnit: String,
         @Query("u") userId: String
-    )
+    ): Response<OneValueEntity>
 
     @GET("/shop/updateShop.php")
     suspend fun updateShop(
@@ -82,13 +87,13 @@ interface MySQLApi {
         @Query("q") quantity: String,
         @Query("qu") quantityUnit: String,
         @Query("id") idShop: String
-    )
+    ): Response<SimpleResponseEntity>
 
     @GET("/shop/getShopList.php")
     suspend fun getShopList(@Query("u") userId: String): Response<ShopListEntity>
 
     @GET("/shop/deleteShop.php")
-    suspend fun deleteShop(@Query("id") idShop: String)
+    suspend fun deleteShop(@Query("id") idShop: String): Response<SimpleResponseEntity>
 
     @GET("/shop/getShopProduct.php")
     suspend fun getShopProduct(@Query("id") idShop: String): Response<ShopProductEntity>
@@ -106,7 +111,10 @@ interface MySQLApi {
     suspend fun getRecipeList(@Query("l") language: String): Response<RecipeListEntity>
 
     @GET("/recipe/getRecipesSuggested.php")
-    suspend fun getRecipesSuggested(@Query("l") language: String): Response<RecipeListEntity>
+    suspend fun getRecipesSuggested(
+        @Query("l") language: String,
+        @Query("u") user: String
+    ): Response<RecipeListEntity>
 
     @GET("/recipe/getRecipe.php")
     suspend fun getRecipe(
@@ -141,7 +149,9 @@ interface MySQLApi {
     ): Response<SimpleResponseEntity>
 
     @GET("/pantry/getNutrients.php")
-    suspend fun getNutrients(): Response<NutrientGroupEntity>
+    suspend fun getNutrients(
+        @Query("l") language: String
+    ): Response<NutrientGroupEntity>
 
     @GET("/pantry/getNutrientsByType.php")
     suspend fun getNutrientsByType(

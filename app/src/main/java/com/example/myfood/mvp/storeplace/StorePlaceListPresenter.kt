@@ -14,6 +14,7 @@ class StorePlaceListPresenter(
 ) : StorePlaceListContract.Presenter {
     private lateinit var placeAdapter: StorePlaceListAdapter
     private var placeMutableList: MutableList<StorePlace> = mutableListOf()
+    private var storePlaceFiltered: MutableList<StorePlace> = mutableListOf()
 
     init {
         placeListModel.getInstance(context)
@@ -40,10 +41,10 @@ class StorePlaceListPresenter(
     }
 
     override fun doFilter(userFilter: Editable?) {
-        val shopFiltered = placeMutableList.filter { place ->
+        storePlaceFiltered = placeMutableList.filter { place ->
             place.storePlace.lowercase().contains(userFilter.toString().lowercase())
-        }
-        placeAdapter.updateStorePlaceList(shopFiltered)
+        }.toMutableList()
+        placeAdapter.updateStorePlaceList(storePlaceFiltered)
     }
 
     override fun getCurrentLanguage(): String {
@@ -61,7 +62,17 @@ class StorePlaceListPresenter(
 
     private fun onDeleteItem(position: Int, place: StorePlace) {
         placeListModel.deleteStorePlace(place.idStorePlace.toString())
-        placeMutableList.removeAt(position)
+
+        var count = 0
+        var pos = 0
+        placeMutableList.forEach {
+            if (it.idStorePlace == place.idStorePlace) {
+                pos = count
+            }
+            count += 1
+        }
+        placeMutableList.removeAt(pos)
+        storePlaceFiltered.removeAt(position)
         placeAdapter.notifyItemRemoved(position)
     }
 

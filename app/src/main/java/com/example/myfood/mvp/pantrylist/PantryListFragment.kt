@@ -54,8 +54,6 @@ class PantryListFragment : Fragment(), PantryListContract.View {
         val currentLanguage = pantryListPresenter.getCurrentLanguage()
         this.mutableTranslations = pantryListPresenter.getTranslations(currentLanguage.toInt())
         setTranslations()
-
-
     }
 
     override fun onUserIdLoaded(idUser: String?) {

@@ -6,6 +6,7 @@ import com.example.myfood.databases.MyFoodRepository
 import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.enum.ScreenType
 import com.example.myfood.mvvm.data.model.PantryListEntity
+import com.example.myfood.mvvm.data.model.SimpleResponseEntity
 
 class PantryListModel : PantryListContract.Model {
 
@@ -35,7 +36,7 @@ class PantryListModel : PantryListContract.Model {
         return myFoodRepository.getPantryList(idUser)
     }
 
-    override fun deletePantry(id: String) {
-        myFoodRepository.deletePantry(id)
+    override fun deletePantry(id: String): MutableLiveData<SimpleResponseEntity> {
+        return myFoodRepository.deletePantry(id)
     }
 }

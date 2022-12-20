@@ -18,11 +18,13 @@ interface RecipeListContract {
         fun loadRecipes(result: RecipeListEntity)
         fun initData()
         fun doFilter(userFilter: Editable?)
+        fun getUserId(): String
     }
 
     interface Model : Translatable.Model {
         fun getInstance(context: Context)
+        fun getUserId(): String
         fun getRecipeList(language: String): MutableLiveData<RecipeListEntity>
-        fun getRecipesSuggested(language: String): MutableLiveData<RecipeListEntity>
+        fun getRecipesSuggested(language: String, user: String): MutableLiveData<RecipeListEntity>
     }
 }

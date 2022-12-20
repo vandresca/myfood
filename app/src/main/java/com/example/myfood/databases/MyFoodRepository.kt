@@ -19,8 +19,8 @@ class MyFoodRepository {
     private lateinit var dbSQLite: RoomSingleton
     private lateinit var dbMySQL: Retrofit
 
-    fun getInstance(application: Context) {
-        dbSQLite = RoomSingleton.getInstance(application)
+    fun getInstance(context: Context) {
+        dbSQLite = RoomSingleton.getInstance(context)
         dbMySQL = RetrofitHelper.getRetrofit()
     }
 
@@ -97,13 +97,19 @@ class MyFoodRepository {
         barcode: String, name: String, quantity: String,
         quantityUnit: String, place: String, weight: String, price: String,
         expirationDate: String, preferenceDate: String, image: String, brand: String, userId: String
-    ) {
+    ): MutableLiveData<OneValueEntity> {
+        val mutable: MutableLiveData<OneValueEntity> = MutableLiveData()
         CoroutineScope(Dispatchers.IO).launch {
-            dbMySQL.create(MySQLApi::class.java).insertPantry(
-                barcode, name, quantity, quantityUnit, place,
-                weight, price, expirationDate, preferenceDate, image, brand, userId
-            )
+            val value = withContext(Dispatchers.IO) {
+                val response = dbMySQL.create(MySQLApi::class.java).insertPantry(
+                    barcode, name, quantity, quantityUnit, place,
+                    weight, price, expirationDate, preferenceDate, image, brand, userId
+                )
+                response.body() ?: OneValueEntity("KO", "")
+            }
+            mutable.postValue(value)
         }
+        return mutable
     }
 
     fun updatePantry(
@@ -119,13 +125,20 @@ class MyFoodRepository {
         image: String,
         brand: String,
         idPantry: String
-    ) {
+    ): MutableLiveData<SimpleResponseEntity> {
+        val mutable: MutableLiveData<SimpleResponseEntity> = MutableLiveData()
         CoroutineScope(Dispatchers.IO).launch {
-            dbMySQL.create(MySQLApi::class.java).updatePantry(
-                barcode, name, quantity, quantityUnit, place,
-                weight, price, expirationDate, preferenceDate, image, brand, idPantry
-            )
+            val value = withContext(Dispatchers.IO) {
+                val response = dbMySQL.create(MySQLApi::class.java).updatePantry(
+                    barcode,
+                    name, quantity, quantityUnit, place,
+                    weight, price, expirationDate, preferenceDate, image, brand, idPantry
+                )
+                response.body() ?: SimpleResponseEntity("KO")
+            }
+            mutable.postValue(value)
         }
+        return mutable
     }
 
     fun getPantryProduct(idPantry: String): MutableLiveData<PantryProductEntity> {
@@ -152,7 +165,7 @@ class MyFoodRepository {
                 val response = dbMySQL.create(MySQLApi::class.java).getOpenFoodProduct(url)
                 val emptyObject = OpenFoodProductEntity(
                     "",
-                    "", "", "", " "
+                    "", "", "", ""
                 )
                 response.body() ?: OpenFoodEntity(0, emptyObject)
             }
@@ -181,11 +194,19 @@ class MyFoodRepository {
         quantity: String,
         quantityUnit: String,
         userId: String
-    ) {
+    ): MutableLiveData<OneValueEntity> {
+        val mutable: MutableLiveData<OneValueEntity> = MutableLiveData()
         CoroutineScope(Dispatchers.IO).launch {
-            dbMySQL.create(MySQLApi::class.java)
-                .insertShop(name, quantity, quantityUnit, userId)
+            val value = withContext(Dispatchers.IO) {
+                val response = dbMySQL.create(MySQLApi::class.java).insertShop(
+                    name,
+                    quantity, quantityUnit, userId
+                )
+                response.body() ?: OneValueEntity("KO", "")
+            }
+            mutable.postValue(value)
         }
+        return mutable
     }
 
     fun updateShop(
@@ -193,10 +214,19 @@ class MyFoodRepository {
         quantity: String,
         quantityUnit: String,
         idShop: String
-    ) {
+    ): MutableLiveData<SimpleResponseEntity> {
+        val mutable: MutableLiveData<SimpleResponseEntity> = MutableLiveData()
         CoroutineScope(Dispatchers.IO).launch {
-            dbMySQL.create(MySQLApi::class.java).updateShop(name, quantity, quantityUnit, idShop)
+            val value = withContext(Dispatchers.IO) {
+                val response = dbMySQL.create(MySQLApi::class.java).updateShop(
+                    name,
+                    quantity, quantityUnit, idShop
+                )
+                response.body() ?: SimpleResponseEntity("KO")
+            }
+            mutable.postValue(value)
         }
+        return mutable
     }
 
     fun changeEmail(email: String, user: String): MutableLiveData<SimpleResponseEntity> {
@@ -302,10 +332,16 @@ class MyFoodRepository {
         return mutable
     }
 
-    fun deletePantry(id: String) {
+    fun deletePantry(id: String): MutableLiveData<SimpleResponseEntity> {
+        val mutable: MutableLiveData<SimpleResponseEntity> = MutableLiveData()
         CoroutineScope(Dispatchers.IO).launch {
-            dbMySQL.create(MySQLApi::class.java).deletePantry(id)
+            val value = withContext(Dispatchers.IO) {
+                val response = dbMySQL.create(MySQLApi::class.java).deletePantry(id)
+                response.body() ?: SimpleResponseEntity("KO")
+            }
+            mutable.postValue(value)
         }
+        return mutable
     }
 
     fun getPantryList(idUser: String): MutableLiveData<PantryListEntity> {
@@ -350,11 +386,12 @@ class MyFoodRepository {
         return mutable
     }
 
-    fun getRecipesSuggested(language: String): MutableLiveData<RecipeListEntity> {
+    fun getRecipesSuggested(language: String, user: String): MutableLiveData<RecipeListEntity> {
         val mutable: MutableLiveData<RecipeListEntity> = MutableLiveData()
         CoroutineScope(Dispatchers.IO).launch {
             val value = withContext(Dispatchers.IO) {
-                val response = dbMySQL.create(MySQLApi::class.java).getRecipesSuggested(language)
+                val response =
+                    dbMySQL.create(MySQLApi::class.java).getRecipesSuggested(language, user)
                 response.body() ?: RecipeListEntity("KO", emptyList())
             }
             mutable.postValue(value)
@@ -374,23 +411,11 @@ class MyFoodRepository {
         return mutable
     }
 
-    fun deleteShop(idShop: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            dbMySQL.create(MySQLApi::class.java).deleteShop(idShop)
-        }
-    }
-
-    fun insertUser(
-        name: String,
-        surnames: String,
-        email: String,
-        password: String,
-    ): MutableLiveData<SimpleResponseEntity> {
+    fun deleteShop(idShop: String): MutableLiveData<SimpleResponseEntity> {
         val mutable: MutableLiveData<SimpleResponseEntity> = MutableLiveData()
         CoroutineScope(Dispatchers.IO).launch {
             val value = withContext(Dispatchers.IO) {
-                val response =
-                    dbMySQL.create(MySQLApi::class.java).insertUser(name, surnames, email, password)
+                val response = dbMySQL.create(MySQLApi::class.java).deleteShop(idShop)
                 response.body() ?: SimpleResponseEntity("KO")
             }
             mutable.postValue(value)
@@ -398,11 +423,44 @@ class MyFoodRepository {
         return mutable
     }
 
-    fun getNutrients(): MutableLiveData<NutrientGroupEntity> {
+    fun insertUser(
+        name: String,
+        surnames: String,
+        email: String,
+        password: String,
+    ): MutableLiveData<OneValueEntity> {
+        val mutable: MutableLiveData<OneValueEntity> = MutableLiveData()
+        CoroutineScope(Dispatchers.IO).launch {
+            val value = withContext(Dispatchers.IO) {
+                val response =
+                    dbMySQL.create(MySQLApi::class.java).insertUser(name, surnames, email, password)
+                response.body() ?: OneValueEntity("KO", "")
+            }
+            mutable.postValue(value)
+        }
+        return mutable
+    }
+
+    fun deleteUser(
+        id: String,
+    ): MutableLiveData<SimpleResponseEntity> {
+        val mutable: MutableLiveData<SimpleResponseEntity> = MutableLiveData()
+        CoroutineScope(Dispatchers.IO).launch {
+            val value = withContext(Dispatchers.IO) {
+                val response =
+                    dbMySQL.create(MySQLApi::class.java).deleteUser(id)
+                response.body() ?: SimpleResponseEntity("KO")
+            }
+            mutable.postValue(value)
+        }
+        return mutable
+    }
+
+    fun getNutrients(language: String): MutableLiveData<NutrientGroupEntity> {
         val mutable: MutableLiveData<NutrientGroupEntity> = MutableLiveData()
         CoroutineScope(Dispatchers.IO).launch {
             val value = withContext(Dispatchers.IO) {
-                val response = dbMySQL.create(MySQLApi::class.java).getNutrients()
+                val response = dbMySQL.create(MySQLApi::class.java).getNutrients(language)
                 response.body() ?: NutrientGroupEntity("KO", emptyList())
             }
             mutable.postValue(value)

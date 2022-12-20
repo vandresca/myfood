@@ -9,19 +9,19 @@ class PantryListViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     val binding = ElementPantryListBinding.bind(view)
 
     fun render(
-        purchaseListModel: PantryList,
+        pantryListModel: PantryList,
         onClickListener: (PantryList) -> Unit,
         onCLickDelete: (Int, PantryList) -> Unit,
         onClickUpdate: (PantryList) -> Unit,
         currency: String
     ) {
-        binding.tvPPName.text = purchaseListModel.name
-        binding.tvPPQuantity.text = purchaseListModel.quantity
-        binding.tvPPQuantityUnit.text = purchaseListModel.quantityUnit
-        binding.tvPPPrice.text = purchaseListModel.price
+        binding.tvPPName.text = pantryListModel.name
+        binding.tvPPQuantity.text = pantryListModel.quantity
+        binding.tvPPQuantityUnit.text = pantryListModel.quantityUnit
+        binding.tvPPPrice.text = pantryListModel.price
         binding.tvPPCurrency.text = currency
-        binding.itemViewPL.setOnClickListener { onClickListener(purchaseListModel) }
-        binding.btnDeletePP.setOnClickListener { onCLickDelete(adapterPosition, purchaseListModel) }
-        binding.btnUpdatePP.setOnClickListener { onClickUpdate(purchaseListModel) }
+        binding.itemViewPL.setOnClickListener { onClickListener(pantryListModel) }
+        binding.btnDeletePP.setOnClickListener { onCLickDelete(adapterPosition, pantryListModel) }
+        binding.btnUpdatePP.setOnClickListener { onClickUpdate(pantryListModel) }
     }
 }

@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.example.myfood.databases.databasesqlite.entity.QuantityUnit
 import com.example.myfood.interfaces.Translatable
+import com.example.myfood.mvvm.data.model.OneValueEntity
 import com.example.myfood.mvvm.data.model.ShopProductEntity
+import com.example.myfood.mvvm.data.model.SimpleResponseEntity
 
 interface AddShopContract {
     interface View : Translatable.View {
@@ -16,6 +18,19 @@ interface AddShopContract {
         fun getUserId(): String
         fun getQuantitiesUnit(): List<QuantityUnit>
         fun getShopProduct(idShop: String): MutableLiveData<ShopProductEntity>
+        fun insertShop(
+            name: String,
+            quantity: String,
+            quantityUnit: String,
+            userId: String
+        ): MutableLiveData<OneValueEntity>
+
+        fun updateShop(
+            name: String,
+            quantity: String,
+            quantityUnit: String,
+            idShop: String
+        ): MutableLiveData<SimpleResponseEntity>
     }
 
     interface Model : Translatable.Model {
@@ -28,14 +43,13 @@ interface AddShopContract {
             quantity: String,
             quantityUnit: String,
             userId: String
-        )
+        ): MutableLiveData<OneValueEntity>
 
         fun updateShop(
             name: String,
             quantity: String,
             quantityUnit: String,
             idShop: String
-        )
-
+        ): MutableLiveData<SimpleResponseEntity>
     }
 }

@@ -69,7 +69,7 @@
                     android:layout_marginRight="10dp"
                     android:autofillHints="creditCardNumber"
                     android:ems="10"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     android:text="" />
             </LinearLayout>
 

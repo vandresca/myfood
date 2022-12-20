@@ -17,6 +17,7 @@ class PantryListPresenter(
 ) : PantryListContract.Presenter {
     private lateinit var pantryAdapter: PantryListAdapter
     private var pantryMutableList: MutableList<PantryList> = mutableListOf()
+    private var pantryFiltered: MutableList<PantryList> = mutableListOf()
     private lateinit var idUser: String
 
     init {
@@ -54,10 +55,10 @@ class PantryListPresenter(
 
     override fun doFilter(userFilter: Editable?) {
         Handler(Looper.getMainLooper()).post {
-            val purchasesFiltered = pantryMutableList.filter { purchase ->
+            pantryFiltered = pantryMutableList.filter { purchase ->
                 purchase.name.lowercase().contains(userFilter.toString().lowercase())
-            }
-            pantryAdapter.updatePantryList(purchasesFiltered)
+            }.toMutableList()
+            pantryAdapter.updatePantryList(pantryFiltered)
         }
     }
 
@@ -82,17 +83,31 @@ class PantryListPresenter(
         return mutableTranslations
     }
 
-    private fun onItemSelected(purchaseList: PantryList) {
-        pantryListView.showPantryProduct(purchaseList.id)
+    private fun onItemSelected(pantryList: PantryList) {
+        pantryListView.showPantryProduct(pantryList.id)
     }
 
-    private fun onDeleteItem(position: Int, purchase: PantryList) {
-        pantryListModel.deletePantry(purchase.id)
-        pantryMutableList.removeAt(position)
-        pantryAdapter.notifyItemRemoved(position)
+    private fun onDeleteItem(position: Int, pantry: PantryList) {
+        pantryListModel.deletePantry(pantry.id)
+            .observe(pantryListFragment.viewLifecycleOwner) { result ->
+                if (result.status == Constant.OK) {
+                    var count = 0
+                    var pos: Int = 0
+                    pantryMutableList.forEach {
+                        if (it.id == pantry.id) {
+                            pos = count
+                        }
+                        count += 1
+                    }
+                    pantryMutableList.removeAt(pos)
+                    pantryFiltered.removeAt(position)
+                    pantryAdapter.notifyItemRemoved(position)
+                }
+            }
+
     }
 
-    private fun onUpdateItem(purchaseList: PantryList) {
-        pantryListView.showUpdatePurchaseScreen(purchaseList.id)
+    private fun onUpdateItem(pantryList: PantryList) {
+        pantryListView.showUpdatePurchaseScreen(pantryList.id)
     }
 }

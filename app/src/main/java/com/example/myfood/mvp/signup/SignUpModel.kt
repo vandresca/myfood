@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.myfood.databases.MyFoodRepository
 import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.enum.ScreenType
-import com.example.myfood.mvvm.data.model.SimpleResponseEntity
+import com.example.myfood.mvvm.data.model.OneValueEntity
 
 class SignUpModel : SignUpContract.Model {
 
@@ -28,7 +28,7 @@ class SignUpModel : SignUpContract.Model {
         surnames: String,
         email: String,
         password: String,
-    ): MutableLiveData<SimpleResponseEntity> {
+    ): MutableLiveData<OneValueEntity> {
         return myFoodRepository.insertUser(name, surnames, email, password)
     }
 }

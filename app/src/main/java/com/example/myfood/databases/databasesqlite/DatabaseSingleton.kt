@@ -10,7 +10,7 @@ import com.example.myfood.databases.databasesqlite.entity.*
     entities = [
         Currency::class, CurrencyTranslation::class, Language::class, Screen::class,
         ScreenWord::class, Word::class, WordTranslation::class, QuantityUnit::class,
-        StorePlace::class, ConfigProfile::class], version = 20, exportSchema = true
+        StorePlace::class, ConfigProfile::class], version = 22, exportSchema = true
 )
 abstract class RoomSingleton : androidx.room.RoomDatabase() {
 

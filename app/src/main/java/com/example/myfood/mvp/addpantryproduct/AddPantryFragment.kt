@@ -1,20 +1,24 @@
 package com.example.myfood.mvp.addpantryproduct
 
+import android.Manifest.permission.*
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts.*
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import com.example.myfood.R
 import com.example.myfood.constants.Constant
-import com.example.myfood.constants.Constant.Companion.IMAGE_CHOOSE
 import com.example.myfood.databases.databasesqlite.entity.QuantityUnit
 import com.example.myfood.databases.databasesqlite.entity.StorePlace
 import com.example.myfood.databases.databasesqlite.entity.Translation
@@ -26,6 +30,8 @@ import com.example.myfood.popup.Popup
 import com.example.myfood.util.DatePickerFragment
 import com.google.zxing.integration.android.IntentIntegrator
 import com.squareup.picasso.Picasso
+import java.io.ByteArrayOutputStream
+import java.util.*
 
 
 class AddPantryFragment(private val mode: Int, private var idPantry: String = "") : Fragment(),
@@ -81,54 +87,44 @@ class AddPantryFragment(private val mode: Int, private var idPantry: String = ""
 
     override fun onLoadPantryToUpdate(result: PantryProductEntity) {
         if (result.status == Constant.OK) {
-            Handler(Looper.getMainLooper()).post {
-                if (result.image.isNotEmpty()) {
-                    Picasso.with(binding.ivProduct.context)
-                        .load(result.image)
-                        .into(binding.ivProduct)
-                }
-                if (result.expiredDate.isNotEmpty())
-                    binding.etExpirationDate.setText(result.expiredDate)
-                if (result.preferenceDate.isNotEmpty())
-                    binding.etPreferenceDate.setText(result.preferenceDate)
-                binding.etProductName.setText(result.name)
-                binding.etBarcode.setText(result.barcode)
-                binding.etQuantity.setText(result.quantity)
-                binding.sQuantityUnit.setSelection(
-                    quantitiesUnitMutable.indexOf(result.quantityUnit)
-                )
-                binding.sPLace.setSelection(
-                    placesMutable.indexOf(result.storePlace)
-                )
-                binding.etWeight.setText(result.weight)
-                binding.etPrice.setText(result.price)
-                binding.etBrand.setText(result.brand)
+            if (result.image.isNotEmpty()) {
+                val decoded = Base64.getDecoder().decode(result.image)
+                val bitmap = BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
+                binding.ivProduct.setImageBitmap(bitmap)
             }
+            if (result.expiredDate.isNotEmpty())
+                binding.etExpirationDate.setText(result.expiredDate)
+            if (result.preferenceDate.isNotEmpty())
+                binding.etPreferenceDate.setText(result.preferenceDate)
+            binding.etProductName.setText(result.name)
+            binding.etBarcode.setText(result.barcode)
+            binding.etQuantity.setText(result.quantity)
+            binding.sQuantityUnit.setSelection(
+                quantitiesUnitMutable.indexOf(result.quantityUnit)
+            )
+            binding.sPLace.setSelection(
+                placesMutable.indexOf(result.storePlace)
+            )
+            binding.etWeight.setText(result.weight)
+            binding.etPrice.setText(result.price)
+            binding.etBrand.setText(result.brand)
         }
         binding.layoutAddPantry.visibility = View.VISIBLE
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Constant.RESULT_GALLERY_OK && requestCode == IMAGE_CHOOSE) {
-            val uri = data?.data
-            binding.ivProduct.tag = uri
-            Handler(Looper.getMainLooper()).post {
-                Picasso.with(requireContext()).load(uri).into(binding.ivProduct)
+        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        if (result != null) {
+            if (result.contents == null) {
+                binding.etBarcode.setText("")
+            } else {
+                binding.etBarcode.setText(result.contents)
+                fillProduct(result.contents)
             }
         } else {
-            val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-            if (result != null) {
-                if (result.contents == null) {
-                    binding.etBarcode.setText("")
-                } else {
-                    binding.etBarcode.setText(result.contents)
-                    fillProduct(result.contents)
-                }
-            } else {
-                binding.etBarcode.setText("")
-            }
-            commit()
+            binding.etBarcode.setText("")
         }
+        commit()
     }
 
 
@@ -162,9 +158,10 @@ class AddPantryFragment(private val mode: Int, private var idPantry: String = ""
             binding.etProductName.setText(nameProduct)
             binding.etBarcode.setText(result.product.barcode)
             binding.etBrand.setText(brand)
+
             binding.ivProduct.tag = srcImage
             Handler(Looper.getMainLooper()).post {
-                Picasso.with(requireContext()).load(srcImage).into(binding.ivProduct)
+                Picasso.get().load(srcImage).into(binding.ivProduct)
             }
         } else {
             Popup.showInfo(
@@ -206,16 +203,16 @@ class AddPantryFragment(private val mode: Int, private var idPantry: String = ""
     }
 
     private fun initBtnChange() {
-        binding.btnChangeImage.setOnClickListener { chooseGallery() }
-    }
+        val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
+            if (uri != null) {
+                binding.ivProduct.tag = uri
+                binding.ivProduct.setImageURI(uri)
+            }
+        }
 
-    private fun chooseGallery() {
-        val i = Intent(
-            Intent.ACTION_PICK,
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        )
-        //startActivity(i)
-        startActivityForResult(i, IMAGE_CHOOSE)
+        binding.btnChangeImage.setOnClickListener {
+            pickMedia.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+        }
     }
 
     private fun addUpdateProductToDB() {
@@ -228,8 +225,12 @@ class AddPantryFragment(private val mode: Int, private var idPantry: String = ""
         val price = binding.etPrice.text.toString()
         val expirationDate = binding.etExpirationDate.text.toString()
         val preferenceDate = binding.etPreferenceDate.text.toString()
-        var image = ""
-        if (binding.ivProduct.tag != null) image = binding.ivProduct.tag.toString()
+        val bitmap = binding.ivProduct.drawable.toBitmap()
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        val byteArray = stream.toByteArray()
+        val image = Base64.getEncoder().encodeToString(byteArray)
+
         val brand = binding.etBrand.text.toString()
 
         if (name.isEmpty()) {
@@ -247,14 +248,21 @@ class AddPantryFragment(private val mode: Int, private var idPantry: String = ""
                 addPantryPresenter.insertPantry(
                     barcode, name, quantity, quantityUnit, place,
                     weight, price, expirationDate, preferenceDate, image, brand, userId
-                )
+                ).observe(this.viewLifecycleOwner) { result ->
+                    if (result.status == Constant.OK) {
+                        loadFragment(PantryListFragment())
+                    }
+                }
             } else {
                 addPantryPresenter.updatePantry(
                     barcode, name, quantity, quantityUnit, place,
                     weight, price, expirationDate, preferenceDate, image, brand, idPantry
-                )
+                ).observe(this.viewLifecycleOwner) { result ->
+                    if (result.status == Constant.OK) {
+                        loadFragment(PantryListFragment())
+                    }
+                }
             }
-            loadFragment(PantryListFragment())
         }
     }
 

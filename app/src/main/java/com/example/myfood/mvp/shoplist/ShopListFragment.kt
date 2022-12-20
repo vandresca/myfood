@@ -42,7 +42,10 @@ class ShopListFragment : Fragment(), ShopListContract.View {
     private fun initialize() {
         binding.layoutShopList.visibility = View.INVISIBLE
         shopListModel = ShopListModel()
-        shopListPresenter = ShopListPresenter(this, ShopListModel(), requireContext())
+        shopListPresenter = ShopListPresenter(
+            this, ShopListModel(), this,
+            requireContext()
+        )
         val idUser = shopListPresenter.getUserId()
         shopListPresenter.setIdUser(this, idUser)
         val currentLanguage = shopListPresenter.getCurrentLanguage()

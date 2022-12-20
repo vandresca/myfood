@@ -15,8 +15,6 @@ class Constant {
         const val MODE_ADD = 0
         const val CONST_DPICKER = "DataPicker"
         const val CONST_SCAN = "SCAN"
-        const val IMAGE_CHOOSE = 1000
-        const val RESULT_GALLERY_OK = -1
 
         //Fields
         const val FIELD_NAME = "name"

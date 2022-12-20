@@ -38,6 +38,7 @@ class RecipeListFragment : Fragment(), RecipeListContract.View {
         binding.layoutRecipeList.visibility = View.INVISIBLE
         recipeListModel = RecipeListModel()
         recipeListPresenter = RecipeListPresenter(this, RecipeListModel(), this, requireContext())
+        val user = recipeListPresenter.getUserId()
         val currentLanguage = recipeListPresenter.getCurrentLanguage()
         this.mutableTranslations = recipeListPresenter.getTranslations(currentLanguage.toInt())
         setTranslations()
@@ -47,7 +48,7 @@ class RecipeListFragment : Fragment(), RecipeListContract.View {
         )
         initSearcher()
         binding.btnRLAll.setOnClickListener { recipeListPresenter.filterAll() }
-        binding.btnRLSuggestions.setOnClickListener { recipeListPresenter.filterSuggested() }
+        binding.btnRLSuggestions.setOnClickListener { recipeListPresenter.filterSuggested(user) }
 
 
     }

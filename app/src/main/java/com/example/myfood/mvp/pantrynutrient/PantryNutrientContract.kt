@@ -15,7 +15,7 @@ interface PantryNutrientContract {
 
     interface Presenter : Translatable.Presenter {
         fun deletePantry(idPurchase: String)
-        fun getNutrients(): MutableLiveData<NutrientGroupEntity>
+        fun getNutrients(language: String): MutableLiveData<NutrientGroupEntity>
         fun getNutrientsByType(
             typeNutrient: String,
             idFood: String
@@ -25,7 +25,7 @@ interface PantryNutrientContract {
     interface Model : Translatable.Model {
         fun getInstance(context: Context)
         fun deletePantry(id: String)
-        fun getNutrients(): MutableLiveData<NutrientGroupEntity>
+        fun getNutrients(language: String): MutableLiveData<NutrientGroupEntity>
         fun getNutrientsByType(
             typeNutrient: String,
             idFood: String

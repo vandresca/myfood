@@ -1,6 +1,7 @@
 package com.example.myfood.mvp.pantryfeature
 
 import android.annotation.SuppressLint
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -25,7 +26,7 @@ import com.example.myfood.mvvm.data.model.NutrientGroupEntity
 import com.example.myfood.mvvm.data.model.NutrientListTypeEntity
 import com.example.myfood.mvvm.data.model.PantryProductEntity
 import com.example.myfood.popup.Popup
-import com.squareup.picasso.Picasso
+import java.util.*
 
 
 class PantryNutrientFragment(
@@ -58,7 +59,7 @@ class PantryNutrientFragment(
         this.mutableTranslations = pantryNutrientPresenter.getTranslations(currentLanguage.toInt())
         setTranslations()
         setImage()
-        pantryNutrientPresenter.getNutrients().observe(this.viewLifecycleOwner)
+        pantryNutrientPresenter.getNutrients(currentLanguage).observe(this.viewLifecycleOwner)
         { groupNutrients -> onNutrientsLoaded(groupNutrients) }
         pantryNutrientPresenter.getNutrientsByType(Constant.LABEL_GENERAL, pantryProduct.idFood)
             .observe(this.viewLifecycleOwner)
@@ -122,8 +123,9 @@ class PantryNutrientFragment(
     }
 
     private fun selectGroupNutrient(position: Int) {
+        val nutrientType = position + 1
         pantryNutrientPresenter.getNutrientsByType(
-            nutrientsGroup[position], pantryProduct.idFood
+            nutrientType.toString(), pantryProduct.idFood
         ).observe(this.viewLifecycleOwner)
         { nutrients -> onNutrientsTypeLoaded(nutrients) }
     }
@@ -160,9 +162,9 @@ class PantryNutrientFragment(
 
     private fun setImage() {
         if (pantryProduct.image.isNotEmpty()) {
-            Picasso.with(binding.ivProduct.context)
-                .load(pantryProduct.image)
-                .into(binding.ivProduct)
+            val decoded = Base64.getDecoder().decode(pantryProduct.image)
+            val bitmap = BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
+            binding.ivProduct.setImageBitmap(bitmap)
         }
     }
 }

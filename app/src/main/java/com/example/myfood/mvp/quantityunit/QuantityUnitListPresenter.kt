@@ -14,7 +14,7 @@ class QuantityUnitListPresenter(
 ) : QuantityUnitListContract.Presenter {
     private lateinit var quantityUnitAdapter: QuantityUnitListAdapter
     private var quantityUnitMutableList: MutableList<QuantityUnit> = mutableListOf()
-
+    private var quantityUnitFiltered: MutableList<QuantityUnit> = mutableListOf()
 
     init {
         quantityUnitListModel.getInstance(context)
@@ -43,10 +43,10 @@ class QuantityUnitListPresenter(
     }
 
     override fun doFilter(userFilter: Editable?) {
-        val shopFiltered = quantityUnitMutableList.filter { QuantityUnit ->
+        quantityUnitFiltered = quantityUnitMutableList.filter { QuantityUnit ->
             QuantityUnit.quantityUnit.lowercase().contains(userFilter.toString().lowercase())
-        }
-        quantityUnitAdapter.updateQuantityUnitList(shopFiltered)
+        }.toMutableList()
+        quantityUnitAdapter.updateQuantityUnitList(quantityUnitFiltered)
     }
 
     override fun getCurrentLanguage(): String {
@@ -64,7 +64,16 @@ class QuantityUnitListPresenter(
 
     private fun onDeleteItem(position: Int, quantityUnit: QuantityUnit) {
         quantityUnitListModel.deleteQuantityUnit(quantityUnit.idQuantityUnit.toString())
-        quantityUnitMutableList.removeAt(position)
+        var count = 0
+        var pos = 0
+        quantityUnitMutableList.forEach {
+            if (it.idQuantityUnit == quantityUnit.idQuantityUnit) {
+                pos = count
+            }
+            count += 1
+        }
+        quantityUnitMutableList.removeAt(pos)
+        quantityUnitFiltered.removeAt(position)
         quantityUnitAdapter.notifyItemRemoved(position)
     }
 

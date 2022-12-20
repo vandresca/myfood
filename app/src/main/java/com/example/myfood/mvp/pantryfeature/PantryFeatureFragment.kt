@@ -1,5 +1,7 @@
 package com.example.myfood.mvp.pantryfeature
 
+
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,7 +17,7 @@ import com.example.myfood.mvp.addpantryproduct.AddPantryFragment
 import com.example.myfood.mvp.pantrylist.PantryListFragment
 import com.example.myfood.mvvm.data.model.PantryProductEntity
 import com.example.myfood.popup.Popup
-import com.squareup.picasso.Picasso
+import java.util.*
 
 
 class PantryFeatureFragment(private var idPantry: String) : Fragment(),
@@ -73,9 +75,9 @@ class PantryFeatureFragment(private var idPantry: String) : Fragment(),
             pantryProduct = pantryProductEntity
             Handler(Looper.getMainLooper()).post {
                 if (pantryProduct.image.isNotEmpty()) {
-                    Picasso.with(binding.ivProduct.context)
-                        .load(pantryProduct.image)
-                        .into(binding.ivProduct)
+                    val decoded = Base64.getDecoder().decode(pantryProduct.image)
+                    val bitmap = BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
+                    binding.ivProduct.setImageBitmap(bitmap)
                 }
                 binding.header.titleHeader.text = pantryProduct.name
                 binding.leExpirationDate.text = pantryProduct.expiredDate

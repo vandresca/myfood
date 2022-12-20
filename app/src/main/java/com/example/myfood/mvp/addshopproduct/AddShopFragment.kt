@@ -103,11 +103,20 @@ class AddShopFragment(private val mode: Int, private var idShop: String = "") : 
         val quantityUnit = binding.sASQuantityUnit.selectedItem.toString()
         if (name.isNotEmpty()) {
             if (mode == MODE_ADD) {
-                addShopModel.insertShop(name, quantity, quantityUnit, userId)
+                addShopPresenter.insertShop(name, quantity, quantityUnit, userId)
+                    .observe(this.viewLifecycleOwner) { result ->
+                        if (result.status == Constant.OK) {
+                            loadFragment(ShopListFragment())
+                        }
+                    }
             } else {
-                addShopModel.updateShop(name, quantity, quantityUnit, idShop)
+                addShopPresenter.updateShop(name, quantity, quantityUnit, idShop)
+                    .observe(this.viewLifecycleOwner) { result ->
+                        if (result.status == Constant.OK) {
+                            loadFragment(ShopListFragment())
+                        }
+                    }
             }
-            loadFragment(ShopListFragment())
         } else {
             Popup.showInfo(
                 requireContext(),

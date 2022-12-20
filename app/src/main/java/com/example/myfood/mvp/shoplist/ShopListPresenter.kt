@@ -12,11 +12,13 @@ import com.example.myfood.mvvm.data.model.ShopListEntity
 class ShopListPresenter(
     private val shopListView: ShopListContract.View,
     private val shopListModel: ShopListContract.Model,
+    private val shopListFragment: ShopListFragment,
     context: Context
 ) : ShopListContract.Presenter {
     private lateinit var shopAdapter: ShopListAdapter
     private lateinit var idUser: String
     private var shopMutableList: MutableList<ShopList> = mutableListOf()
+    private var shopFiltered: MutableList<ShopList> = mutableListOf()
 
     init {
         shopListModel.getInstance(context)
@@ -42,9 +44,9 @@ class ShopListPresenter(
     }
 
     override fun doFilter(userFilter: Editable?) {
-        val shopFiltered = shopMutableList.filter { shop ->
+        shopFiltered = shopMutableList.filter { shop ->
             shop.name.lowercase().contains(userFilter.toString().lowercase())
-        }
+        }.toMutableList()
         shopAdapter.updateShopList(shopFiltered)
     }
 
@@ -70,9 +72,21 @@ class ShopListPresenter(
     }
 
     private fun onDeleteItem(position: Int, shop: ShopList) {
-        shopListModel.deleteShop(shop.id)
-        shopMutableList.removeAt(position)
-        shopAdapter.notifyItemRemoved(position)
+        shopListModel.deleteShop(shop.id).observe(shopListFragment.viewLifecycleOwner) { result ->
+            if (result.status == Constant.OK) {
+                var count = 0
+                var pos = 0
+                shopMutableList.forEach {
+                    if (it.id == shop.id) {
+                        pos = count
+                    }
+                    count += 1
+                }
+                shopMutableList.removeAt(pos)
+                shopFiltered.removeAt(position)
+                shopAdapter.notifyItemRemoved(position)
+            }
+        }
     }
 
     private fun onUpdateItem(shopList: ShopList) {

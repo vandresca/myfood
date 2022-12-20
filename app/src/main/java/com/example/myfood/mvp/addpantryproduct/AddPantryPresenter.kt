@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.example.myfood.databases.databasesqlite.entity.QuantityUnit
 import com.example.myfood.databases.databasesqlite.entity.Translation
+import com.example.myfood.mvvm.data.model.OneValueEntity
 import com.example.myfood.mvvm.data.model.OpenFoodEntity
 import com.example.myfood.mvvm.data.model.PantryProductEntity
+import com.example.myfood.mvvm.data.model.SimpleResponseEntity
 
 class AddPantryPresenter(
     private val addPantryView: AddPantryContract.View,
@@ -50,8 +52,8 @@ class AddPantryPresenter(
         quantityUnit: String, place: String, weight: String, price: String,
         expirationDate: String, preferenceDate: String, image: String,
         brand: String, userId: String
-    ) {
-        addPantryModel.insertPantry(
+    ): MutableLiveData<OneValueEntity> {
+        return addPantryModel.insertPantry(
             barcode, name, quantity, quantityUnit, place,
             weight, price, expirationDate, preferenceDate, image, brand, userId
         )
@@ -62,8 +64,8 @@ class AddPantryPresenter(
         quantityUnit: String, place: String, weight: String, price: String,
         expirationDate: String, preferenceDate: String, image: String,
         brand: String, idPantry: String
-    ) {
-        addPantryModel.updatePantry(
+    ): MutableLiveData<SimpleResponseEntity> {
+        return addPantryModel.updatePantry(
             barcode, name, quantity, quantityUnit, place,
             weight, price, expirationDate, preferenceDate, image, brand, idPantry
         )

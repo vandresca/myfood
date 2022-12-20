@@ -6,6 +6,7 @@ import com.example.myfood.databases.MyFoodRepository
 import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.enum.ScreenType
 import com.example.myfood.mvvm.data.model.ShopListEntity
+import com.example.myfood.mvvm.data.model.SimpleResponseEntity
 
 
 class ShopListModel : ShopListContract.Model {
@@ -32,8 +33,8 @@ class ShopListModel : ShopListContract.Model {
         return myFoodRepository.getShopList(idUser)
     }
 
-    override fun deleteShop(idShop: String) {
-        myFoodRepository.deleteShop(idShop)
+    override fun deleteShop(idShop: String): MutableLiveData<SimpleResponseEntity> {
+        return myFoodRepository.deleteShop(idShop)
     }
 
 }

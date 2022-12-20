@@ -3,11 +3,11 @@ package com.example.myfood.mvp.signup
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.example.myfood.interfaces.Translatable
-import com.example.myfood.mvvm.data.model.SimpleResponseEntity
+import com.example.myfood.mvvm.data.model.OneValueEntity
 
 interface SignUpContract {
     interface View : Translatable.View {
-        fun onInsertedUser(result: SimpleResponseEntity)
+        fun onInsertedUser(result: OneValueEntity)
         fun setTranslations()
     }
 
@@ -17,7 +17,7 @@ interface SignUpContract {
             surnames: String,
             email: String,
             password: String
-        ): MutableLiveData<SimpleResponseEntity>
+        ): MutableLiveData<OneValueEntity>
     }
 
     interface Model : Translatable.Model {
@@ -27,6 +27,6 @@ interface SignUpContract {
             surnames: String,
             email: String,
             password: String,
-        ): MutableLiveData<SimpleResponseEntity>
+        ): MutableLiveData<OneValueEntity>
     }
 }

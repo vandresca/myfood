@@ -65,8 +65,8 @@ class RecipeListPresenter(
             .observe(recipeListFragment) { data -> loadRecipes(data) }
     }
 
-    fun filterSuggested() {
-        recipeListModel.getRecipesSuggested(idLanguage)
+    fun filterSuggested(idUser: String) {
+        recipeListModel.getRecipesSuggested(idLanguage, idUser)
             .observe(recipeListFragment) { data -> loadRecipes(data) }
     }
 
@@ -82,4 +82,9 @@ class RecipeListPresenter(
             RecipeFragment(recipeList.id, idLanguage)
         )
     }
+
+    override fun getUserId(): String {
+        return recipeListModel.getUserId()
+    }
+
 }

@@ -27,8 +27,8 @@ class PantryNutrientModel : PantryNutrientContract.Model {
         myFoodRepository.deletePantry(id)
     }
 
-    override fun getNutrients(): MutableLiveData<NutrientGroupEntity> {
-        return myFoodRepository.getNutrients()
+    override fun getNutrients(language: String): MutableLiveData<NutrientGroupEntity> {
+        return myFoodRepository.getNutrients(language)
     }
 
     override fun getNutrientsByType(typeNutrient: String, idFood: String):

@@ -9,7 +9,7 @@ import com.example.myfood.constants.Constant.Companion.FIELD_SIGN_UP
 import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.databinding.ActivitySignupBinding
 import com.example.myfood.mvp.login.LoginActivity
-import com.example.myfood.mvvm.data.model.SimpleResponseEntity
+import com.example.myfood.mvvm.data.model.OneValueEntity
 import com.example.myfood.popup.Popup
 
 class SignUpActivity : AppCompatActivity(), SignUpContract.View {
@@ -55,7 +55,7 @@ class SignUpActivity : AppCompatActivity(), SignUpContract.View {
 
     }
 
-    override fun onInsertedUser(result: SimpleResponseEntity) {
+    override fun onInsertedUser(result: OneValueEntity) {
         if (result.status == Constant.OK) {
             Popup.showInfo(
                 this,

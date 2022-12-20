@@ -32,8 +32,8 @@ class PantryNutrientPresenter(
         pantryNutrientModel.deletePantry(idPurchase)
     }
 
-    override fun getNutrients(): MutableLiveData<NutrientGroupEntity> {
-        return pantryNutrientModel.getNutrients()
+    override fun getNutrients(language: String): MutableLiveData<NutrientGroupEntity> {
+        return pantryNutrientModel.getNutrients(language)
     }
 
     override fun getNutrientsByType(typeNutrient: String, idFood: String):

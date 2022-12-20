@@ -4,7 +4,9 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.example.myfood.databases.databasesqlite.entity.QuantityUnit
 import com.example.myfood.databases.databasesqlite.entity.Translation
+import com.example.myfood.mvvm.data.model.OneValueEntity
 import com.example.myfood.mvvm.data.model.ShopProductEntity
+import com.example.myfood.mvvm.data.model.SimpleResponseEntity
 
 class AddShopPresenter(
     private val addShopView: AddShopContract.View,
@@ -39,5 +41,23 @@ class AddShopPresenter(
 
     override fun getShopProduct(idShop: String): MutableLiveData<ShopProductEntity> {
         return addShopModel.getShopProduct(idShop)
+    }
+
+    override fun insertShop(
+        name: String,
+        quantity: String,
+        quantityUnit: String,
+        userId: String
+    ): MutableLiveData<OneValueEntity> {
+        return addShopModel.insertShop(name, quantity, quantityUnit, userId)
+    }
+
+    override fun updateShop(
+        name: String,
+        quantity: String,
+        quantityUnit: String,
+        idShop: String
+    ): MutableLiveData<SimpleResponseEntity> {
+        return addShopModel.updateShop(name, quantity, quantityUnit, idShop)
     }
 }

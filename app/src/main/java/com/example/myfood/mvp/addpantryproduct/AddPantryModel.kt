@@ -7,8 +7,10 @@ import com.example.myfood.databases.databasesqlite.entity.QuantityUnit
 import com.example.myfood.databases.databasesqlite.entity.StorePlace
 import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.enum.ScreenType
+import com.example.myfood.mvvm.data.model.OneValueEntity
 import com.example.myfood.mvvm.data.model.OpenFoodEntity
 import com.example.myfood.mvvm.data.model.PantryProductEntity
+import com.example.myfood.mvvm.data.model.SimpleResponseEntity
 
 
 class AddPantryModel : AddPantryContract.Model {
@@ -43,8 +45,8 @@ class AddPantryModel : AddPantryContract.Model {
         barcode: String, name: String, quantity: String,
         quantityUnit: String, place: String, weight: String, price: String,
         expirationDate: String, preferenceDate: String, image: String, brand: String, userId: String
-    ) {
-        myFoodRepository.insertPantry(
+    ): MutableLiveData<OneValueEntity> {
+        return myFoodRepository.insertPantry(
             barcode, name, quantity, quantityUnit, place,
             weight, price, expirationDate, preferenceDate, image, brand, userId
         )
@@ -63,8 +65,8 @@ class AddPantryModel : AddPantryContract.Model {
         image: String,
         brand: String,
         idPantry: String
-    ) {
-        myFoodRepository.updatePantry(
+    ): MutableLiveData<SimpleResponseEntity> {
+        return myFoodRepository.updatePantry(
             barcode, name, quantity, quantityUnit, place,
             weight, price, expirationDate, preferenceDate, image, brand, idPantry
         )

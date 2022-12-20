@@ -5,6 +5,7 @@ import android.text.Editable
 import androidx.lifecycle.MutableLiveData
 import com.example.myfood.interfaces.Translatable
 import com.example.myfood.mvvm.data.model.ShopListEntity
+import com.example.myfood.mvvm.data.model.SimpleResponseEntity
 
 interface ShopListContract {
     interface View : Translatable.View {
@@ -25,6 +26,6 @@ interface ShopListContract {
         fun getInstance(context: Context)
         fun getUserId(): String
         fun getShopList(idUser: String): MutableLiveData<ShopListEntity>
-        fun deleteShop(idShop: String)
+        fun deleteShop(idShop: String): MutableLiveData<SimpleResponseEntity>
     }
 }

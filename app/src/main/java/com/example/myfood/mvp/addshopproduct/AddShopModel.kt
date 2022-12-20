@@ -6,7 +6,9 @@ import com.example.myfood.databases.MyFoodRepository
 import com.example.myfood.databases.databasesqlite.entity.QuantityUnit
 import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.enum.ScreenType
+import com.example.myfood.mvvm.data.model.OneValueEntity
 import com.example.myfood.mvvm.data.model.ShopProductEntity
+import com.example.myfood.mvvm.data.model.SimpleResponseEntity
 
 class AddShopModel : AddShopContract.Model {
 
@@ -41,8 +43,8 @@ class AddShopModel : AddShopContract.Model {
         quantity: String,
         quantityUnit: String,
         userId: String
-    ) {
-        myFoodRepository.insertShop(name, quantity, quantityUnit, userId)
+    ): MutableLiveData<OneValueEntity> {
+        return myFoodRepository.insertShop(name, quantity, quantityUnit, userId)
     }
 
     override fun updateShop(
@@ -50,7 +52,7 @@ class AddShopModel : AddShopContract.Model {
         quantity: String,
         quantityUnit: String,
         idShop: String
-    ) {
-        myFoodRepository.updateShop(name, quantity, quantityUnit, idShop)
+    ): MutableLiveData<SimpleResponseEntity> {
+        return myFoodRepository.updateShop(name, quantity, quantityUnit, idShop)
     }
 }

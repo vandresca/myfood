@@ -5,6 +5,7 @@ import android.text.Editable
 import androidx.lifecycle.MutableLiveData
 import com.example.myfood.interfaces.Translatable
 import com.example.myfood.mvvm.data.model.PantryListEntity
+import com.example.myfood.mvvm.data.model.SimpleResponseEntity
 
 interface PantryListContract {
     interface View : Translatable.View {
@@ -28,7 +29,7 @@ interface PantryListContract {
         fun getInstance(context: Context)
         fun getPantryList(idUser: String): MutableLiveData<PantryListEntity>
         fun getCurrentCurrency(): String
-        fun deletePantry(id: String)
+        fun deletePantry(id: String): MutableLiveData<SimpleResponseEntity>
         fun getUserId(): String
     }
 }

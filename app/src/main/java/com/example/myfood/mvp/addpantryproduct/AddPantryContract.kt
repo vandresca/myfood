@@ -6,8 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import com.example.myfood.databases.databasesqlite.entity.QuantityUnit
 import com.example.myfood.databases.databasesqlite.entity.StorePlace
 import com.example.myfood.interfaces.Translatable
+import com.example.myfood.mvvm.data.model.OneValueEntity
 import com.example.myfood.mvvm.data.model.OpenFoodEntity
 import com.example.myfood.mvvm.data.model.PantryProductEntity
+import com.example.myfood.mvvm.data.model.SimpleResponseEntity
 
 interface AddPantryContract {
     interface View : Translatable.View {
@@ -28,14 +30,14 @@ interface AddPantryContract {
             quantityUnit: String, place: String, weight: String, price: String,
             expirationDate: String, preferenceDate: String, image: String,
             brand: String, userId: String
-        )
+        ): MutableLiveData<OneValueEntity>
 
         fun updatePantry(
             barcode: String, name: String, quantity: String,
             quantityUnit: String, place: String, weight: String, price: String,
             expirationDate: String, preferenceDate: String, image: String,
             brand: String, idPantry: String
-        )
+        ): MutableLiveData<SimpleResponseEntity>
     }
 
     interface Model : Translatable.Model {
@@ -58,7 +60,7 @@ interface AddPantryContract {
             image: String,
             brand: String,
             userId: String
-        )
+        ): MutableLiveData<OneValueEntity>
 
         fun updatePantry(
             barcode: String,
@@ -73,6 +75,6 @@ interface AddPantryContract {
             image: String,
             brand: String,
             idPantry: String
-        )
+        ): MutableLiveData<SimpleResponseEntity>
     }
 }

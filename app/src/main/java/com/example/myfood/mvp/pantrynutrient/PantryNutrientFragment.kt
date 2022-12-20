@@ -40,6 +40,7 @@ class PantryNutrientFragment(
     private lateinit var pantryNutrientModel: PantryNutrientModel
     private lateinit var pantryNutrientPresenter: PantryNutrientPresenter
     private var mutableTranslations: MutableMap<String, Translation>? = null
+    private lateinit var currentLanguage: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,13 +56,16 @@ class PantryNutrientFragment(
         pantryNutrientModel = PantryNutrientModel()
         pantryNutrientPresenter =
             PantryNutrientPresenter(this, pantryNutrientModel, requireContext())
-        val currentLanguage = pantryNutrientPresenter.getCurrentLanguage()
+        currentLanguage = pantryNutrientPresenter.getCurrentLanguage()
         this.mutableTranslations = pantryNutrientPresenter.getTranslations(currentLanguage.toInt())
         setTranslations()
         setImage()
         pantryNutrientPresenter.getNutrients(currentLanguage).observe(this.viewLifecycleOwner)
         { groupNutrients -> onNutrientsLoaded(groupNutrients) }
-        pantryNutrientPresenter.getNutrientsByType(Constant.LABEL_GENERAL, pantryProduct.idFood)
+        pantryNutrientPresenter.getNutrientsByType(
+            Constant.GENERAL_NUTRIENT,
+            pantryProduct.idFood, currentLanguage
+        )
             .observe(this.viewLifecycleOwner)
             { nutrients -> onNutrientsTypeLoaded(nutrients) }
         binding.btnDeletePantryProduct.setOnClickListener {
@@ -125,7 +129,8 @@ class PantryNutrientFragment(
     private fun selectGroupNutrient(position: Int) {
         val nutrientType = position + 1
         pantryNutrientPresenter.getNutrientsByType(
-            nutrientType.toString(), pantryProduct.idFood
+            nutrientType.toString(), pantryProduct.idFood,
+            currentLanguage
         ).observe(this.viewLifecycleOwner)
         { nutrients -> onNutrientsTypeLoaded(nutrients) }
     }

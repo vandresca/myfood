@@ -18,7 +18,8 @@ interface PantryNutrientContract {
         fun getNutrients(language: String): MutableLiveData<NutrientGroupEntity>
         fun getNutrientsByType(
             typeNutrient: String,
-            idFood: String
+            idFood: String,
+            language: String
         ): MutableLiveData<NutrientListTypeEntity>
     }
 
@@ -28,7 +29,8 @@ interface PantryNutrientContract {
         fun getNutrients(language: String): MutableLiveData<NutrientGroupEntity>
         fun getNutrientsByType(
             typeNutrient: String,
-            idFood: String
+            idFood: String,
+            language: String
         ): MutableLiveData<NutrientListTypeEntity>
     }
 }

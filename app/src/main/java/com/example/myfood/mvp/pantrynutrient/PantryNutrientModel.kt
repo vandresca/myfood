@@ -31,8 +31,8 @@ class PantryNutrientModel : PantryNutrientContract.Model {
         return myFoodRepository.getNutrients(language)
     }
 
-    override fun getNutrientsByType(typeNutrient: String, idFood: String):
+    override fun getNutrientsByType(typeNutrient: String, idFood: String, language: String):
             MutableLiveData<NutrientListTypeEntity> {
-        return myFoodRepository.getNutrientsByType(typeNutrient, idFood)
+        return myFoodRepository.getNutrientsByType(typeNutrient, idFood, language)
     }
 }

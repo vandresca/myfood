@@ -156,6 +156,7 @@ interface MySQLApi {
     @GET("/pantry/getNutrientsByType.php")
     suspend fun getNutrientsByType(
         @Query("t") typeNutrient: String,
-        @Query("id") idFood: String
+        @Query("id") idFood: String,
+        @Query("l") language: String
     ): Response<NutrientListTypeEntity>
 }

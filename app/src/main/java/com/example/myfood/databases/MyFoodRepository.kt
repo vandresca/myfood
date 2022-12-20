@@ -468,13 +468,16 @@ class MyFoodRepository {
         return mutable
     }
 
-    fun getNutrientsByType(typeNutrient: String, idFood: String):
+    fun getNutrientsByType(typeNutrient: String, idFood: String, language: String):
             MutableLiveData<NutrientListTypeEntity> {
         val mutable: MutableLiveData<NutrientListTypeEntity> = MutableLiveData()
         CoroutineScope(Dispatchers.IO).launch {
             val value = withContext(Dispatchers.IO) {
                 val response =
-                    dbMySQL.create(MySQLApi::class.java).getNutrientsByType(typeNutrient, idFood)
+                    dbMySQL.create(MySQLApi::class.java).getNutrientsByType(
+                        typeNutrient,
+                        idFood, language
+                    )
                 response.body() ?: NutrientListTypeEntity("KO", emptyList())
             }
             mutable.postValue(value)

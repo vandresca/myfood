@@ -36,8 +36,8 @@ class PantryNutrientPresenter(
         return pantryNutrientModel.getNutrients(language)
     }
 
-    override fun getNutrientsByType(typeNutrient: String, idFood: String):
+    override fun getNutrientsByType(typeNutrient: String, idFood: String, language: String):
             MutableLiveData<NutrientListTypeEntity> {
-        return pantryNutrientModel.getNutrientsByType(typeNutrient, idFood)
+        return pantryNutrientModel.getNutrientsByType(typeNutrient, idFood, language)
     }
 }

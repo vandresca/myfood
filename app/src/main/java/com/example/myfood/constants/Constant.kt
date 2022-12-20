@@ -15,6 +15,7 @@ class Constant {
         const val MODE_ADD = 0
         const val CONST_DPICKER = "DataPicker"
         const val CONST_SCAN = "SCAN"
+        const val GENERAL_NUTRIENT = "1"
 
         //Fields
         const val FIELD_NAME = "name"
@@ -132,7 +133,6 @@ class Constant {
         const val LABEL_WEIGHT = "weight"
         const val LABEL_EXPIRATION_DATE = "expirationDate"
         const val LABEL_PREFERENCE_DATE = "preferenceDate"
-        const val LABEL_GENERAL = "General"
 
         //Menu
         const val MENU_PANTRY = "menuPurchase"

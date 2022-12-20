@@ -63,6 +63,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="20dp"
                         android:backgroundTint="@color/turquoise"
+                        android:visibility="invisible"
                         android:text="@string/OCR"
                         android:textAllCaps="false" />
                 </RelativeLayout>

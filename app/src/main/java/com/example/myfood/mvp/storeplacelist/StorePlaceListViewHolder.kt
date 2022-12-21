@@ -1,4 +1,4 @@
-package com.example.myfood.mvp.storeplace
+package com.example.myfood.mvp.storeplacelist
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView

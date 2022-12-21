@@ -1,5 +1,11 @@
 package com.example.myfood.enum
 
+// Enumeración para los tipos de idioma
+// SPANISH: Español
+// ENGLISH: Inglés
+// FRENCH: Francés
+// GERMAN: Alemán
+// CATALAN: Catalan
 enum class LanguageType(val int: Int) {
     SPANISH(1),
     ENGLISH(2),

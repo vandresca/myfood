@@ -7,13 +7,19 @@ import androidx.lifecycle.MutableLiveData
 import com.example.myfood.interfaces.Translatable
 import com.example.myfood.mvvm.data.model.RecipeListEntity
 
+// Interfaz que obliga a implementar los siguientes métodos para la pantalla
+// Lista Recetas
 interface RecipeListContract {
+
+    //Vista
+    //Implementa la interfaz Translable.View
     interface View : Translatable.View {
         fun initRecyclerView(recipeListAdapter: RecipeListAdapter)
         fun loadFragment(fragment: Fragment)
-        fun setTranslations()
     }
 
+    //Presentador
+    //Implementa la interfaz Translable.Presenter
     interface Presenter : Translatable.Presenter {
         fun loadRecipes(result: RecipeListEntity)
         fun initData()
@@ -21,6 +27,8 @@ interface RecipeListContract {
         fun getUserId(): String
     }
 
+    //Modelo
+    //Implementa la interfaz Translable.Model
     interface Model : Translatable.Model {
         fun getInstance(context: Context)
         fun getUserId(): String

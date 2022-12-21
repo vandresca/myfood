@@ -1,12 +1,12 @@
-package com.example.myfood.mvp.quantityunit
+package com.example.myfood.mvp.storeplacelist
 
 import android.content.Context
 import com.example.myfood.databases.MyFoodRepository
-import com.example.myfood.databases.databasesqlite.entity.QuantityUnit
+import com.example.myfood.databases.databasesqlite.entity.StorePlace
 import com.example.myfood.databases.databasesqlite.entity.Translation
 import com.example.myfood.enum.ScreenType
 
-class QuantityUnitListModel : QuantityUnitListContract.Model {
+class StorePlaceListModel : StorePlaceListContract.Model {
 
     private val myFoodRepository = MyFoodRepository()
 
@@ -22,11 +22,11 @@ class QuantityUnitListModel : QuantityUnitListContract.Model {
         return myFoodRepository.getTranslations(language, ScreenType.CONFIG.int)
     }
 
-    override fun getQuantityUnits(): List<QuantityUnit> {
-        return myFoodRepository.getQuantitiesUnit()
+    override fun getStorePlaces(): List<StorePlace> {
+        return myFoodRepository.getStorePlaces()
     }
 
-    override fun deleteQuantityUnit(idQuantityUnit: String) {
-        myFoodRepository.deleteQuantityUnit(idQuantityUnit)
+    override fun deleteStorePlace(idPlace: String) {
+        myFoodRepository.deleteStorePlace(idPlace)
     }
 }

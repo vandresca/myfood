@@ -2,6 +2,7 @@ package com.example.myfood.mvvm.data.model
 
 import com.google.gson.annotations.SerializedName
 
+// Entidad que serializa los atributos de un producto de despensa
 class PantryProductEntity(
     @SerializedName("response") val status: String,
     @SerializedName("id_pantry") val idPantry: String,

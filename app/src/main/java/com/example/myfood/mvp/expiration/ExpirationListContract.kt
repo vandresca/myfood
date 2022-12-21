@@ -7,12 +7,18 @@ import com.example.myfood.interfaces.Translatable
 import com.example.myfood.mvvm.data.model.ExpirationListEntity
 import com.example.myfood.mvvm.data.model.SimpleResponseEntity
 
+// Interfaz que obliga a implementar los siguientes métodos para la pantalla
+// Caducidad
 interface ExpirationListContract {
+
+    //Vista
+    //Implementa la interfaz Translable.View
     interface View : Translatable.View {
         fun initRecyclerView(expirationListAdapter: ExpirationListAdapter)
-        fun setTranslations()
     }
 
+    //Presentador
+    //Implementa la interfaz Translable.Presenter
     interface Presenter : Translatable.Presenter {
         fun initData()
         fun loadData(expirationListEntity: ExpirationListEntity)
@@ -22,6 +28,8 @@ interface ExpirationListContract {
         fun getUserId(): String
     }
 
+    //Modelo
+    //Implementa la interfaz Translable.Model
     interface Model : Translatable.Model {
         fun getInstance(context: Context)
         fun getUserId(): String

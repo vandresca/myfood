@@ -1,4 +1,4 @@
-package com.example.myfood.mvp.storeplace
+package com.example.myfood.mvp.storeplacelist
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

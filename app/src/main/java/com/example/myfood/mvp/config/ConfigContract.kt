@@ -7,15 +7,21 @@ import com.example.myfood.interfaces.Translatable
 import com.example.myfood.mvvm.data.model.OneValueEntity
 import com.example.myfood.mvvm.data.model.SimpleResponseEntity
 
+// Interfaz que obliga a implementar los siguientes métodos para la pantalla
+// Configuración
 interface ConfigContract {
+
+    //Vista
+    //Implementa la interfaz Translable.View
     interface View : Translatable.View {
         fun onGottenEmail(result: OneValueEntity)
         fun onGottenPassword(result: OneValueEntity)
         fun onChangeEmail(result: SimpleResponseEntity)
         fun onChangePassword(result: SimpleResponseEntity)
-        fun setTranslations()
     }
 
+    //Presentador
+    //Implementa la interfaz Translable.Presenter
     interface Presenter : Translatable.Presenter {
         fun getLanguages(): List<String>
         fun getUserId(): String
@@ -30,6 +36,8 @@ interface ConfigContract {
         fun getPassword(user: String): MutableLiveData<OneValueEntity>
     }
 
+    //Modelo
+    //Implementa la interfaz Translable.Model
     interface Model : Translatable.Model {
         fun getInstance(context: Context)
         fun getTranslationsMenu(language: Int): List<Translation>

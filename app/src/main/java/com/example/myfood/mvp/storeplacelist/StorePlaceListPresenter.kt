@@ -1,4 +1,4 @@
-package com.example.myfood.mvp.storeplace
+package com.example.myfood.mvp.storeplacelist
 
 import android.content.Context
 import android.os.Handler
@@ -72,7 +72,7 @@ class StorePlaceListPresenter(
             count += 1
         }
         placeMutableList.removeAt(pos)
-        storePlaceFiltered.removeAt(position)
+        if (storePlaceFiltered.isNotEmpty()) storePlaceFiltered.removeAt(position)
         placeAdapter.notifyItemRemoved(position)
     }
 

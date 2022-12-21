@@ -8,12 +8,18 @@ import com.example.myfood.mvvm.data.model.OneValueEntity
 import com.example.myfood.mvvm.data.model.ShopProductEntity
 import com.example.myfood.mvvm.data.model.SimpleResponseEntity
 
+// Interfaz que obliga a implementar los siguientes métodos para la pantalla
+// Añadir Producto Compra
 interface AddShopContract {
+
+    //Vista
+    //Implementa la interfaz Translable.View
     interface View : Translatable.View {
         fun onLoadShopToUpdate(shopProductEntity: ShopProductEntity)
-        fun setTranslations()
     }
 
+    //Presentador
+    //Implementa la interfaz Translable.Presenter
     interface Presenter : Translatable.Presenter {
         fun getUserId(): String
         fun getQuantitiesUnit(): List<QuantityUnit>
@@ -33,6 +39,8 @@ interface AddShopContract {
         ): MutableLiveData<SimpleResponseEntity>
     }
 
+    //Modelo
+    //Implementa la interfaz Translable.Model
     interface Model : Translatable.Model {
         fun getInstance(context: Context)
         fun getShopProduct(idShop: String): MutableLiveData<ShopProductEntity>

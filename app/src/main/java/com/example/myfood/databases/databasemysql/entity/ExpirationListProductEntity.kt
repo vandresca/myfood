@@ -2,6 +2,7 @@ package com.example.myfood.mvvm.data.model
 
 import com.google.gson.annotations.SerializedName
 
+//Subentidad de ExpirationListEntity
 class ExpirationListProductEntity(
     @SerializedName("name") val name: String,
     @SerializedName("days") val days: String,

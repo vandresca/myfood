@@ -2,6 +2,7 @@ package com.example.myfood.mvvm.data.model
 
 import com.google.gson.annotations.SerializedName
 
+// Subentidad de ShopListEntity
 class ShopListProductEntity(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String,

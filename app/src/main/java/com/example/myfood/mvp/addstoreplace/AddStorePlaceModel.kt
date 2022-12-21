@@ -1,4 +1,4 @@
-package com.example.myfood.mvp.addplace
+package com.example.myfood.mvp.addstoreplace
 
 import android.content.Context
 import com.example.myfood.databases.MyFoodRepository

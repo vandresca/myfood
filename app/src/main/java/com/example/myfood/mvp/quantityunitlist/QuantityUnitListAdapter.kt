@@ -1,4 +1,4 @@
-package com.example.myfood.mvp.quantityunit
+package com.example.myfood.mvp.quantityunitlist
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater

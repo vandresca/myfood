@@ -1,4 +1,4 @@
-package com.example.myfood.mvp.quantityunit
+package com.example.myfood.mvp.quantityunitlist
 
 import android.content.Context
 import android.os.Handler
@@ -73,7 +73,7 @@ class QuantityUnitListPresenter(
             count += 1
         }
         quantityUnitMutableList.removeAt(pos)
-        quantityUnitFiltered.removeAt(position)
+        if (quantityUnitFiltered.isNotEmpty()) quantityUnitFiltered.removeAt(position)
         quantityUnitAdapter.notifyItemRemoved(position)
     }
 

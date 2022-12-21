@@ -2,6 +2,7 @@ package com.example.myfood.mvvm.data.model
 
 import com.google.gson.annotations.SerializedName
 
+// Subentidad de OpenFoodEntity
 data class OpenFoodProductEntity(
     @SerializedName("product_name") val productName: String,
     @SerializedName("generic_name") val genericName: String,

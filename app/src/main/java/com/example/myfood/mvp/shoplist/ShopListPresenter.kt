@@ -83,7 +83,9 @@ class ShopListPresenter(
                     count += 1
                 }
                 shopMutableList.removeAt(pos)
-                shopFiltered.removeAt(position)
+
+                if (shopFiltered.isNotEmpty()) shopFiltered.removeAt(position)
+
                 shopAdapter.notifyItemRemoved(position)
             }
         }

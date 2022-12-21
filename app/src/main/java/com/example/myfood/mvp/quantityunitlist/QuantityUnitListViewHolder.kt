@@ -1,4 +1,4 @@
-package com.example.myfood.mvp.quantityunit
+package com.example.myfood.mvp.quantityunitlist
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView

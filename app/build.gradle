@@ -66,9 +66,6 @@ dependencies {
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
     implementation('com.journeyapps:zxing-android-embedded:4.1.0') { transitive = false }
 
-    //Okhttp
-    implementation 'com.squareup.okhttp3:okhttp:3.14.9'
-
     //Picasso
     implementation 'com.squareup.picasso:picasso:2.71828'
 
@@ -99,6 +96,4 @@ dependencies {
 
     //Zxing
     implementation 'com.google.zxing:core:3.3.3'
-    //Jsoup
-    implementation("org.jsoup:jsoup:1.11.3")
 }

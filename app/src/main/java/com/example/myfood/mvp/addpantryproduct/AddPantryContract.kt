@@ -11,15 +11,21 @@ import com.example.myfood.mvvm.data.model.OpenFoodEntity
 import com.example.myfood.mvvm.data.model.PantryProductEntity
 import com.example.myfood.mvvm.data.model.SimpleResponseEntity
 
+// Interfaz que obliga a implementar los siguientes métodos para la pantalla
+// Añadir Producto Despensa
 interface AddPantryContract {
+
+    //Vista
+    //Implementa la interfaz Translable.View
     interface View : Translatable.View {
         fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
         fun fillProduct(barcode: String)
         fun onFillProductData(result: OpenFoodEntity)
         fun onLoadPantryToUpdate(result: PantryProductEntity)
-        fun setTranslations()
     }
 
+    //Presentador
+    //Implementa la interfaz Translable.Presenter
     interface Presenter : Translatable.Presenter {
         fun getUserId(): String
         fun getQuantitiesUnit(): List<QuantityUnit>
@@ -40,6 +46,8 @@ interface AddPantryContract {
         ): MutableLiveData<SimpleResponseEntity>
     }
 
+    //Modelo
+    //Implementa la interfaz Translable.Model
     interface Model : Translatable.Model {
         fun getInstance(context: Context)
         fun getPantryProduct(idPantry: String): MutableLiveData<PantryProductEntity>

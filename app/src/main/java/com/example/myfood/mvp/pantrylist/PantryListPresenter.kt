@@ -100,7 +100,7 @@ class PantryListPresenter(
                         count += 1
                     }
                     pantryMutableList.removeAt(pos)
-                    pantryFiltered.removeAt(position)
+                    if (pantryFiltered.isNotEmpty()) pantryFiltered.removeAt(position)
                     pantryAdapter.notifyItemRemoved(position)
                 }
             }
@@ -108,6 +108,6 @@ class PantryListPresenter(
     }
 
     private fun onUpdateItem(pantryList: PantryList) {
-        pantryListView.showUpdatePurchaseScreen(pantryList.id)
+        pantryListView.showUpdatePantryScreen(pantryList.id)
     }
 }

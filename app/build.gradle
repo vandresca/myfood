@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.myfood'
+    namespace 'com.myfood'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.myfood"
+        applicationId 'com.myfood'
         minSdk 26
         targetSdk 33
         versionCode 1

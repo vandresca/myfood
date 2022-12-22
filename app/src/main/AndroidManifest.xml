@@ -28,7 +28,7 @@
             android:screenOrientation="portrait"
             tools:replace="screenOrientation" />
         <activity
-            android:name=".mvp.forgotpassword.ForgotPasswordActivity"
+            android:name="com.myfood.mvp.forgotpassword.ForgotPasswordActivity"
             android:exported="false"
             android:label="ForgotPasswordActivity"
             android:screenOrientation="portrait"
@@ -38,7 +38,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".mvp.main.MainActivity"
+            android:name="com.myfood.mvp.main.MainActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:label="MainActivity"
@@ -48,7 +48,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".mvp.signup.SignUpActivity"
+            android:name="com.myfood.mvp.signup.SignUpActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:label="SignUpActivity"
@@ -59,7 +59,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".mvp.login.LoginActivity"
+            android:name="com.myfood.mvp.login.LoginActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
             android:exported="true"

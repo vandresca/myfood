@@ -1,0 +1,31 @@
+package com.myfood.mvp.quantityunitlist
+
+import android.content.Context
+import com.myfood.databases.databasesqlite.entity.QuantityUnit
+import com.myfood.databases.databasesqlite.entity.Translation
+import com.myfood.enum.ScreenType
+
+class QuantityUnitListModel : QuantityUnitListContract.Model {
+
+    private val myFoodRepository = com.myfood.databases.MyFoodRepository()
+
+    override fun getInstance(context: Context) {
+        myFoodRepository.getInstance(context)
+    }
+
+    override fun getCurrentLanguage(): String {
+        return myFoodRepository.getCurrentLanguage()
+    }
+
+    override fun getTranslations(language: Int): List<Translation> {
+        return myFoodRepository.getTranslations(language, ScreenType.CONFIG.int)
+    }
+
+    override fun getQuantityUnits(): List<QuantityUnit> {
+        return myFoodRepository.getQuantitiesUnit()
+    }
+
+    override fun deleteQuantityUnit(idQuantityUnit: String) {
+        myFoodRepository.deleteQuantityUnit(idQuantityUnit)
+    }
+}

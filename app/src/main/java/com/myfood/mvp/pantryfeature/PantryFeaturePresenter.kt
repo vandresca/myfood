@@ -1,38 +1,48 @@
 package com.myfood.mvp.pantryfeature
 
 import android.content.Context
-import androidx.lifecycle.MutableLiveData
-import com.myfood.databases.databasemysql.entity.PantryProductEntity
-import com.myfood.databases.databasesqlite.entity.Translation
 
 class PantryFeaturePresenter(
-    private val pantryFeatureView: PantryFeatureContract.View,
-    private val pantryFeatureModel: PantryFeatureContract.Model,
+    private val pantryFeatureFragment: PantryFeatureFragment,
     context: Context
 ) : PantryFeatureContract.Presenter {
+
+    //Declaración de las variables globales
+    private val pantryFeatureModel: PantryFeatureModel= PantryFeatureModel()
+    private val currentLanguage: String
+
     init {
-        pantryFeatureModel.getInstance(context)
+
+        //Creamos las instacias de las bases de datos
+        pantryFeatureModel.createInstances(context)
+
+        //Obtenemos el idoma actual de la App
+        currentLanguage = pantryFeatureModel.getCurrentLanguage()
     }
 
-    override fun getCurrentLanguage(): String {
-        return pantryFeatureModel.getCurrentLanguage()
-    }
-
-    override fun getTranslations(language: Int): MutableMap<String, Translation> {
-        val mutableTranslations: MutableMap<String, Translation> = mutableMapOf()
-        val translations = pantryFeatureModel.getTranslations(language)
+    //Metodo que devuelve las traducciones de la pantalla
+    override fun getTranslationsScreen():MutableMap<String, String>{
+        val mutableTranslations: MutableMap<String, String> =
+            mutableMapOf()
+        val translations = pantryFeatureModel.getTranslations(currentLanguage.toInt())
         translations.forEach {
-            mutableTranslations[it.word] = it
+            mutableTranslations[it.word] = it.text
         }
         return mutableTranslations
     }
 
-    override fun getPantryProduct(idPantry: String): MutableLiveData<PantryProductEntity> {
-        return pantryFeatureModel.getPantryProduct(idPantry)
+    //Metodo que obtiene los atributos de un producto de despensa dada su id
+    override fun getPantryProduct(idPantry: String){
+        pantryFeatureModel.getPantryProduct(idPantry).
+        observe(pantryFeatureFragment)
+        { product -> pantryFeatureFragment.onLoadPantryFeature(product) }
     }
 
+    //Metodo que elimina un producto de la base de datos dada su id
     override fun deletePantry(idPurchase: String) {
-        pantryFeatureModel.deletePantry(idPurchase)
+        pantryFeatureModel.deletePantry(idPurchase).
+        observe(pantryFeatureFragment)
+        {pantryFeatureFragment.onDeletePantryProduct()}
     }
 
 }

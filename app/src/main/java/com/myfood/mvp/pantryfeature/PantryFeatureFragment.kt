@@ -11,7 +11,6 @@ import com.example.myfood.mvp.pantryfeature.PantryNutrientFragment
 import com.myfood.R
 import com.myfood.constants.Constant
 import com.myfood.databases.databasemysql.entity.PantryProductEntity
-import com.myfood.databases.databasesqlite.entity.Translation
 import com.myfood.databinding.PantryFeatureFragmentBinding
 import com.myfood.mvp.addpantryproduct.AddPantryFragment
 import com.myfood.mvp.pantrylist.PantryListFragment
@@ -26,9 +25,8 @@ class PantryFeatureFragment(private var idPantry: String) : Fragment(),
     private var _binding: PantryFeatureFragmentBinding? = null
     private val binding get() = _binding!!
     private lateinit var pantryProduct: PantryProductEntity
-    private lateinit var pantryFeatureModel: PantryFeatureModel
     private lateinit var pantryFeaturePresenter: PantryFeaturePresenter
-    private var mutableTranslations: MutableMap<String, Translation>? = null
+    private var mutableTranslations: MutableMap<String, String> = mutableMapOf()
 
     //Método onCreateView
     //Mientras se está creando la vista
@@ -50,20 +48,15 @@ class PantryFeatureFragment(private var idPantry: String) : Fragment(),
         //Hacemos que el layout principal sea invisible hasta que no se carguen los datos
         binding.layoutPantryFeature.visibility = View.INVISIBLE
 
-        //Creamos el modelo
-        pantryFeatureModel = PantryFeatureModel()
-
         //Creamos el presentador
-        pantryFeaturePresenter = PantryFeaturePresenter(this, pantryFeatureModel, requireContext())
+        pantryFeaturePresenter = PantryFeaturePresenter(this, requireContext())
 
         //Obtenemos el idioma de la App y establecemos las traducciones
-        val currentLanguage = pantryFeaturePresenter.getCurrentLanguage()
-        this.mutableTranslations = pantryFeaturePresenter.getTranslations(currentLanguage.toInt())
+        mutableTranslations = pantryFeaturePresenter.getTranslationsScreen()
         setTranslations()
 
         //Obtenemos los atributos del producto de despensa
-        pantryFeaturePresenter.getPantryProduct(idPantry).observe(this.viewLifecycleOwner)
-        { product -> onLoadPantryFeature(product) }
+        pantryFeaturePresenter.getPantryProduct(idPantry)
 
         //Inicializamos el boton eliminar producto despena
         binding.btnDeletePantryProduct.setOnClickListener {
@@ -71,13 +64,13 @@ class PantryFeatureFragment(private var idPantry: String) : Fragment(),
             //Mostamos un mensaje para confirmar que se desea eliminar el producto
             Popup.showConfirm(
                 requireContext(), resources,
-                mutableTranslations?.get(com.myfood.constants.Constant.MSG_DELETE_PANTRY_QUESTION)!!.text,
-                mutableTranslations?.get(com.myfood.constants.Constant.BTN_YES)!!.text,
-                mutableTranslations?.get(com.myfood.constants.Constant.BTN_NO)!!.text
+                mutableTranslations[Constant.MSG_DELETE_PANTRY_QUESTION]!!,
+                mutableTranslations[Constant.BTN_YES]!!,
+                mutableTranslations[Constant.BTN_NO]!!
             ) {
                 //En caso afirmativo se borra y se vuelve a la pantalla de Despensa
                 pantryFeaturePresenter.deletePantry(idPantry)
-                loadFragment(PantryListFragment())
+
             }
         }
 
@@ -94,12 +87,16 @@ class PantryFeatureFragment(private var idPantry: String) : Fragment(),
 
     }
 
+    //Se ejecuta cuando se ha eliminado un producrto de despensa de la base de datos
+    override fun onDeletePantryProduct(){
+        loadFragment(PantryListFragment())
+    }
 
     //Se ejecuta cuando se cargan los atributos del producto despensa
     override fun onLoadPantryFeature(pantryProductEntity: PantryProductEntity) {
 
         //Verificamos que la respuesta es correcta
-        if (pantryProductEntity.status == com.myfood.constants.Constant.OK) {
+        if (pantryProductEntity.status == Constant.OK) {
 
             //Asignamos el producto recibido a una variable global
             pantryProduct = pantryProductEntity
@@ -143,24 +140,24 @@ class PantryFeatureFragment(private var idPantry: String) : Fragment(),
     //Establece las traducciones
     override fun setTranslations() {
         binding.lBarcode.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.LABEL_BARCODE)!!.text
+            mutableTranslations[Constant.LABEL_BARCODE]!!
         binding.lBrand.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.LABEL_BRAND)!!.text
+            mutableTranslations[Constant.LABEL_BRAND]!!
         binding.lPlace.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.LABEL_PLACE)!!.text
+            mutableTranslations[Constant.LABEL_PLACE]!!
         binding.lPrice.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.LABEL_PRICE)!!.text
+            mutableTranslations[Constant.LABEL_PRICE]!!
         binding.lQuantity.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.LABEL_QUANTITY)!!.text
+            mutableTranslations[Constant.LABEL_QUANTITY]!!
         binding.lQuantityUnit.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.LABEL_QUANTITY_UNIT)!!.text
+            mutableTranslations[Constant.LABEL_QUANTITY_UNIT]!!
         binding.lWeight.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.LABEL_WEIGHT)!!.text
+            mutableTranslations[Constant.LABEL_WEIGHT]!!
         binding.lExpirationDate.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.LABEL_EXPIRATION_DATE)!!.text
+            mutableTranslations[Constant.LABEL_EXPIRATION_DATE]!!
         binding.lPreferenceDate.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.LABEL_PREFERENCE_DATE)!!.text
+            mutableTranslations[Constant.LABEL_PREFERENCE_DATE]!!
         binding.btnNutrients.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.BTN_NUTRIENTS)!!.text
+            mutableTranslations[Constant.BTN_NUTRIENTS]!!
     }
 }

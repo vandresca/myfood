@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.myfood.databases.databasesqlite.entity.Translation
+import com.myfood.constants.Constant
 import com.myfood.databinding.ExpirationListFragmentBinding
 import com.myfood.popup.Popup
 
@@ -18,8 +18,7 @@ class ExpirationListFragment : Fragment(), ExpirationListContract.View {
     private var _binding: ExpirationListFragmentBinding? = null
     private val binding get() = _binding!!
     private lateinit var expirationListPresenter: ExpirationListPresenter
-    private lateinit var expirationListModel: ExpirationListModel
-    private var mutableTranslations: MutableMap<String, Translation>? = null
+    private lateinit var mutableTranslations: MutableMap<String, String>
 
     //Método onCreateView
     //Mientras se está creando la vista
@@ -41,27 +40,14 @@ class ExpirationListFragment : Fragment(), ExpirationListContract.View {
         //Hacemos que el layout principal sea invisible hasta que no se carguen los datos
         binding.layoutExpiration.visibility = View.INVISIBLE
 
-        //Creamos el modelo
-        expirationListModel = ExpirationListModel()
-
         //Creamos el presentador
-        expirationListPresenter = ExpirationListPresenter(
-            this,
-            expirationListModel, this, requireContext()
-        )
-
-        //Obtenemos el id de usuario de la App
-        val idUser = expirationListPresenter.getUserId()
-
-        //Establecemos el usuario para mostrar la lista de productos
-        expirationListPresenter.setIdUser(idUser)
+        expirationListPresenter = ExpirationListPresenter(this, requireContext())
 
         //Inicializamos el buscador
         initSearcher()
 
-        //Obtenemos el idioma de la App y establecemos las traducciones
-        val currentLanguage = expirationListPresenter.getCurrentLanguage()
-        this.mutableTranslations = expirationListPresenter.getTranslations(currentLanguage.toInt())
+        //Obtenemos las traducciones de pantalla
+        mutableTranslations = expirationListPresenter.getTranslationsScreen()
         setTranslations()
 
         //Inicializamos los botones
@@ -92,9 +78,9 @@ class ExpirationListFragment : Fragment(), ExpirationListContract.View {
             Popup.showConfirm(
                 requireContext(),
                 resources,
-                mutableTranslations?.get(com.myfood.constants.Constant.MSG_REMOVE_ALL_EXPIRED_QUESTION)!!.text,
-                mutableTranslations?.get(com.myfood.constants.Constant.BTN_YES)!!.text,
-                mutableTranslations?.get(com.myfood.constants.Constant.BTN_NO)!!.text
+                mutableTranslations[Constant.MSG_REMOVE_ALL_EXPIRED_QUESTION]!!,
+                mutableTranslations[Constant.BTN_YES]!!,
+                mutableTranslations[Constant.BTN_NO]!!
             )
             { expirationListPresenter.removeExpired() }
         }
@@ -119,25 +105,25 @@ class ExpirationListFragment : Fragment(), ExpirationListContract.View {
     override fun setTranslations() {
         binding.layoutExpiration.visibility = View.VISIBLE
         binding.header.titleHeader.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.TITLE_EXPIRATION_LIST)!!.text
+            mutableTranslations[Constant.TITLE_EXPIRATION_LIST]!!
         binding.etFilterEL.hint =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_SEARCH)!!.text
+            mutableTranslations[Constant.FIELD_SEARCH]!!
         binding.lELTotal.text =
-            "${mutableTranslations?.get(com.myfood.constants.Constant.LABEL_TOTAL)!!.text}:  "
+            "${mutableTranslations[Constant.LABEL_TOTAL]!!}:  "
         binding.lELPrice.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.LABEL_PRICE)!!.text
+            mutableTranslations[Constant.LABEL_PRICE]!!
         binding.lELRemain.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.LABEL_REMAIN)!!.text
+            mutableTranslations[Constant.LABEL_REMAIN]!!
         binding.btnAllEL.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.BTN_ALL)!!.text
+            mutableTranslations[Constant.BTN_ALL]!!
         binding.btnExpiredEL.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.BTN_EXPIRED)!!.text
+            mutableTranslations[Constant.BTN_EXPIRED]!!
         binding.btnZeroToTenEL.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.BTN_0_TO_10_DAYS)!!.text
+            mutableTranslations[Constant.BTN_0_TO_10_DAYS]!!
         binding.btnMoreThanTenEL.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.BTN_MORE_10_DAYS)!!.text
+            mutableTranslations[Constant.BTN_MORE_10_DAYS]!!
         binding.btnRemoveAlLExpired.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.BTN_REMOVE_ALL_EXPIRED)!!.text
+            mutableTranslations[Constant.BTN_REMOVE_ALL_EXPIRED]!!
         binding.tvELCurrency.text = expirationListPresenter.getCurrentCurrency()
     }
 }

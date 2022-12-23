@@ -14,31 +14,49 @@ interface ExpirationListContract {
     //Vista
     //Implementa la interfaz Translable.View
     interface View : Translatable.View {
+
+        //Metodo que inicia el recyclerview
         fun initRecyclerView(expirationListAdapter: ExpirationListAdapter)
     }
 
     //Presentador
     //Implementa la interfaz Translable.Presenter
     interface Presenter : Translatable.Presenter {
-        fun initData()
-        fun loadData(expirationListEntity: ExpirationListEntity)
+
+        //Metodo que carga la lista de productos en el recyclerview
+        fun loadList(expirationListEntity: ExpirationListEntity)
+
+        //Metodo que realiza el filtrado del buscador
         fun doFilter(userFilter: Editable?)
+
+        //Metodo que se ejecuta despues de eliminar los productos caducados
         fun onRemovedExpired(result: SimpleResponseEntity)
+
+        //Metodo que obtiene el tipo de moneda actual de la App
         fun getCurrentCurrency(): String
-        fun getUserId(): String
     }
 
     //Modelo
     //Implementa la interfaz Translable.Model
     interface Model : Translatable.Model {
-        fun getInstance(context: Context)
+
+        //Metodo que crea las instancias de las bases de datos
+        fun createInstances(context: Context)
+
+        //Metodo que obtiene el id de usuario actual de la App
         fun getUserId(): String
+
+        //Metodo que obtiene el tipo de moneda actual de la App
         fun getCurrentCurrency(): String
+
+        //Metodo que obtiene la lista de productos de despensa segun
+        //la caducidad especificada
         fun getExpirationList(
             expiration: String,
             idUser: String
         ): MutableLiveData<ExpirationListEntity>
 
+        //Metodo que elimina los productos caducados del usuario
         fun removeExpired(idUser: String): MutableLiveData<SimpleResponseEntity>
     }
 }

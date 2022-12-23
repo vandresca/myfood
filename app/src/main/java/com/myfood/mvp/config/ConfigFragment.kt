@@ -5,12 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import com.myfood.R
+import com.myfood.constants.Constant
 import com.myfood.databases.databasemysql.entity.OneValueEntity
 import com.myfood.databases.databasemysql.entity.SimpleResponseEntity
-import com.myfood.databases.databasesqlite.entity.Translation
 import com.myfood.databinding.ActivityMainBinding
 import com.myfood.databinding.ConfigFragmentBinding
 import com.myfood.mvp.quantityunitlist.QuantityUnitListFragment
@@ -23,14 +22,7 @@ class ConfigFragment(private var activityMainBinding: ActivityMainBinding) : Fra
     //Declaración variables globales
     private var _binding: ConfigFragmentBinding? = null
     private val binding get() = _binding!!
-    private lateinit var spinnerAdapterLanguage: ArrayAdapter<String>
-    private lateinit var spinnerAdapterCurrency: ArrayAdapter<String>
-    private lateinit var configModel: ConfigModel
-    private lateinit var idUser: String
-    private lateinit var languages: List<String>
-    private lateinit var currencies: List<String>
-    private var languageSelected: Int = 0
-    private var mutableTranslations: MutableMap<String, Translation>? = null
+    private var mutableTranslations: MutableMap<String, String> = mutableMapOf()
     private lateinit var configPresenter: ConfigPresenter
 
     //Método onCreateView
@@ -53,65 +45,59 @@ class ConfigFragment(private var activityMainBinding: ActivityMainBinding) : Fra
         //Hacemos que el layout principal sea invisible hasta que no se carguen los datos
         binding.layoutConfig.visibility = View.INVISIBLE
 
-        //Creamos el modelo
-        configModel = ConfigModel()
-
         //Creamos el presentador
-        configPresenter = ConfigPresenter(this, configModel, requireContext())
+        configPresenter = ConfigPresenter(this, requireContext())
 
         //Inicializamos el combo lenguajes
         initLanguages()
 
-        //Obtenemos el idioma de la App y establecemos las traducciones
-        val currentLanguage = configPresenter.getCurrentLanguage()
-        this.mutableTranslations = configPresenter.getTranslations(currentLanguage.toInt())
+        //Obtenemos las traducciones de pantalla
+        mutableTranslations = configPresenter.getTranslationsScreen()
         setTranslations()
 
-        //Obtenemos usuario y datos relacionados
-        initUser()
+        //Obtenemos el email y la contraseña actual
+        loadEmailAndPassword()
 
         //Inicializamos los clicks de los botones
         initClickButtons()
     }
 
     private fun initLanguages() {
-        //Obtenemos todos los lenguages de la App
-        val languages = configPresenter.getLanguages()
 
-        //Los almacenamos en una variable global
-        this.languages = languages
-
-        //Creamos un adapter y poblamos el combo con los lenguajes
-        spinnerAdapterLanguage =
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, languages)
-        spinnerAdapterLanguage.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         //Añadimos el adapter al spinner
-        binding.sLanguageConfig.adapter = spinnerAdapterLanguage
-
-        //Obtenemos el lenguaje actual de la App
-        val currentLanguage = configPresenter.getCurrentLanguage()
+        binding.sLanguageConfig.adapter = configPresenter.createAdapterLanguages()
 
         //Seleccionamos en el combo el lenguaje actual
-        binding.sLanguageConfig.setSelection(currentLanguage.toInt() - 1)
+        binding.sLanguageConfig.setSelection(configPresenter.getCurrentLanguage() - 1)
 
         //Inicializamos el evento que se produce al seleccionar una opción del combo
-        initOnItemSelectedListenerLanguage()
+        binding.sLanguageConfig.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+
+                    //Obtenemos los tipos de moneda para un idioma concreto y lo cargamos en
+                    //el combo
+                    val languageSelected = position + 1
+                    configPresenter.setCurrentLanguage(languageSelected.toString())
+                    setCurrencies()
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
     }
 
-    private fun initUser() {
-        //Obtenemos el usuario de la App
-        val idUser = configPresenter.getUserId()
-
-        //Lo almacenamos en una variable global
-        this.idUser = idUser
+    private fun loadEmailAndPassword() {
 
         //Obtenemos el email del usuario
-        configPresenter.getEmail(idUser)
-            .observe(this.viewLifecycleOwner) { response -> onGottenEmail(response) }
+        configPresenter.getEmail()
 
         //Obtenemos el password del usuario
-        configPresenter.getPassword(idUser)
-            .observe(this.viewLifecycleOwner) { response -> onGottenPassword(response) }
+        configPresenter.getPassword()
     }
 
     private fun initClickButtons() {
@@ -131,19 +117,18 @@ class ConfigFragment(private var activityMainBinding: ActivityMainBinding) : Fra
                 Popup.showInfo(
                     requireContext(),
                     resources,
-                    mutableTranslations?.get(com.myfood.constants.Constant.MSG_EMAIL_REQUIRED_CONF)!!.text
+                    mutableTranslations[Constant.MSG_EMAIL_REQUIRED_CONF]!!
                 )
                 //Si el formato de correo es incorrecto mostramos un menaje al usuario indicandolo
             } else if (!emailREGEX.toRegex().matches(email)) {
                 Popup.showInfo(
                     requireContext(),
                     resources,
-                    mutableTranslations?.get(com.myfood.constants.Constant.MSG_EMAIL_FORMAT_INCORRECT_CONF)!!.text
+                    mutableTranslations[Constant.MSG_EMAIL_FORMAT_INCORRECT_CONF]!!
                 )
                 //Si todo es correcto modificamos el correo antiguo por el nuevo para ese usuario
             } else {
-                configPresenter.changeEmail(email, idUser).observe(this.viewLifecycleOwner)
-                { response -> onChangeEmail(response) }
+                configPresenter.changeEmail(email)
             }
         }
 
@@ -153,34 +138,30 @@ class ConfigFragment(private var activityMainBinding: ActivityMainBinding) : Fra
             val password = binding.etConfigPassword.text.toString()
 
             //Cambiamos la contraseña
-            configPresenter.changePassword(password, idUser).observe(this.viewLifecycleOwner)
-            { response -> onChangePassword(response) }
+            configPresenter.changePassword(password)
         }
 
         //Inicializamos el click para el boton cambiar lenguage y tipo de moneda
         binding.btnChangeLangAndCurrency.setOnClickListener {
 
-            //Actualizamos el lenguaje en la App
-            configPresenter.updateCurrentLanguage((languages.indexOf(binding.sLanguageConfig.selectedItem) + 1).toString())
+            //Actualizamos el lenguaje y el tipo de moneda en la App
+            val newLanguage = configPresenter.getPositionLanguages(
+                binding.sLanguageConfig.selectedItem.toString()) + 1
+            val newCurrency = binding.sCurrencyConfig.selectedItem as String
+            configPresenter.setCurrentLanguage(newLanguage.toString())
+            configPresenter.setCurrentCurrency(newCurrency)
 
-            //Actualizamos el tipo de moneda en la App
-            configPresenter.updateCurrentCurrency(binding.sCurrencyConfig.selectedItem as String)
-
-            //Cargamos las traducciones generales y las almacenamos en una variable global
-            this.mutableTranslations = configPresenter.getTranslations(languageSelected)
-
-            //Establecemos las nuevas traducciones generales
+            //Cargamos las traducciones de pantalla y de menu de navegación
+            this.mutableTranslations = configPresenter.getTranslationsScreen()
             setTranslations()
-
-            //Cargamos y establecemos las traducciones del menu de navegación
-            setTranslationsMenu(configPresenter.getTranslationsMenu(languageSelected))
+            setTranslationsMenu()
 
             //Mostramos un mensaje al usuario indicando que los cambios se han efectuado
             //correctamente
             Popup.showInfo(
                 requireContext(),
                 resources,
-                mutableTranslations?.get(com.myfood.constants.Constant.MSG_LANG_AND_CURR_UPDATED)!!.text
+                mutableTranslations[Constant.MSG_LANG_AND_CURR_UPDATED]!!
             )
         }
 
@@ -192,114 +173,51 @@ class ConfigFragment(private var activityMainBinding: ActivityMainBinding) : Fra
     }
 
     //Método llamado tras obtener los tipos de moneda de la base de datos SQLite
-    private fun setCurrencies(currencies: List<String>) {
-
-        //Almacenamos los tipos de moneda en una variable global
-        this.currencies = currencies
-
-        //Creamos un adapter y poblamos el combo con los tipos de moneda
-        spinnerAdapterCurrency =
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, currencies)
-        spinnerAdapterCurrency.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+    private fun setCurrencies() {
 
         //Añadimos el adapter al spinner
-        binding.sCurrencyConfig.adapter = spinnerAdapterCurrency
-
-        //Obtenemos el tipo de moneda actual de la App
-        val currentCurrency = configPresenter.getCurrentCurrency()
+        binding.sCurrencyConfig.adapter = configPresenter.createAdapterCurrencies()
 
         //Seleccionamos el tipo de moneda actual en el combo
-        binding.sCurrencyConfig.setSelection(currencies.indexOf(currentCurrency))
-
-        //Inicializamos el evento que se produce al seleccionar una opción en el combo
-        initOnItemSelectedListenerCurrency()
+        binding.sCurrencyConfig.setSelection(
+            configPresenter.getPositionCurrencies(configPresenter.getCurrentCurrency()))
     }
 
     //Establecemos las traducciones del menu de navegación
-    private fun setTranslationsMenu(translationsMenu: MutableMap<String, Translation>?) {
+    private fun setTranslationsMenu() {
+        val translationsMenu = configPresenter.getTranslationsMenu()
         activityMainBinding.bottomNavigation.menu.findItem(R.id.purchaseItem).title =
-            translationsMenu?.get(com.myfood.constants.Constant.MENU_PANTRY)!!.text
+            translationsMenu[Constant.MENU_PANTRY]!!
         activityMainBinding.bottomNavigation.menu.findItem(R.id.shopListItem).title =
-            translationsMenu[com.myfood.constants.Constant.MENU_SHOPPING]!!.text
+            translationsMenu[Constant.MENU_SHOPPING]!!
         activityMainBinding.bottomNavigation.menu.findItem(R.id.expirationItem).title =
-            translationsMenu[com.myfood.constants.Constant.MENU_EXPIRATION]!!.text
+            translationsMenu[Constant.MENU_EXPIRATION]!!
         activityMainBinding.bottomNavigation.menu.findItem(R.id.recipeItem).title =
-            translationsMenu[com.myfood.constants.Constant.MENU_RECIPE]!!.text
+            translationsMenu[Constant.MENU_RECIPE]!!
         activityMainBinding.bottomNavigation.menu.findItem(R.id.configItem).title =
-            translationsMenu[com.myfood.constants.Constant.MENU_CONFIG]!!.text
+            translationsMenu[Constant.MENU_CONFIG]!!
     }
 
     //Establecemos las traducciones generales
     override fun setTranslations() {
         binding.layoutConfig.visibility = View.VISIBLE
-        binding.header.titleHeader.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.TITLE_CONFIG)!!.text
-        binding.lLanguageConfig.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.LABEL_LANGUAGE)!!.text
-        binding.lCurrencyConfig.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.LABEL_CURRENCY)!!.text
-        binding.etConfigEmail.hint =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_EMAIL)!!.text
-        binding.etConfigPassword.hint =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_PASSWORD)!!.text
-        binding.btnChangeLangAndCurrency.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.BTN_LANG_AND_CURR)!!.text
-        binding.btnChangeEmail.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.BTN_CHANGE_EMAIL)!!.text
-        binding.btnChangePassword.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.BTN_CHANGE_PASSWORD)!!.text
-        binding.btnConfigStorePlaces.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.BTN_STORE_PLACES)!!.text
-        binding.btnConfigQuantityUnit.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.BTN_QUANTITY_UNIT)!!.text
-    }
-
-    private fun initOnItemSelectedListenerLanguage() {
-
-        //Se ejecuta cada vez que se selecciona un elemento en el combo lenguaje
-        binding.sLanguageConfig.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    //Asignamos el lenguaje segun la posición seleccionada (1 más porque
-                    //el id de los lenguajes no empiezan en 0 si no en 1)
-                    languageSelected = position + 1
-
-                    //Obtenemos los tipos de moneda para un idioma concreto y lo cargamos en
-                    //el combo
-                    setCurrencies(configPresenter.getCurrencies(position + 1))
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-            }
-    }
-
-    private fun initOnItemSelectedListenerCurrency() {
-
-        //Se ejecuta cada vez que se selecciona un elemento del combo de tipo de moneda
-        binding.sCurrencyConfig.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-            }
+        binding.header.titleHeader.text = mutableTranslations[Constant.TITLE_CONFIG]!!
+        binding.lLanguageConfig.text = mutableTranslations[Constant.LABEL_LANGUAGE]!!
+        binding.lCurrencyConfig.text = mutableTranslations[Constant.LABEL_CURRENCY]!!
+        binding.etConfigEmail.hint = mutableTranslations[Constant.FIELD_EMAIL]!!
+        binding.etConfigPassword.hint = mutableTranslations[Constant.FIELD_PASSWORD]!!
+        binding.btnChangeLangAndCurrency.text = mutableTranslations[Constant.BTN_LANG_AND_CURR]!!
+        binding.btnChangeEmail.text = mutableTranslations[Constant.BTN_CHANGE_EMAIL]!!
+        binding.btnChangePassword.text = mutableTranslations[Constant.BTN_CHANGE_PASSWORD]!!
+        binding.btnConfigStorePlaces.text = mutableTranslations[Constant.BTN_STORE_PLACES]!!
+        binding.btnConfigQuantityUnit.text = mutableTranslations[Constant.BTN_QUANTITY_UNIT]!!
     }
 
     //Se ejecuta cada vez que se recupera el email de usuario de la base de datos
     override fun onGottenEmail(result: OneValueEntity) {
 
         //Verifiacamos que la respuestra es correcta
-        if (result.status == com.myfood.constants.Constant.OK) {
+        if (result.status == Constant.OK) {
 
             //Asignamos el valor al campo de texto
             binding.etConfigEmail.setText(result.value)
@@ -310,7 +228,7 @@ class ConfigFragment(private var activityMainBinding: ActivityMainBinding) : Fra
     override fun onGottenPassword(result: OneValueEntity) {
 
         //Verifiacamos que la respuestra es correcta
-        if (result.status == com.myfood.constants.Constant.OK) {
+        if (result.status == Constant.OK) {
 
             //Asignamos el valor al campo de texto
             binding.etConfigPassword.setText(result.value)
@@ -322,10 +240,10 @@ class ConfigFragment(private var activityMainBinding: ActivityMainBinding) : Fra
 
         //Verificamos si el correo se ha cambiado o no con éxito y
         //mostramos un mensaje al usuario indicandoselo
-        val msgResult = if (result.status == com.myfood.constants.Constant.OK) {
-            mutableTranslations?.get(com.myfood.constants.Constant.MSG_EMAIL_UPDATED)!!.text
+        val msgResult = if (result.status == Constant.OK) {
+            mutableTranslations[Constant.MSG_EMAIL_UPDATED]!!
         } else {
-            mutableTranslations?.get(com.myfood.constants.Constant.MSG_EMAIL_NOT_UPDATED)!!.text
+            mutableTranslations[Constant.MSG_EMAIL_NOT_UPDATED]!!
         }
         Popup.showInfo(requireContext(), resources, msgResult)
     }
@@ -335,10 +253,10 @@ class ConfigFragment(private var activityMainBinding: ActivityMainBinding) : Fra
 
         //Verificamos si la contraseña se ha cambiado o no con éxito y
         //mostramos un mensaje al usuario indicandoselo
-        val msgResult = if (result.status == com.myfood.constants.Constant.OK) {
-            mutableTranslations?.get(com.myfood.constants.Constant.MSG_PASSWORD_UPDATED)!!.text
+        val msgResult = if (result.status == Constant.OK) {
+            mutableTranslations[Constant.MSG_PASSWORD_UPDATED]!!
         } else {
-            mutableTranslations?.get(com.myfood.constants.Constant.MSG_PASSWORD_NOT_UPDATED)!!.text
+            mutableTranslations[Constant.MSG_PASSWORD_NOT_UPDATED]!!
         }
         Popup.showInfo(requireContext(), resources, msgResult)
     }

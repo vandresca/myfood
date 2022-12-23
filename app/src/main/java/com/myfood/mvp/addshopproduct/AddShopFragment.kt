@@ -4,13 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import com.myfood.R
+import com.myfood.constants.Constant
 import com.myfood.constants.Constant.Companion.MODE_ADD
 import com.myfood.databases.databasemysql.entity.ShopProductEntity
-import com.myfood.databases.databasesqlite.entity.QuantityUnit
-import com.myfood.databases.databasesqlite.entity.Translation
 import com.myfood.databinding.AddShopFragmentBinding
 import com.myfood.mvp.shoplist.ShopListFragment
 import com.myfood.popup.Popup
@@ -22,11 +20,8 @@ class AddShopFragment(private val mode: Int, private var idShop: String = "") : 
     //Declaración de variables globales
     private var _binding: AddShopFragmentBinding? = null
     private val binding get() = _binding!!
-    private lateinit var userId: String
-    private lateinit var addShopModel: AddShopModel
     private lateinit var addShopPresenter: AddShopPresenter
-    private lateinit var quantitiesUnitMutable: MutableList<String>
-    private var mutableTranslations: MutableMap<String, Translation>? = null
+    private var mutableTranslations: MutableMap<String, String> = mutableMapOf()
 
     //Método onCreateView
     //Mientras se está creando la vista
@@ -48,27 +43,19 @@ class AddShopFragment(private val mode: Int, private var idShop: String = "") : 
         //Hacemos que el layout principal sea invisible hasta que no se carguen los datos
         binding.layoutAddShop.visibility = View.INVISIBLE
 
-        //Creamos el modelo
-        addShopModel = AddShopModel()
-
         //Creamos el presentador
-        addShopPresenter = AddShopPresenter(this, addShopModel, requireContext())
-
-        //Obtenemos el id de usuario de la App y lo asignamos a una variable global
-        userId = addShopPresenter.getUserId()
+        addShopPresenter = AddShopPresenter(this, requireContext())
 
         //Obtenemos las unidades de cantidad de la App y las asignamos al combo
-        setQuantities(addShopPresenter.getQuantitiesUnit())
+        setQuantities()
 
-        //Obtenemos el idioma de la App y establecemos las traducciones
-        val currentLanguage = addShopPresenter.getCurrentLanguage()
-        this.mutableTranslations = addShopPresenter.getTranslations(currentLanguage.toInt())
+        //Obtenemos las traducciones de pantalla
+        this.mutableTranslations = addShopPresenter.getTranslationsScreen()
         setTranslations()
 
         //Si venimos del modo modidicar cargamos los datos
-        if (mode == com.myfood.constants.Constant.MODE_UPDATE) {
-            addShopPresenter.getShopProduct(idShop).observe(this.viewLifecycleOwner)
-            { data -> onLoadShopToUpdate(data) }
+        if (mode == Constant.MODE_UPDATE) {
+            addShopPresenter.getShopProduct(idShop)
         }
 
         //Inicializamos el click del boton añadir
@@ -79,39 +66,20 @@ class AddShopFragment(private val mode: Int, private var idShop: String = "") : 
     override fun onLoadShopToUpdate(shopProductEntity: ShopProductEntity) {
 
         //Verificamos que la respuesta es correcta
-        if (shopProductEntity.status == com.myfood.constants.Constant.OK) {
+        if (shopProductEntity.status == Constant.OK) {
 
             //Cargamos los campos de texto y combo
             binding.etASName.setText(shopProductEntity.name)
             binding.etASQuantity.setText(shopProductEntity.quantity)
             binding.sASQuantityUnit.setSelection(
-                quantitiesUnitMutable.indexOf(shopProductEntity.quantityUnit)
+                addShopPresenter.getPositionQuantitiesUnit(shopProductEntity.quantityUnit)
             )
         }
     }
 
     //Se ejecuta una vez se recuperan todas las unidades de cantidad de la App
-    private fun setQuantities(quantitiesUnit: List<QuantityUnit>) {
-
-        //Creamos una lista mutable y la cargamos con el String de cada uno de los
-        //objetos QuantityUnit.  Luego la asignamos a una variable global
-        quantitiesUnitMutable = mutableListOf()
-        quantitiesUnit.forEach {
-            this.quantitiesUnitMutable.add(it.quantityUnit)
-        }
-
-        //Creamos un adapter y lo poblamos con dicha lista
-        ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            quantitiesUnitMutable
-        ).also { adapter ->
-
-            //Especificamos el layout a usar cuando la lista de opciones aparece
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            //Aplicamos el adapter al spinner
-            binding.sASQuantityUnit.adapter = adapter
-        }
+    private fun setQuantities() {
+        binding.sASQuantityUnit.adapter = addShopPresenter.createAdapterQuantitiesUnit()
     }
 
     //Método que añade un producto de compra a la basde de datos
@@ -126,49 +94,45 @@ class AddShopFragment(private val mode: Int, private var idShop: String = "") : 
         //Despues volvemos a la pantalla de Compra
         if (name.isNotEmpty()) {
             if (mode == MODE_ADD) {
-                addShopPresenter.insertShop(name, quantity, quantityUnit, userId)
-                    .observe(this.viewLifecycleOwner) { result ->
-                        if (result.status == com.myfood.constants.Constant.OK) {
-                            loadFragment(ShopListFragment())
-                        }
-                    }
+                addShopPresenter.insertShop(name, quantity, quantityUnit)
             } else {
                 addShopPresenter.updateShop(name, quantity, quantityUnit, idShop)
-                    .observe(this.viewLifecycleOwner) { result ->
-                        if (result.status == com.myfood.constants.Constant.OK) {
-                            loadFragment(ShopListFragment())
-                        }
-                    }
             }
             //En caso contrario indicamos al usuario que debe ponerlo
         } else {
             Popup.showInfo(
                 requireContext(),
                 resources,
-                mutableTranslations?.get(com.myfood.constants.Constant.MSG_NAME_REQUIRED)!!.text
+                mutableTranslations[Constant.MSG_NAME_REQUIRED]!!
             )
         }
+    }
+
+    //Metodo que se ejecuta tras haber insertado o actualizado correctamente un producto
+    //de compra en la base de datos
+    override fun onInsertedOrUpdatedProduct(){
+        loadFragment(ShopListFragment())
     }
 
     //Establecemos las traducciones
     override fun setTranslations() {
         binding.layoutAddShop.visibility = View.VISIBLE
         binding.lASName.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.LABEL_NAME)!!.text
+            mutableTranslations[Constant.LABEL_NAME]!!
         binding.lASQuantity.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.LABEL_QUANTITY)!!.text
+            mutableTranslations[Constant.LABEL_QUANTITY]!!
         binding.lASQuantityUnit.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.LABEL_QUANTITY_UNIT)!!.text
+            mutableTranslations[Constant.LABEL_QUANTITY_UNIT]!!
         if (mode == MODE_ADD) {
             binding.header.titleHeader.text =
-                mutableTranslations?.get(com.myfood.constants.Constant.TITLE_ADD_SHOPPING)!!.text
+                mutableTranslations[Constant.TITLE_ADD_SHOPPING]!!
             binding.btnASProduct.text =
-                mutableTranslations?.get(com.myfood.constants.Constant.BTN_ADD_SHOPPING)!!.text
+                mutableTranslations[Constant.BTN_ADD_SHOPPING]!!
         } else {
             binding.header.titleHeader.text =
-                mutableTranslations?.get(com.myfood.constants.Constant.TITLE_UPDATE_SHOPPING)!!.text
+                mutableTranslations[Constant.TITLE_UPDATE_SHOPPING]!!
             binding.btnASProduct.text =
-                mutableTranslations?.get(com.myfood.constants.Constant.BTN_UPDATE_SHOPPING)!!.text
+                mutableTranslations[Constant.BTN_UPDATE_SHOPPING]!!
         }
     }
 

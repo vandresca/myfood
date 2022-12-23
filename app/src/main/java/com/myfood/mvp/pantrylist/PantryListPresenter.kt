@@ -4,88 +4,101 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
-import androidx.lifecycle.MutableLiveData
 import com.myfood.databases.databasemysql.entity.PantryListEntity
-import com.myfood.databases.databasesqlite.entity.Translation
 
 class PantryListPresenter(
-    private val pantryListView: PantryListContract.View,
-    private val pantryListModel: PantryListContract.Model,
     private val pantryListFragment: PantryListFragment,
     context: Context
 ) : PantryListContract.Presenter {
+
+    //Declaramos las variables globales
     private lateinit var pantryAdapter: PantryListAdapter
     private var pantryMutableList: MutableList<PantryList> = mutableListOf()
     private var pantryFiltered: MutableList<PantryList> = mutableListOf()
-    private lateinit var idUser: String
+    private var idUser: String
+    private var currentLanguage:String
+    private val pantryListModel: PantryListModel = PantryListModel()
 
     init {
-        pantryListModel.getInstance(context)
+
+        //Creamos las instancias de las bases de datos
+        pantryListModel.createInstances(context)
+
+        //Obtenemos el id de usuario actual de la App
+        idUser = pantryListModel.getUserId()
+
+        //Obtenemos el idioma actual de la App
+        currentLanguage = pantryListModel.getCurrentLanguage()
+
+        //Obtenemos el listado de productos despensa y lo pintamos en el recyclerview
+        pantryListModel.getPantryList(idUser).
+        observe(pantryListFragment) { data -> loadData(data) }
     }
 
-    fun setIdUser(idUser: String) {
-        this.idUser = idUser
-        pantryListModel.getPantryList(idUser).observe(pantryListFragment) { data -> loadData(data) }
-    }
-
+    //Metodo que se ejecuta cuando se tiene la lista de productos despensa
     override fun loadData(pantryListEntity: PantryListEntity) {
+
+        //Verificamos que la respuesta es correcta
         if (pantryListEntity.status == com.myfood.constants.Constant.OK) {
+
+            //Convertimos el objeto entidad con la lista de productos a una lista de productos
+            //de despensa
             pantryMutableList = pantryListEntity.toMVP().toMutableList()
-            initData()
+
+            //Creamos el adapter para la lista de elementos
+            pantryAdapter = PantryListAdapter(
+                purchaseList = pantryMutableList,
+                onClickListener = { purchaseItem -> onItemSelected(purchaseItem) },
+                onClickDelete = { position, purchaseItem -> onDeleteItem(position, purchaseItem) },
+                onClickUpdate = { purchaseItem -> onUpdateItem(purchaseItem) },
+                currency = "  ${getCurrentCurrency()}"
+            )
+
+            //Iniciamos el recyclerview
+            //Handler(Looper.getMainLooper()).post {
+            pantryListFragment.initRecyclerView(pantryAdapter)
+            //}
         }
     }
 
-    override fun getPantryList(idUser: String): MutableLiveData<PantryListEntity> {
-        return pantryListModel.getPantryList(idUser)
-    }
-
-    override fun initData() {
-        pantryAdapter = PantryListAdapter(
-            purchaseList = pantryMutableList,
-            onClickListener = { purchaseItem -> onItemSelected(purchaseItem) },
-            onClickDelete = { position, purchaseItem -> onDeleteItem(position, purchaseItem) },
-            onClickUpdate = { purchaseItem -> onUpdateItem(purchaseItem) },
-            currency = "  ${getCurrentCurrency()}"
-        )
-        Handler(Looper.getMainLooper()).post {
-            pantryListView.initRecyclerView(pantryAdapter)
-        }
-    }
-
+    //Metodo que se ejecuta cuando se escribe algo en el buscador o se modifica el texto de este
     override fun doFilter(userFilter: Editable?) {
         Handler(Looper.getMainLooper()).post {
+
+            //Obtenemos la lista filtrada con los elementos que coinciden total o parcialmente
+            //con el texto del buscador
             pantryFiltered = pantryMutableList.filter { purchase ->
                 purchase.name.lowercase().contains(userFilter.toString().lowercase())
             }.toMutableList()
+
+            //actualizamos el adapter
             pantryAdapter.updatePantryList(pantryFiltered)
         }
     }
 
-    override fun getUserId(): String {
-        return pantryListModel.getUserId()
-    }
-
-    override fun getCurrentLanguage(): String {
-        return pantryListModel.getCurrentLanguage()
-    }
-
+    //Metodo que obtiene el tipo de moneda actual de la App
     override fun getCurrentCurrency(): String {
         return pantryListModel.getCurrentCurrency()
     }
 
-    override fun getTranslations(language: Int): MutableMap<String, Translation> {
-        val mutableTranslations: MutableMap<String, Translation> = mutableMapOf()
-        val translations = pantryListModel.getTranslations(language)
+    //Metodo que devuelve las traducciones de la pantalla
+    override fun getTranslationsScreen():MutableMap<String, String>{
+        val mutableTranslations: MutableMap<String, String> =
+            mutableMapOf()
+        val translations = pantryListModel.getTranslations(currentLanguage.toInt())
         translations.forEach {
-            mutableTranslations[it.word] = it
+            mutableTranslations[it.word] = it.text
         }
         return mutableTranslations
     }
 
+    //Metodo que se ejecuta cuando se clica en uno de los elementos de la lista
     private fun onItemSelected(pantryList: PantryList) {
-        pantryListView.showPantryProduct(pantryList.id)
+        pantryListFragment.onClickPantryElement(pantryList.id)
     }
 
+    //Metodo que se ejecuta cuando se pulsa el boton eliminar(papelera) del elemento
+    //de la lista
     private fun onDeleteItem(position: Int, pantry: PantryList) {
         pantryListModel.deletePantry(pantry.id)
             .observe(pantryListFragment.viewLifecycleOwner) { result ->
@@ -106,7 +119,9 @@ class PantryListPresenter(
 
     }
 
+    //Metodo que se ejecuta cuando se pulsa el boton actulizar( texto con lapiz) del
+    //elemento de la lista
     private fun onUpdateItem(pantryList: PantryList) {
-        pantryListView.showUpdatePantryScreen(pantryList.id)
+        pantryListFragment.onUpdatePantry(pantryList.id)
     }
 }

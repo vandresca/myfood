@@ -12,19 +12,30 @@ interface ForgotPasswordContract {
     //Vista
     //Implementa la interfaz Translable.View
     interface View : Translatable.View {
+
+        //Metodo que se ejecuta despues de enviar el link para resetear la contraseña
+        //de usuario
         fun onSendLink(result: SimpleResponseEntity)
     }
 
     //Presentador
     //Implementa la interfaz Translable.Presenter
     interface Presenter : Translatable.Presenter {
-        fun sendLink(language: String, email: String): MutableLiveData<SimpleResponseEntity>
+
+        //Metodo que envia un link para resetear la contraseña de usuario a partir del email
+        //si existe en el idioma actual de la App
+        fun sendLink(email: String)
     }
 
     //Modelo
     //Implementa la interfaz Translable.Model
     interface Model : Translatable.Model {
-        fun getInstance(context: Context)
+
+        //Metodo que crea las instancias del las bases de datos
+        fun createInstances(context: Context)
+
+        //Metodo que envia un link para resetear la contraseña de usuario en el idioma actual de la
+        //App
         fun sendLink(language: String, email: String): MutableLiveData<SimpleResponseEntity>
     }
 }

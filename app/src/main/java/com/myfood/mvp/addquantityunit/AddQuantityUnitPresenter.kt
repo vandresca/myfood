@@ -1,35 +1,40 @@
 package com.myfood.mvp.addquantityunit
 
 import android.content.Context
-import com.myfood.databases.databasesqlite.entity.Translation
 
 
 class AddQuantityUnitPresenter(
-    private val addQuantityUnitView: AddQuantityUnitContract.View,
-    private val addQuantityUnitModel: AddQuantityUnitContract.Model,
     context: Context
 ) : AddQuantityUnitContract.Presenter {
+
+    //Declaramos las variables globales
+    private val addQuantityUnitModel: AddQuantityUnitModel = AddQuantityUnitModel()
+
     init {
-        addQuantityUnitModel.getInstance(context)
+
+        //Creamos las instancias de la base de datos
+        addQuantityUnitModel.createInstances(context)
     }
 
-    override fun getCurrentLanguage(): String {
-        return addQuantityUnitModel.getCurrentLanguage()
-    }
 
-    override fun getTranslations(language: Int): MutableMap<String, Translation> {
-        val mutableTranslations: MutableMap<String, Translation> = mutableMapOf()
-        val translations = addQuantityUnitModel.getTranslations(language)
+    //Metodo que retorna las traducciones de la pantalla
+    override fun getTranslationsScreen():MutableMap<String, String>{
+        val mutableTranslations: MutableMap<String, String> =
+            mutableMapOf()
+        val currentLanguage = addQuantityUnitModel.getCurrentLanguage()
+        val translations = addQuantityUnitModel.getTranslations(currentLanguage.toInt())
         translations.forEach {
-            mutableTranslations[it.word] = it
+            mutableTranslations[it.word] = it.text
         }
         return mutableTranslations
     }
 
+    //Metodo que añade una cantidad a la base de datos SQLite
     override fun addQuantityUnit(quantityUnit: String) {
         addQuantityUnitModel.addQuantityUnit(quantityUnit)
     }
 
+    //Metodo que actualiza una cantidad en la base de datos SQLite a partir de su id
     override fun updateQuantityUnit(quantityUnit: String, idQuantityUnit: String) {
         addQuantityUnitModel.updateQuantityUnit(quantityUnit, idQuantityUnit)
     }

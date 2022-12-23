@@ -9,6 +9,7 @@ data class ShopList(
     val quantityUnit: String
 )
 
+//Metodo que transforma el objeto ShopListEntity a una lista de objetos ShopList
 fun ShopListEntity.toMVP(): List<ShopList> {
     val list: MutableList<ShopList> = mutableListOf()
     products.forEach {

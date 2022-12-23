@@ -21,7 +21,6 @@ import com.myfood.constants.Constant
 import com.myfood.databases.databasemysql.entity.NutrientGroupEntity
 import com.myfood.databases.databasemysql.entity.NutrientListTypeEntity
 import com.myfood.databases.databasemysql.entity.PantryProductEntity
-import com.myfood.databases.databasesqlite.entity.Translation
 import com.myfood.databinding.PantryNutrientFragmentBinding
 import com.myfood.mvp.addpantryproduct.AddPantryFragment
 import com.myfood.mvp.pantryfeature.PantryFeatureFragment
@@ -39,10 +38,9 @@ class PantryNutrientFragment(
     private var _binding: PantryNutrientFragmentBinding? = null
     private val binding get() = _binding!!
     private lateinit var nutrientsGroup: List<String>
-    private lateinit var pantryNutrientModel: PantryNutrientModel
     private lateinit var pantryNutrientPresenter: PantryNutrientPresenter
-    private var mutableTranslations: MutableMap<String, Translation>? = null
-    private lateinit var currentLanguage: String
+    private var mutableTranslations: MutableMap<String, String> = mutableMapOf()
+
 
     //Método onCreateView
     //Mientras se está creando la vista
@@ -65,32 +63,25 @@ class PantryNutrientFragment(
         //Hacemos que el layout principal sea invisible hasta que no se carguen los datos
         binding.layoutPantryNutrient.visibility = View.INVISIBLE
 
-        //Creamos el modelo
-        pantryNutrientModel = PantryNutrientModel()
-
         //Creamos el presentador
         pantryNutrientPresenter =
-            PantryNutrientPresenter(this, pantryNutrientModel, requireContext())
+            PantryNutrientPresenter(this, requireContext())
 
-        //Obtenemos los atributos del producto de despensa
-        currentLanguage = pantryNutrientPresenter.getCurrentLanguage()
-        this.mutableTranslations = pantryNutrientPresenter.getTranslations(currentLanguage.toInt())
+        //Obtenemos el idioma de la App y establecemos las traducciones
+        mutableTranslations = pantryNutrientPresenter.getTranslationsScreen()
         setTranslations()
 
         //Establecemos la imagen del producto
         setImage()
 
         //Obtenemos el grupo de tipo de nutrientes
-        pantryNutrientPresenter.getNutrients(currentLanguage).observe(this.viewLifecycleOwner)
-        { groupNutrients -> onNutrientsLoaded(groupNutrients) }
+        pantryNutrientPresenter.getNutrients(pantryNutrientPresenter.getCurrentLanguage())
 
         //Obtenemo los nutrientes para el tipo General en el idioma de la aplicación
         pantryNutrientPresenter.getNutrientsByType(
             Constant.GENERAL_NUTRIENT,
-            pantryProduct.idFood, currentLanguage
+            pantryProduct.idFood
         )
-            .observe(this.viewLifecycleOwner)
-            { nutrients -> onNutrientsTypeLoaded(nutrients) }
 
 
         //Inicializamos el click del boton eliminar
@@ -99,9 +90,9 @@ class PantryNutrientFragment(
             //Preguntamos por confirmación para borrar el producto
             Popup.showConfirm(
                 requireContext(), resources,
-                mutableTranslations?.get(Constant.MSG_DELETE_PANTRY_QUESTION)!!.text,
-                mutableTranslations?.get(Constant.BTN_YES)!!.text,
-                mutableTranslations?.get(Constant.BTN_NO)!!.text
+                mutableTranslations[Constant.MSG_DELETE_PANTRY_QUESTION]!!,
+                mutableTranslations[Constant.BTN_YES]!!,
+                mutableTranslations[Constant.BTN_NO]!!
             ) {
                 //Si la respuesta es si, borramos y vamos a la pantalla despensa
                 pantryNutrientPresenter.deletePantry(pantryProduct.idPantry)
@@ -178,10 +169,7 @@ class PantryNutrientFragment(
 
         //Obtenemos los nutrientes del tipo seleccionado
         pantryNutrientPresenter.getNutrientsByType(
-            nutrientType.toString(), pantryProduct.idFood,
-            currentLanguage
-        ).observe(this.viewLifecycleOwner)
-        { nutrients -> onNutrientsTypeLoaded(nutrients) }
+            nutrientType.toString(), pantryProduct.idFood)
     }
 
 
@@ -215,7 +203,7 @@ class PantryNutrientFragment(
     override fun setTranslations() {
         binding.header.titleHeader.text = pantryProduct.name
         binding.btnCharacteristics.text =
-            mutableTranslations?.get(Constant.BTN_CHARACTERISTICS)!!.text
+            mutableTranslations[Constant.BTN_CHARACTERISTICS]!!
         binding.layoutPantryNutrient.visibility = View.VISIBLE
     }
 

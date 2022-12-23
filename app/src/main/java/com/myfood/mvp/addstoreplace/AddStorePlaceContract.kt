@@ -13,16 +13,26 @@ interface AddStorePlaceContract {
 
     //Presentador
     //Implementa la interfaz Translable.Presenter
-    interface Presenter : Translatable.Presenter {
+    interface Presenter: Translatable.Presenter {
+
+        //Metodo que añade un lugar de almacenaje en la base de datos SQLite
         fun addStorePlace(storePlace: String)
+
+        //Metodo que actualiza un lugar de almacenaje en la base de datos SQLite
         fun updateStorePlace(storePlace: String, idStorePlace: String)
     }
 
     //Modelo
     //Implementa la interfaz Translable.Model
     interface Model : Translatable.Model {
-        fun getInstance(context: Context)
+
+        //Metodo que crea las instancias de la bases de datos
+        fun createInstances(context: Context)
+
+        //Metodo que añade un lugar de almacenaje en la base de datos SQLite
         fun addStorePlace(storePlace: String)
+
+        //Metodo que actualiza un lugar de almacenaje en la base de datos SQLite
         fun updateStorePlace(storePlace: String, id: String)
     }
 }

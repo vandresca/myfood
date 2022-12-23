@@ -16,11 +16,8 @@ interface Translatable {
     //Presentador
     interface Presenter {
 
-        // Obtiene el lenguage de la App
-        fun getCurrentLanguage(): String
-
-        // Obtiene las traducciones para un tipo de idioma concreto
-        fun getTranslations(language: Int): MutableMap<String, Translation>
+        // Obtiene las traducciones de pantalla para un tipo de idioma concreto
+        fun getTranslationsScreen(): MutableMap<String, String>
     }
 
     //Modelo

@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.myfood.R
-import com.myfood.databases.databasesqlite.entity.Translation
 import com.myfood.databinding.ActivityMainBinding
 import com.myfood.mvp.config.ConfigFragment
 import com.myfood.mvp.expiration.ExpirationListFragment
@@ -16,9 +15,8 @@ class MainActivity : AppCompatActivity(), MainContract.View {
 
     //Declaración de variables globales
     private lateinit var binding: ActivityMainBinding
-    private lateinit var mainModel: MainModel
     private lateinit var mainPresenter: MainPresenter
-    private var mutableTranslations: MutableMap<String, Translation>? = null
+    private var mutableTranslations: MutableMap<String, String> = mutableMapOf()
 
     //Metodo onCreate que se ejecuta cuando la vista esta creada
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,16 +27,13 @@ class MainActivity : AppCompatActivity(), MainContract.View {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //Creamos el modelo
-        mainModel = MainModel()
-
         //Creamos el presentador
-        mainPresenter = MainPresenter(this, mainModel, this)
+        mainPresenter = MainPresenter(this)
 
-        //Obtenemos el idioma de la App y establecemos las traducciones
-        val currentLanguage = mainPresenter.getCurrentLanguage()
-        this.mutableTranslations = mainPresenter.getTranslations(currentLanguage.toInt())
-        setTranslations()
+        //Obtenemos el idioma de la App y establecemos las traducciones del
+        //menu de navegacion
+        this.mutableTranslations = mainPresenter.getTranslationsMenu()
+        setTranslationsMenu()
 
         //Establecemos la lógica del menu de navegación
         navigate()
@@ -48,17 +43,17 @@ class MainActivity : AppCompatActivity(), MainContract.View {
     }
 
     //Establecemos las traducciones
-    override fun setTranslations() {
+    override fun setTranslationsMenu() {
         binding.bottomNavigation.menu.findItem(R.id.purchaseItem).title =
-            mutableTranslations?.get(com.myfood.constants.Constant.MENU_PANTRY)!!.text
+            mutableTranslations[com.myfood.constants.Constant.MENU_PANTRY]!!
         binding.bottomNavigation.menu.findItem(R.id.shopListItem).title =
-            mutableTranslations?.get(com.myfood.constants.Constant.MENU_SHOPPING)!!.text
+            mutableTranslations[com.myfood.constants.Constant.MENU_SHOPPING]!!
         binding.bottomNavigation.menu.findItem(R.id.expirationItem).title =
-            mutableTranslations?.get(com.myfood.constants.Constant.MENU_EXPIRATION)!!.text
+            mutableTranslations[com.myfood.constants.Constant.MENU_EXPIRATION]!!
         binding.bottomNavigation.menu.findItem(R.id.recipeItem).title =
-            mutableTranslations?.get(com.myfood.constants.Constant.MENU_RECIPE)!!.text
+            mutableTranslations[com.myfood.constants.Constant.MENU_RECIPE]!!
         binding.bottomNavigation.menu.findItem(R.id.configItem).title =
-            mutableTranslations?.get(com.myfood.constants.Constant.MENU_CONFIG)!!.text
+            mutableTranslations[com.myfood.constants.Constant.MENU_CONFIG]!!
     }
 
     //Metodo que nos permite navegar a otro Fragment o pantalla

@@ -1,66 +1,74 @@
 package com.myfood.mvp.signup
 
 
-import androidx.lifecycle.MutableLiveData
-import com.myfood.databases.databasemysql.entity.OneValueEntity
-import com.myfood.databases.databasesqlite.entity.Translation
+import com.myfood.constants.Constant
 
 class SignUpPresenter(
-    private val signUpView: SignUpContract.View,
-    private val signUpModel: SignUpContract.Model,
-    signUpActivity: SignUpActivity
+    private val signUpActivity: SignUpActivity
 ) : SignUpContract.Presenter {
+
+    //Declaración de variables globales
+    private val signUpModel: SignUpModel = SignUpModel()
+    private val currentLanguage:String
+
     init {
-        signUpModel.getInstance(signUpActivity)
+
+        //Creamos las instancias de las bases de datos
+        signUpModel.createInstances(signUpActivity)
+
+        //Obtenemos el idioma actual de la App
+        currentLanguage = signUpModel.getCurrentLanguage()
     }
 
-    override fun getCurrentLanguage(): String {
-        return signUpModel.getCurrentLanguage()
-    }
-
-    override fun getTranslations(language: Int): MutableMap<String, Translation> {
-        val mutableTranslations: MutableMap<String, Translation> = mutableMapOf()
-        val translations = signUpModel.getTranslations(language)
+    //Metodo que devuelve las traducciones de la pantalla
+    override fun getTranslationsScreen():MutableMap<String, String>{
+        val mutableTranslations: MutableMap<String, String> =
+            mutableMapOf()
+        val translations = signUpModel.getTranslations(currentLanguage.toInt())
         translations.forEach {
-            mutableTranslations[it.word] = it
+            mutableTranslations[it.word] = it.text
         }
         return mutableTranslations
     }
 
+    //Metodo que inserta un usuario nuevo en la base de datos
     override fun insertUser(
         name: String,
         surnames: String,
         email: String,
         password: String
-    ): MutableLiveData<OneValueEntity> {
-        return signUpModel.insertUser(name, surnames, email, password)
+    ){
+        signUpModel.insertUser(name, surnames, email, password).
+        observe(signUpActivity)
+        { result -> signUpActivity.onInsertedUser(result) }
     }
 
+    //Metodo que comprueba dados los datos de inserción de usuario que sean correctos
     fun getMsgResult(
         name: String, surnames: String, email: String, password: String, confirmPassword: String,
-        mutableTranslations: MutableMap<String, Translation>?
+        mutableTranslations: MutableMap<String, String>
     ): String {
         var msg = ""
         val emailREGEX = "^[A-Za-z](.*)([@])(.+)(\\.)(.+)"
         if (name.isEmpty()) {
-            msg = mutableTranslations?.get(com.myfood.constants.Constant.MSG_NAME_IS_EMPTY)!!.text
+            msg = mutableTranslations[Constant.MSG_NAME_IS_EMPTY]!!
         } else if (surnames.isEmpty()) {
             msg =
-                mutableTranslations?.get(com.myfood.constants.Constant.MSG_SURNAMES_IS_EMPTY)!!.text
+                mutableTranslations[Constant.MSG_SURNAMES_IS_EMPTY]!!
         } else if (email.isEmpty()) {
-            msg = mutableTranslations?.get(com.myfood.constants.Constant.MSG_EMAIL_IS_EMPTY)!!.text
+            msg = mutableTranslations[Constant.MSG_EMAIL_IS_EMPTY]!!
         } else if (!emailREGEX.toRegex().matches(email)) {
             msg =
-                mutableTranslations?.get(com.myfood.constants.Constant.MSG_EMAIL_FORMAT_INCORRECT)!!.text
+                mutableTranslations[Constant.MSG_EMAIL_FORMAT_INCORRECT]!!
         } else if (password.isEmpty()) {
             msg =
-                mutableTranslations?.get(com.myfood.constants.Constant.MSG_PASSWORD_IS_EMPTY)!!.text
+                mutableTranslations[Constant.MSG_PASSWORD_IS_EMPTY]!!
         } else if (confirmPassword.isEmpty()) {
             msg =
-                mutableTranslations?.get(com.myfood.constants.Constant.MSG_CONFIRM_PASSWORD_IS_EMPTY)!!.text
+                mutableTranslations[Constant.MSG_CONFIRM_PASSWORD_IS_EMPTY]!!
         } else if (password != confirmPassword) {
             msg =
-                mutableTranslations?.get(com.myfood.constants.Constant.MSG_NOT_MATCH_PASSWORDS)!!.text
+                mutableTranslations[Constant.MSG_NOT_MATCH_PASSWORDS]!!
         }
         return msg
     }

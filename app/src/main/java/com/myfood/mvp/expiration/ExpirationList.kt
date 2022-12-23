@@ -9,6 +9,8 @@ data class ExpirationList(
     val price: String
 )
 
+//Creamos una funcion para la entidad ExpirationListEntity para transformar el objeto
+// a una lista de ExpirationList
 fun ExpirationListEntity.toMVP(): List<ExpirationList> {
     val list: MutableList<ExpirationList> = mutableListOf()
     products.forEach {

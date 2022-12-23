@@ -5,85 +5,95 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import com.myfood.databases.databasemysql.entity.RecipeListEntity
-import com.myfood.databases.databasesqlite.entity.Translation
-import com.myfood.mvp.recipe.RecipeFragment
 
 class RecipeListPresenter(
-    private val recipeListView: RecipeListContract.View,
-    private val recipeListModel: RecipeListContract.Model,
     private val recipeListFragment: RecipeListFragment,
     context: Context
 ) : RecipeListContract.Presenter {
+
+    //Declaramos las variables globales
+    private val recipeListModel: RecipeListModel = RecipeListModel()
     private lateinit var recipeAdapter: RecipeListAdapter
     private var recipeMutableList: MutableList<RecipeList> = mutableListOf()
-    private lateinit var recipeTitle: String
-    private lateinit var idLanguage: String
-    fun loadData(idLanguage: String?, recipeTitle: String) {
-        this.recipeTitle = recipeTitle
-        this.idLanguage = idLanguage!!
-        recipeListModel.getRecipeList(idLanguage)
+    private val currentLanguage:String
+    private val userId:String
+
+    init {
+
+        //Creamos las instancias de la base de datos
+        recipeListModel.createInstances(context)
+
+        //Obtenemos el idioma actual de la App
+        currentLanguage = recipeListModel.getCurrentLanguage()
+
+        //Obtenemos el id de usario acutal de la App
+        userId = recipeListModel.getUserId()
+
+        //Cargamos la lista de todas las recetas en el idioma actual
+        recipeListModel.getRecipeList(currentLanguage)
             .observe(recipeListFragment) { data -> loadRecipes(data) }
     }
 
-    init {
-        recipeListModel.getInstance(context)
-    }
 
+    //Metodo que se ejecuta una vez que tenemo la lista de redetas
     override fun loadRecipes(result: RecipeListEntity) {
+
+        //Verificamos que la respuesta es correcta
         if (result.status == com.myfood.constants.Constant.OK) {
+
+            //Tranformamos el objeto RecipListEntity a una Lista de objetos
+            //RecipeList
             recipeMutableList = result.toMVP().toMutableList()
-            initData()
+
+            //Creamos el adapter para el recyclerview
+            recipeAdapter = RecipeListAdapter(
+                recipeList = recipeMutableList,
+                onClickListener =
+                { recipeItem ->
+                    recipeListFragment.onItemSelected(recipeItem, currentLanguage)
+                }
+            )
+
+            //Incializamos el recyclerview
+            Handler(Looper.getMainLooper()).post {
+                recipeListFragment.initRecyclerView(recipeAdapter)
+            }
         }
     }
 
-    override fun initData() {
-        recipeAdapter = RecipeListAdapter(
-            recipeList = recipeMutableList,
-            onClickListener = { recipeItem -> onItemSelected(recipeItem) },
-        )
-        Handler(Looper.getMainLooper()).post {
-            recipeListView.initRecyclerView(recipeAdapter)
-        }
-    }
-
-    override fun getCurrentLanguage(): String {
-        return recipeListModel.getCurrentLanguage()
-    }
-
-    override fun getTranslations(language: Int): MutableMap<String, Translation> {
-        val mutableTranslations: MutableMap<String, Translation> = mutableMapOf()
-        val translations = recipeListModel.getTranslations(language)
+    //Metodo que devuelve las traducciones de la pantalla
+    override fun getTranslationsScreen():MutableMap<String, String>{
+        val mutableTranslations: MutableMap<String, String> =
+            mutableMapOf()
+        val translations = recipeListModel.getTranslations(currentLanguage.toInt())
         translations.forEach {
-            mutableTranslations[it.word] = it
+            mutableTranslations[it.word] = it.text
         }
         return mutableTranslations
     }
 
-    fun filterAll() {
-        recipeListModel.getRecipeList(idLanguage)
+    //Metodo que filtra todas las recetas del sistema
+    override fun filterAll() {
+        recipeListModel.getRecipeList(currentLanguage)
             .observe(recipeListFragment) { data -> loadRecipes(data) }
     }
 
-    fun filterSuggested(idUser: String) {
-        recipeListModel.getRecipesSuggested(idLanguage, idUser)
+    //Metodo que filtra aquellas recetas que coinciden con los productos de despensa
+    //del usuario
+    override fun filterSuggested() {
+        recipeListModel.getRecipesSuggested(currentLanguage, userId)
             .observe(recipeListFragment) { data -> loadRecipes(data) }
     }
 
+    //Metodo que se ejecuta cuando se varia el contenido del campo de texto del buscador
     override fun doFilter(userFilter: Editable?) {
+
+        //Almacenamos los objetos filtrados en una lista
         val recipeFiltered = recipeMutableList.filter { recipe ->
             recipe.title.lowercase().contains(userFilter.toString().lowercase())
         }
+
+        //Actualizamos el recyclerview con los cambios
         recipeAdapter.updateExpirationList(recipeFiltered)
     }
-
-    private fun onItemSelected(recipeList: RecipeList) {
-        recipeListView.loadFragment(
-            RecipeFragment(recipeList.id, idLanguage)
-        )
-    }
-
-    override fun getUserId(): String {
-        return recipeListModel.getUserId()
-    }
-
 }

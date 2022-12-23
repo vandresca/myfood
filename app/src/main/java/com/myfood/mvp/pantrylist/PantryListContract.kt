@@ -14,29 +14,50 @@ interface PantryListContract {
     //Vista
     //Implementa la interfaz Translable.View
     interface View : Translatable.View {
-        fun showUpdatePantryScreen(idPurchase: String)
-        fun showPantryProduct(idPantry: String)
+
+        //Metodo que se ejecuta al hacer clic en el boton modificar de un item de
+        //la lista
+        fun onUpdatePantry(idPurchase: String)
+
+        //Metodo que se ejecuta al hacer clic sobre un elemento de la lista
+        fun onClickPantryElement(idPantry: String)
+
+        //Metodo que inicializa el recyclerview de la lista de despensa
         fun initRecyclerView(purchaseAdapter: PantryListAdapter)
     }
 
     //Presentador
     //Implementa la interfaz Translable.Presenter
     interface Presenter : Translatable.Presenter {
+
+        //Metodo que se ejecuta una vez que tenemos los elementos de la lista de
+        //productos de despensa
         fun loadData(pantryListEntity: PantryListEntity)
-        fun initData()
+
+        //Metodo que se ejecuta tras modificar el contenido del campo de texto del buscador
         fun doFilter(userFilter: Editable?)
-        fun getUserId(): String
-        fun getPantryList(idUser: String): MutableLiveData<PantryListEntity>
+
+        //Metodo que obtiene el tipo de moneda actual de la App
         fun getCurrentCurrency(): String
     }
 
     //Modelo
     //Implementa la interfaz Translable.Model
     interface Model : Translatable.Model {
-        fun getInstance(context: Context)
+
+        //Metodo que crea las instancias de las bases de datos
+        fun createInstances(context: Context)
+
+        //Metodo que obtiene la lista de productos de despensa del usuario actual
         fun getPantryList(idUser: String): MutableLiveData<PantryListEntity>
+
+        //Metodo que obtiene el tipo de moneda actual de la App
         fun getCurrentCurrency(): String
+
+        //Metodo que elimina un producto de despensa de la base de datos dado su id
         fun deletePantry(id: String): MutableLiveData<SimpleResponseEntity>
+
+        //Metodo que obtiene el id de usuario actual de la App
         fun getUserId(): String
     }
 }

@@ -9,15 +9,21 @@ interface MainContract {
 
     //Vista
     //Implementa la interfaz Translable.View
-    interface View : Translatable.View
+    interface View{
+        fun setTranslationsMenu()
+    }
 
     //Presentador
     //Implementa la interfaz Translable.Presenter
-    interface Presenter : Translatable.Presenter
+    interface Presenter{
+        fun getTranslationsMenu():MutableMap<String, String>
+    }
 
     //Modelo
     //Implementa la interfaz Translable.Model
     interface Model : Translatable.Model {
-        fun getInstance(context: Context)
+
+        //Metodo que crea las instancias de las bases de datos
+        fun createInstances(context: Context)
     }
 }

@@ -1,63 +1,110 @@
 package com.myfood.mvp.addshopproduct
 
+import android.R
 import android.content.Context
-import androidx.lifecycle.MutableLiveData
-import com.myfood.databases.databasemysql.entity.OneValueEntity
-import com.myfood.databases.databasemysql.entity.ShopProductEntity
-import com.myfood.databases.databasemysql.entity.SimpleResponseEntity
+import android.widget.ArrayAdapter
 import com.myfood.databases.databasesqlite.entity.QuantityUnit
-import com.myfood.databases.databasesqlite.entity.Translation
 
 class AddShopPresenter(
-    private val addShopView: AddShopContract.View,
-    private val addShopModel: AddShopContract.Model,
-    context: Context
+    private val addShopFragment: AddShopFragment,
+    private val context: Context
 ) : AddShopContract.Presenter {
+
+    //Declaramos las variables globales
+    private var addShopModel: AddShopModel = AddShopModel()
+    private var quantitiesUnit: List<QuantityUnit>
+    private var userId:String
+
     init {
-        addShopModel.getInstance(context)
+
+        //Creamos las instacias de la base de datos
+        addShopModel.createInstances(context)
+
+        //Obtenemos el id de usuario de la App y lo asignamos a una variable global
+        userId = addShopModel.getUserId()
+
+        //Obtenemos la lista de unidades de cantidad
+        quantitiesUnit = addShopModel.getQuantitiesUnit()
     }
 
-    override fun getUserId(): String {
-        return addShopModel.getUserId()
+    //Metodo que obtiene la posicion de una determinada unidad de cantidad en
+    //la lista de unidades de cantidad
+    fun getPositionQuantitiesUnit(quantityUnit: String): Int{
+        val list: MutableList<String> = mutableListOf()
+        quantitiesUnit.forEach{
+            list += it.quantityUnit
+        }
+        return list.indexOf(quantityUnit)
     }
 
+    //Metodo general para crear un adapter (unidades de cantidad o lugares de
+    //almacenaje)
+    fun createAdapterQuantitiesUnit(): ArrayAdapter<String> {
 
-    override fun getCurrentLanguage(): String {
-        return addShopModel.getCurrentLanguage()
+        //Declaramos una variable de tipo lista mutable
+        //de tipo String.
+        //Recorremos los objetos segun el caso de unidad de cantidad o de
+        //lugar de almacenaje y obtenemos solo el String
+        val mutableList: MutableList<String> = mutableListOf()
+        this.quantitiesUnit.forEach {
+            mutableList.add(it.quantityUnit)
+        }
+        //Poblamos el combo con la lista
+        val adapter = ArrayAdapter(
+            context,
+            R.layout.simple_spinner_item,
+            mutableList
+        )
+        // Especifica el layout para usar cuando la lista de opciones aparece
+        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+        return adapter
     }
 
-    override fun getTranslations(language: Int): MutableMap<String, Translation> {
-        val mutableTranslations: MutableMap<String, Translation> = mutableMapOf()
-        val translations = addShopModel.getTranslations(language)
+    //Metodo que retorna las traducciones de la pantalla
+    override fun getTranslationsScreen():MutableMap<String, String>{
+        val mutableTranslations: MutableMap<String, String> =
+            mutableMapOf()
+        val currentLanguage = addShopModel.getCurrentLanguage()
+        val translations = addShopModel.getTranslations(currentLanguage.toInt())
         translations.forEach {
-            mutableTranslations[it.word] = it
+            mutableTranslations[it.word] = it.text
         }
         return mutableTranslations
     }
 
-    override fun getQuantitiesUnit(): List<QuantityUnit> {
-        return addShopModel.getQuantitiesUnit()
+    //Metodo que devuelve los atributos de un producto de compra dado su id
+    override fun getShopProduct(idShop: String) {
+        addShopModel.getShopProduct(idShop).
+        observe(addShopFragment)
+        { data -> addShopFragment.onLoadShopToUpdate(data) }
     }
 
-    override fun getShopProduct(idShop: String): MutableLiveData<ShopProductEntity> {
-        return addShopModel.getShopProduct(idShop)
-    }
-
+    //Metodo que inserta un producto de compra para un usuario en la base de datos
     override fun insertShop(
         name: String,
         quantity: String,
         quantityUnit: String,
-        userId: String
-    ): MutableLiveData<OneValueEntity> {
-        return addShopModel.insertShop(name, quantity, quantityUnit, userId)
+    ){
+        addShopModel.insertShop(name, quantity, quantityUnit, userId)
+            .observe(addShopFragment) { result ->
+            if (result.status == com.myfood.constants.Constant.OK) {
+                addShopFragment.onInsertedOrUpdatedProduct()
+            }
+        }
     }
 
+    //Metodo que actualiza un producto de compra en base de datos dado su id
     override fun updateShop(
         name: String,
         quantity: String,
         quantityUnit: String,
         idShop: String
-    ): MutableLiveData<SimpleResponseEntity> {
-        return addShopModel.updateShop(name, quantity, quantityUnit, idShop)
+    ){
+        addShopModel.updateShop(name, quantity, quantityUnit, idShop).
+        observe(addShopFragment) { result ->
+            if (result.status == com.myfood.constants.Constant.OK) {
+                addShopFragment.onInsertedOrUpdatedProduct()
+            }
+        }
     }
 }

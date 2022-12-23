@@ -23,7 +23,7 @@ class MyFoodRepository {
 
     // Método que crea las instancias para las base de datos de SQLite
     // y MySQL
-    fun getInstance(context: Context) {
+    fun createInstances(context: Context) {
         dbSQLite = RoomSingleton.getInstance(context)
         dbMySQL = RetrofitHelper.getRetrofit()
     }

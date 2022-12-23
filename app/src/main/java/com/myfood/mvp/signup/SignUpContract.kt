@@ -23,13 +23,13 @@ interface SignUpContract {
             surnames: String,
             email: String,
             password: String
-        ): MutableLiveData<OneValueEntity>
+        )
     }
 
     //Modelo
     //Implementa la interfaz Translable.Model
     interface Model : Translatable.Model {
-        fun getInstance(context: Context)
+        fun createInstances(context: Context)
         fun insertUser(
             name: String,
             surnames: String,

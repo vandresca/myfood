@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.myfood.R
+import com.myfood.constants.Constant
 import com.myfood.constants.Constant.Companion.MODE_ADD
 import com.myfood.databases.databasesqlite.entity.StorePlace
-import com.myfood.databases.databasesqlite.entity.Translation
 import com.myfood.databinding.AddStorePlaceFragmentBinding
 import com.myfood.mvp.storeplacelist.StorePlaceListFragment
 import com.myfood.popup.Popup
@@ -23,9 +23,8 @@ class AddStorePlaceFragment(
     //Declaracion variables globales
     private var _binding: AddStorePlaceFragmentBinding? = null
     private val binding get() = _binding!!
-    private lateinit var addStorePlaceModel: AddStorePlaceModel
     private lateinit var addStorePlacePresenter: AddStorePlacePresenter
-    private var mutableTranslations: MutableMap<String, Translation>? = null
+    private var mutableTranslations: MutableMap<String, String> = mutableMapOf()
 
     //Método onCreateView
     //Mientras se está creando la vista
@@ -47,20 +46,16 @@ class AddStorePlaceFragment(
         //Hacemos que el layout principal sea invisible hasta que no se carguen los datos
         binding.layoutAddPlace.visibility = View.INVISIBLE
 
-        //Creamos el modelo
-        addStorePlaceModel = AddStorePlaceModel()
-
         //Creamos el presentador
-        addStorePlacePresenter = AddStorePlacePresenter(this, addStorePlaceModel, requireContext())
+        addStorePlacePresenter = AddStorePlacePresenter(requireContext())
 
-        //Obtenemos el idioma de la App y establecemos las traducciones
-        val currentLanguage = addStorePlacePresenter.getCurrentLanguage()
-        this.mutableTranslations = addStorePlacePresenter.getTranslations(currentLanguage.toInt())
+        //Obtenemos las traducciones de pantalla
+        this.mutableTranslations = addStorePlacePresenter.getTranslationsScreen()
         setTranslations()
 
         //Añadimos el titulo en la cabacera en caso de estar en modo
         //modificar
-        if (mode == com.myfood.constants.Constant.MODE_UPDATE) binding.etAddPlaceName.setText(
+        if (mode == Constant.MODE_UPDATE) binding.etAddPlaceName.setText(
             storePlaceToUpdate!!.storePlace
         )
 
@@ -95,7 +90,7 @@ class AddStorePlaceFragment(
                 Popup.showInfo(
                     requireContext(),
                     resources,
-                    mutableTranslations?.get(com.myfood.constants.Constant.MSG_STORE_PLACE_REQUIRED)!!.text
+                    mutableTranslations[Constant.MSG_STORE_PLACE_REQUIRED]!!
                 )
             }
         }
@@ -105,17 +100,17 @@ class AddStorePlaceFragment(
     override fun setTranslations() {
         binding.layoutAddPlace.visibility = View.VISIBLE
         binding.lAPlaceName.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.LABEL_STORE_PLACE)!!.text
+            mutableTranslations[Constant.LABEL_STORE_PLACE]!!
         if (mode == MODE_ADD) {
             binding.header.titleHeader.text =
-                mutableTranslations?.get(com.myfood.constants.Constant.TITLE_ADD_STORE_PLACE)!!.text
+                mutableTranslations[Constant.TITLE_ADD_STORE_PLACE]!!
             binding.btnAddPlaceProduct.text =
-                mutableTranslations?.get(com.myfood.constants.Constant.BTN_ADD_STORE_PLACE)!!.text
+                mutableTranslations[Constant.BTN_ADD_STORE_PLACE]!!
         } else {
             binding.header.titleHeader.text =
-                mutableTranslations?.get(com.myfood.constants.Constant.TITLE_UPDATE_STORE_PLACE)!!.text
+                mutableTranslations[Constant.TITLE_UPDATE_STORE_PLACE]!!
             binding.btnAddPlaceProduct.text =
-                mutableTranslations?.get(com.myfood.constants.Constant.BTN_UPDATE_STORE_PLACE)!!.text
+                mutableTranslations[Constant.BTN_UPDATE_STORE_PLACE]!!
         }
     }
 

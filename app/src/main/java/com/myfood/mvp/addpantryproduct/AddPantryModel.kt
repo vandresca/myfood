@@ -18,8 +18,8 @@ class AddPantryModel : AddPantryContract.Model {
     private val myFoodRepository = com.myfood.databases.MyFoodRepository()
 
     //Metodo que crea las instancias de la bases de datos
-    override fun getInstance(context: Context) {
-        myFoodRepository.getInstance(context)
+    override fun createInstances(context: Context) {
+        myFoodRepository.createInstances(context)
     }
 
     //Metodo que obtiene el lenguaje actual de la App

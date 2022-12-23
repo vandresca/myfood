@@ -8,8 +8,9 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.myfood.R
-import com.myfood.databases.databasesqlite.entity.Translation
+import com.myfood.constants.Constant
 import com.myfood.databinding.RecipeListFragmentBinding
+import com.myfood.mvp.recipe.RecipeFragment
 
 class RecipeListFragment : Fragment(), RecipeListContract.View {
 
@@ -17,8 +18,7 @@ class RecipeListFragment : Fragment(), RecipeListContract.View {
     private var _binding: RecipeListFragmentBinding? = null
     private val binding get() = _binding!!
     private lateinit var recipeListPresenter: RecipeListPresenter
-    private lateinit var recipeListModel: RecipeListModel
-    private var mutableTranslations: MutableMap<String, Translation>? = null
+    private var mutableTranslations: MutableMap<String, String> = mutableMapOf()
 
 
     //Método onCreateView
@@ -42,25 +42,12 @@ class RecipeListFragment : Fragment(), RecipeListContract.View {
         //Hacemos que el layout principal sea invisible hasta que no se carguen los datos
         binding.layoutRecipeList.visibility = View.INVISIBLE
 
-        //Creamos el modelo
-        recipeListModel = RecipeListModel()
-
         //Creamos el presentador
-        recipeListPresenter = RecipeListPresenter(this, RecipeListModel(), this, requireContext())
+        recipeListPresenter = RecipeListPresenter(this, requireContext())
 
-        //Obtenemos el usuario de la App
-        val user = recipeListPresenter.getUserId()
-
-        //Obtenemos los atributos del producto de despensa
-        val currentLanguage = recipeListPresenter.getCurrentLanguage()
-        this.mutableTranslations = recipeListPresenter.getTranslations(currentLanguage.toInt())
+        //Obtenemos el idioma de la App y establecemos las traducciones
+        mutableTranslations = recipeListPresenter.getTranslationsScreen()
         setTranslations()
-
-        //Obtenemos la lista de recetas
-        recipeListPresenter.loadData(
-            currentLanguage,
-            mutableTranslations?.get(com.myfood.constants.Constant.TITLE_RECIPE)!!.text
-        )
 
         //Inicializamos el buscador
         initSearcher()
@@ -70,7 +57,7 @@ class RecipeListFragment : Fragment(), RecipeListContract.View {
 
         //Inicializamos el click del boton sugerencias para que muestre solo las recetas
         //sugeridas
-        binding.btnRLSuggestions.setOnClickListener { recipeListPresenter.filterSuggested(user) }
+        binding.btnRLSuggestions.setOnClickListener { recipeListPresenter.filterSuggested() }
     }
 
     override fun initRecyclerView(recipeListAdapter: RecipeListAdapter) {
@@ -81,7 +68,7 @@ class RecipeListFragment : Fragment(), RecipeListContract.View {
     }
 
     //Metodo que nos permite navegar a otro Fragment o pantalla
-    override fun loadFragment(fragment: Fragment) {
+    private fun loadFragment(fragment: Fragment) {
 
         //Declaramos una transacción
         //Añadimos el fragment a la pila backStack (sirve para cuando
@@ -97,13 +84,13 @@ class RecipeListFragment : Fragment(), RecipeListContract.View {
     override fun setTranslations() {
         binding.layoutRecipeList.visibility = View.VISIBLE
         binding.header.titleHeader.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.TITLE_RECIPE_LIST)!!.text
+            mutableTranslations[Constant.TITLE_RECIPE_LIST]!!
         binding.etFilterRL.hint =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_SEARCH)!!.text
+            mutableTranslations[Constant.FIELD_SEARCH]!!
         binding.btnRLAll.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.BTN_ALL)!!.text
+            mutableTranslations[Constant.BTN_ALL]!!
         binding.btnRLSuggestions.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.BTN_SUGGESTIONS)!!.text
+            mutableTranslations[Constant.BTN_SUGGESTIONS]!!
     }
 
 
@@ -114,5 +101,13 @@ class RecipeListFragment : Fragment(), RecipeListContract.View {
         binding.etFilterRL.addTextChangedListener { watchText ->
             recipeListPresenter.doFilter(watchText)
         }
+    }
+
+    //Metodo que se ejecuta al seleccionar un item de la lista de recetas
+    fun onItemSelected(recipeList: RecipeList, language:String) {
+
+        //Navegamos a la pantalla de receta cargando los atributos de la receta
+        //seleccionada
+        loadFragment(RecipeFragment(recipeList.id, language))
     }
 }

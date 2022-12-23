@@ -12,26 +12,39 @@ interface LoginContract {
     //Vista
     //Implementa la interfaz Translable.View
     interface View : Translatable.View {
-        fun updateLanguage(position: Int)
-        fun login()
+
+        //Metodo que se ejecuta tras chequear login con un usuario y contraseña
+        fun onLogin(result: LoginEntity)
     }
 
     //Presentador
     //Implementa la interfaz Translable.Presenter
     interface Presenter : Translatable.Presenter {
-        fun login(name: String, password: String): MutableLiveData<LoginEntity>
-        fun getLanguages(): List<String>
-        fun updateCurrentLanguage(language: String)
+
+        //Metodo que chequea login con un usuario y contraseña
+        fun login(name: String, password: String)
+
+        //Metodo que actualiza el id de usuario actual de la App
         fun updateUserId(userId: String)
     }
 
     //Modelo
     //Implementa la interfaz Translable.Model
     interface Model : Translatable.Model {
-        fun getInstance(context: Context)
+
+        //Metodo que crea las instancias de la base de datos
+        fun createInstances(context: Context)
+
+        //Metodo que chequea el login de un nombre y contraseña
         fun login(name: String, password: String): MutableLiveData<LoginEntity>
+
+        //Metodo que obtiene los idiomas disponibles en la App
         fun getLanguages(): List<String>
+
+        //Metodo que actualiza el lenguaje actual de la App
         fun updateCurrentLanguage(language: String)
+
+        //Metodo que actualiza el id de usuario actual de la App
         fun updateUserId(userId: String)
     }
 }

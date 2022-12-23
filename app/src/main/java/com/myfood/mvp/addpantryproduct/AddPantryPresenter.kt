@@ -1,67 +1,115 @@
 package com.myfood.mvp.addpantryproduct
 
+import android.R
 import android.content.Context
-import androidx.lifecycle.MutableLiveData
-import com.myfood.databases.databasemysql.entity.OneValueEntity
-import com.myfood.databases.databasemysql.entity.OpenFoodEntity
-import com.myfood.databases.databasemysql.entity.PantryProductEntity
-import com.myfood.databases.databasemysql.entity.SimpleResponseEntity
+import android.widget.ArrayAdapter
 import com.myfood.databases.databasesqlite.entity.QuantityUnit
-import com.myfood.databases.databasesqlite.entity.Translation
+import com.myfood.databases.databasesqlite.entity.StorePlace
 
 class AddPantryPresenter(
-    private val addPantryView: AddPantryContract.View,
-    private val addPantryModel: AddPantryContract.Model,
-    context: Context
+    private val addPantryFrament: AddPantryFragment,
+    private val context: Context
 ) : AddPantryContract.Presenter {
+
+    //Declaramos las variables globales
+    private val addPantryModel: AddPantryModel = AddPantryModel()
+    private val userId:String
+    private val quantitiesUnit: List<QuantityUnit>
+    private val storePlaces: List<StorePlace>
 
     //Metodo que se lanza al iniciar la clase presentador
     init {
         //Instanciamos las bases de datos
-        addPantryModel.getInstance(context)
+        addPantryModel.createInstances(context)
+
+        //Obtenemos el usuario de la App
+        userId = addPantryModel.getUserId()
+
+        //Obtenemos las unidades de cantidad de la App
+        quantitiesUnit = addPantryModel.getQuantitiesUnit()
+
+        //Obtenemos los lugares de almacenaje de la App
+        storePlaces = addPantryModel.getStorePlaces()
     }
 
-    //Metodo que obtiene el lenguaje actual de la App
-    override fun getCurrentLanguage(): String {
-        return addPantryModel.getCurrentLanguage()
+    //Metodo que obtiene la posicion de una determinada unidad de cantidad en
+    //la lista de unidades de cantidad
+    fun getPositionQuantitiesUnit(quantityUnit: String): Int{
+        val list: MutableList<String> = mutableListOf()
+        quantitiesUnit.forEach{
+            list += it.quantityUnit
+        }
+        return list.indexOf(quantityUnit)
     }
 
-    //Metodo que obtiene las traducciones de la pantalla en el lenguaje indicado
-    override fun getTranslations(language: Int): MutableMap<String, Translation> {
+    //Metodo que obtiene la posición  de un determinado lugar de almacenaje en
+    //la lista de lugares de almacenaje
+    fun getPositionStorePlaces(storePlace: String): Int{
+        val list: MutableList<String> = mutableListOf()
+        storePlaces.forEach{
+            list += it.storePlace
+        }
+        return list.indexOf(storePlace)
+    }
 
-        //Declaramos un Map mutable de clave valor: String, Translation
-        val mutableTranslations: MutableMap<String, Translation> = mutableMapOf()
+    //Metodo que crea un adapter para el spinner de unidades de cantidad
+    fun createAdapterQuantityUnit(): ArrayAdapter<String>{
+        return createAdapter(this.quantitiesUnit)
+    }
 
-        //Realizamos la llamada al metodo getTranslation
-        val translations = addPantryModel.getTranslations(language)
+    //Metodo que crea un adapter para el spinner de lugares de almacenaje
+    fun createAdapterStorePlace(): ArrayAdapter<String>{
+        return createAdapter(this.storePlaces)
+    }
 
-        //Transformamos los datos de la lista de objetos translations recibido
-        //en un map de clave valor String-Translation
+    //Metodo general para crear un adapter (unidades de cantidad o lugares de
+    //almacenaje)
+    private fun <T> createAdapter(list: List<T>): ArrayAdapter<String>{
+
+        //Declaramos una variable de tipo lista mutable
+        //de tipo String.
+        //Recorremos los objetos segun el caso de unidad de cantidad o de
+        //lugar de almacenaje y obtenemos solo el String
+        val mutableList: MutableList<String> = mutableListOf()
+        list.forEach {
+            if(it is QuantityUnit) mutableList.add(it.quantityUnit)
+            if(it is StorePlace) mutableList.add(it.storePlace)
+        }
+        //Poblamos el combo con la lista
+        val adapter =ArrayAdapter(
+            context,
+            R.layout.simple_spinner_item,
+            mutableList
+        )
+        // Especifica el layout para usar cuando la lista de opciones aparece
+        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+        return adapter
+    }
+
+    //Metodo que retorna las traducciones de la pantalla
+    override fun getTranslationsScreen():MutableMap<String, String>{
+        val mutableTranslations: MutableMap<String, String> =
+            mutableMapOf()
+        val currentLanguage = addPantryModel.getCurrentLanguage()
+        val translations = addPantryModel.getTranslations(currentLanguage.toInt())
         translations.forEach {
-            mutableTranslations[it.word] = it
+            mutableTranslations[it.word] = it.text
         }
         return mutableTranslations
     }
 
-    //Metodo que obtiene las unidades de cantidad de la App
-    override fun getQuantitiesUnit(): List<QuantityUnit> {
-        return addPantryModel.getQuantitiesUnit()
-    }
-
-    //Metodo que obtiene el id de usuario de la App
-    override fun getUserId(): String {
-        return addPantryModel.getUserId()
+    fun fillProductOpenFood(barcode: String){
+        addPantryModel.getOpenFoodProduct(
+            "${com.myfood.constants.Constant.OPEN_FOOD_URL}$barcode.json")
+            .observe(addPantryFrament)
+            { result -> addPantryFrament.onFillProductOpenFood(result) }
     }
 
     //Metodo que obtiene el producto de despensa dado su id
-    override fun getPantryProduct(idPantry: String): MutableLiveData<PantryProductEntity> {
-        return addPantryModel.getPantryProduct(idPantry)
-    }
-
-    //Metodo que realiza una llamada a la API de Openfood con la url de un código de barras
-    //y retorna los atributos del producto alimenticio
-    override fun getOpenFoodProduct(url: String): MutableLiveData<OpenFoodEntity> {
-        return addPantryModel.getOpenFoodProduct(url)
+    override fun getPantryProduct(idPantry: String) {
+        addPantryModel.getPantryProduct(idPantry).
+        observe(addPantryFrament)
+        { data->addPantryFrament.onLoadPantryToUpdate(data) }
     }
 
     //Metodo que inserta un producto despensa en la base de datos para un usuario
@@ -69,12 +117,15 @@ class AddPantryPresenter(
         barcode: String, name: String, quantity: String,
         quantityUnit: String, place: String, weight: String, price: String,
         expirationDate: String, preferenceDate: String, image: String,
-        brand: String, userId: String
-    ): MutableLiveData<OneValueEntity> {
-        return addPantryModel.insertPantry(
+        brand: String) {
+        addPantryModel.insertPantry(
             barcode, name, quantity, quantityUnit, place,
             weight, price, expirationDate, preferenceDate, image, brand, userId
-        )
+        ).observe(addPantryFrament) { result ->
+            if (result.status == com.myfood.constants.Constant.OK) {
+                addPantryFrament.onInsertedOrUpdatedPantry()
+            }
+        }
     }
 
     //Metodo que inserta un producto despensa en la base de datos dado su id
@@ -82,11 +133,14 @@ class AddPantryPresenter(
         barcode: String, name: String, quantity: String,
         quantityUnit: String, place: String, weight: String, price: String,
         expirationDate: String, preferenceDate: String, image: String,
-        brand: String, idPantry: String
-    ): MutableLiveData<SimpleResponseEntity> {
-        return addPantryModel.updatePantry(
+        brand: String, idPantry: String) {
+        addPantryModel.updatePantry(
             barcode, name, quantity, quantityUnit, place,
             weight, price, expirationDate, preferenceDate, image, brand, idPantry
-        )
+        ).observe(addPantryFrament) { result ->
+            if (result.status == com.myfood.constants.Constant.OK) {
+                addPantryFrament.onInsertedOrUpdatedPantry()
+            }
+        }
     }
 }

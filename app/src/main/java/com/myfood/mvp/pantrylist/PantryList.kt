@@ -10,6 +10,8 @@ data class PantryList(
     val price: String
 )
 
+//Funcion que transforma un objeto entidad de tipo PantryListEntity a una lista de objetos
+//PantryList
 fun PantryListEntity.toMVP(): List<PantryList> {
     val list: MutableList<PantryList> = mutableListOf()
     products.forEach {

@@ -9,7 +9,6 @@ import com.myfood.R
 import com.myfood.constants.Constant.Companion.MODE_ADD
 import com.myfood.constants.Constant.Companion.MODE_UPDATE
 import com.myfood.databases.databasesqlite.entity.QuantityUnit
-import com.myfood.databases.databasesqlite.entity.Translation
 import com.myfood.databinding.AddQuantityUnitFragmentBinding
 import com.myfood.mvp.quantityunitlist.QuantityUnitListFragment
 import com.myfood.popup.Popup
@@ -26,7 +25,7 @@ class AddQuantityUnitFragment(
     private val binding get() = _binding!!
     private lateinit var addQuantityUnitModel: AddQuantityUnitModel
     private lateinit var addQuantityUnitPresenter: AddQuantityUnitPresenter
-    private var mutableTranslations: MutableMap<String, Translation>? = null
+    private var mutableTranslations: MutableMap<String, String> = mutableMapOf()
 
     //Método onCreateView
     //Mientras se está creando la vista
@@ -52,14 +51,10 @@ class AddQuantityUnitFragment(
         addQuantityUnitModel = AddQuantityUnitModel()
 
         //Creamos el presentador
-        addQuantityUnitPresenter = AddQuantityUnitPresenter(
-            this,
-            addQuantityUnitModel, requireContext()
-        )
+        addQuantityUnitPresenter = AddQuantityUnitPresenter(requireContext())
 
-        //Obtenemos el idioma de la App y establecemos las traducciones
-        val currentLanguage = addQuantityUnitPresenter.getCurrentLanguage()
-        this.mutableTranslations = addQuantityUnitPresenter.getTranslations(currentLanguage.toInt())
+        //Obtenemos las traducciones de pantalla
+        this.mutableTranslations = addQuantityUnitPresenter.getTranslationsScreen()
         setTranslations()
 
         //Añadimos el titulo en la cabacera en caso de estar en modo
@@ -98,7 +93,7 @@ class AddQuantityUnitFragment(
                 Popup.showInfo(
                     requireContext(),
                     resources,
-                    mutableTranslations?.get(com.myfood.constants.Constant.MSG_QUANTIY_UNIT_REQUIRED)!!.text
+                    mutableTranslations[com.myfood.constants.Constant.MSG_QUANTIY_UNIT_REQUIRED]!!
                 )
             }
         }
@@ -108,17 +103,17 @@ class AddQuantityUnitFragment(
     override fun setTranslations() {
         binding.layoutAddQuantityUnit.visibility = View.VISIBLE
         binding.lAddQuantityUnitName.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.LABEL_QUANTITY_UNIT)!!.text
+            mutableTranslations[com.myfood.constants.Constant.LABEL_QUANTITY_UNIT]!!
         if (mode == MODE_ADD) {
             binding.header.titleHeader.text =
-                mutableTranslations?.get(com.myfood.constants.Constant.TITLE_ADD_QUANTITY_UNIT)!!.text
+                mutableTranslations[com.myfood.constants.Constant.TITLE_ADD_QUANTITY_UNIT]!!
             binding.btnAddQuantityUnit.text =
-                mutableTranslations?.get(com.myfood.constants.Constant.BTN_ADD_QUANTITY_UNIT)!!.text
+                mutableTranslations[com.myfood.constants.Constant.BTN_ADD_QUANTITY_UNIT]!!
         } else {
             binding.header.titleHeader.text =
-                mutableTranslations?.get(com.myfood.constants.Constant.TITLE_UPDATE_QUANTITY_UNIT)!!.text
+                mutableTranslations[com.myfood.constants.Constant.TITLE_UPDATE_QUANTITY_UNIT]!!
             binding.btnAddQuantityUnit.text =
-                mutableTranslations?.get(com.myfood.constants.Constant.BTN_UPDATE_QUANTITY_UNIT)!!.text
+                mutableTranslations[com.myfood.constants.Constant.BTN_UPDATE_QUANTITY_UNIT]!!
         }
     }
 

@@ -1,27 +1,33 @@
 package com.myfood.mvp.optionaddpantry
 
 import android.content.Context
-import com.myfood.databases.databasesqlite.entity.Translation
 
 
 class OptionAddPantryPresenter(
-    private val optionAddPantryView: OptionAddPantryContract.View,
-    private val optionAddPantryModel: OptionAddPantryContract.Model,
     context: Context
 ) : OptionAddPantryContract.Presenter {
+
+    //Decalaración de variables globales
+    private val optionAddPantryModel: OptionAddPantryModel= OptionAddPantryModel()
+    private val currentLanguage: String
+
     init {
-        optionAddPantryModel.getInstance(context)
+
+        //Creamos las instancias de las bases de datos
+        optionAddPantryModel.createInstances(context)
+
+        //Obtenemos el idioma actual de la App
+        currentLanguage = optionAddPantryModel.getCurrentLanguage()
     }
 
-    override fun getCurrentLanguage(): String {
-        return optionAddPantryModel.getCurrentLanguage()
-    }
 
-    override fun getTranslations(language: Int): MutableMap<String, Translation> {
-        val mutableTranslations: MutableMap<String, Translation> = mutableMapOf()
-        val translations = optionAddPantryModel.getTranslations(language)
+    //Metodo que devuelve las traducciones de la pantalla
+    override fun getTranslationsScreen():MutableMap<String, String>{
+        val mutableTranslations: MutableMap<String, String> =
+            mutableMapOf()
+        val translations = optionAddPantryModel.getTranslations(currentLanguage.toInt())
         translations.forEach {
-            mutableTranslations[it.word] = it
+            mutableTranslations[it.word] = it.text
         }
         return mutableTranslations
     }

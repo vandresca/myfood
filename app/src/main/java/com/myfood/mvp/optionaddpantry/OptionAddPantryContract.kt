@@ -18,6 +18,8 @@ interface OptionAddPantryContract {
     //Modelo
     //Implementa la interfaz Translable.Model
     interface Model : Translatable.Model {
-        fun getInstance(application: Context)
+
+        //Metodo que crea las instancias de las bases de datos
+        fun createInstances(application: Context)
     }
 }

@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.myfood.R
 import com.myfood.constants.Constant
-import com.myfood.databases.databasesqlite.entity.Translation
 import com.myfood.databinding.OptionAddPantryFragmentBinding
 import com.myfood.mvp.addpantryproduct.AddPantryFragment
 
@@ -17,7 +16,7 @@ class OptionAddPantryFragment : Fragment(), OptionAddPantryContract.View {
     //Declaración de variables globales
     private var _binding: OptionAddPantryFragmentBinding? = null
     private val binding get() = _binding!!
-    private var mutableTranslations: MutableMap<String, Translation>? = null
+    private var mutableTranslations: MutableMap<String, String> = mutableMapOf()
     private lateinit var optionAddPantryModel: OptionAddPantryModel
     private lateinit var optionAddPantryPresenter: OptionAddPantryPresenter
 
@@ -45,14 +44,10 @@ class OptionAddPantryFragment : Fragment(), OptionAddPantryContract.View {
         optionAddPantryModel = OptionAddPantryModel()
 
         //Creamos el presentador
-        optionAddPantryPresenter = OptionAddPantryPresenter(
-            this,
-            optionAddPantryModel, requireContext()
-        )
+        optionAddPantryPresenter = OptionAddPantryPresenter(requireContext())
 
         //Obtenemos el idioma de la App y establecemos las traducciones
-        val currentLanguage = optionAddPantryPresenter.getCurrentLanguage()
-        this.mutableTranslations = optionAddPantryPresenter.getTranslations(currentLanguage.toInt())
+        mutableTranslations = optionAddPantryPresenter.getTranslationsScreen()
         setTranslations()
 
         //Inicializamos el click de escanear para que vaya a la pantalla Añadir Producto Despena
@@ -63,7 +58,7 @@ class OptionAddPantryFragment : Fragment(), OptionAddPantryContract.View {
 
         //Inicializamos el click para añadir producto despensa a mano para que vaya a dicha pantalla
         binding.btnOptionKeyboard.setOnClickListener {
-            loadFragment(AddPantryFragment(com.myfood.constants.Constant.MODE_ADD))
+            loadFragment(AddPantryFragment(Constant.MODE_ADD))
         }
     }
 
@@ -71,7 +66,7 @@ class OptionAddPantryFragment : Fragment(), OptionAddPantryContract.View {
     override fun setTranslations() {
         binding.layoutOptionAddPantry.visibility = View.VISIBLE
         binding.header.titleHeader.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.TITLE_ADD_PANTRY)?.text
+            mutableTranslations[Constant.TITLE_ADD_PANTRY]!!
     }
 
     //Metodo que nos permite navegar a otro Fragment o pantalla

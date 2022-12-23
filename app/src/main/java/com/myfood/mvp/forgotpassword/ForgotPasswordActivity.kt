@@ -4,8 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.myfood.constants.Constant
 import com.myfood.databases.databasemysql.entity.SimpleResponseEntity
-import com.myfood.databases.databasesqlite.entity.Translation
 import com.myfood.databinding.ActivityForgotPasswordBinding
 import com.myfood.mvp.login.LoginActivity
 import com.myfood.popup.Popup
@@ -14,9 +14,7 @@ class ForgotPasswordActivity : AppCompatActivity(), ForgotPasswordContract.View 
 
     //Declaración de variables globales
     private lateinit var binding: ActivityForgotPasswordBinding
-    private lateinit var forgotPasswordModel: ForgotPasswordModel
-    private var mutableTranslations: MutableMap<String, Translation>? = null
-    private lateinit var idLanguage: String
+    private var mutableTranslations: MutableMap<String, String> = mutableMapOf()
     private lateinit var forgotPasswordPresenter: ForgotPasswordPresenter
 
     //Metodo onCreate que se ejecuta cuando la vista esta creada
@@ -31,15 +29,11 @@ class ForgotPasswordActivity : AppCompatActivity(), ForgotPasswordContract.View 
         //Hacemos que el layout principal sea invisible hasta que no se carguen los datos
         binding.layoutForgotPassword.visibility = View.INVISIBLE
 
-        //Creamos el modelo
-        forgotPasswordModel = ForgotPasswordModel()
-
         //Creamos el presentador
-        forgotPasswordPresenter = ForgotPasswordPresenter(this, forgotPasswordModel, this)
+        forgotPasswordPresenter = ForgotPasswordPresenter(this)
 
-        //Obtenemos el idioma de la App y establecemos las traducciones
-        idLanguage = forgotPasswordPresenter.getCurrentLanguage()
-        this.mutableTranslations = forgotPasswordPresenter.getTranslations(idLanguage.toInt())
+        //Obtenemos las traducciones de pantalla
+        mutableTranslations = forgotPasswordPresenter.getTranslationsScreen()
         setTranslations()
 
         //Inicializamos los botones
@@ -51,8 +45,7 @@ class ForgotPasswordActivity : AppCompatActivity(), ForgotPasswordContract.View 
         //Inicializamos el click del boton enviar enlace para resetear la contraseña
         binding.btnSendLink.setOnClickListener {
             val email = binding.etEmailForgotPass.text.toString()
-            forgotPasswordPresenter.sendLink(idLanguage, email).observe(this)
-            { response -> onSendLink(response) }
+            forgotPasswordPresenter.sendLink(email)
         }
 
         //Inicializamos el click para el boton volver a la pantalla de Login
@@ -66,13 +59,13 @@ class ForgotPasswordActivity : AppCompatActivity(), ForgotPasswordContract.View 
     override fun setTranslations() {
         binding.layoutForgotPassword.visibility = View.VISIBLE
         binding.tvForgotPasswordTitle.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.TITLE_FORGOTTEN_PASSWORD)!!.text
+            mutableTranslations[Constant.TITLE_FORGOTTEN_PASSWORD]!!
         binding.tvForgotPasswordText.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.MSG_FORGOTTEN_PASSWORD_TEXT)!!.text
+            mutableTranslations[Constant.MSG_FORGOTTEN_PASSWORD_TEXT]!!
         binding.etEmailForgotPass.hint =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_EMAIL)!!.text
+            mutableTranslations[Constant.FIELD_EMAIL]!!
         binding.btnSendLink.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.BTN_SEND_LINK_FORGOTTEN_PASSWORD)!!.text
+            mutableTranslations[Constant.BTN_SEND_LINK_FORGOTTEN_PASSWORD]!!
     }
 
     //Metodo que se ejecuta una vez que se ha llamado al script para enviar el link
@@ -83,12 +76,12 @@ class ForgotPasswordActivity : AppCompatActivity(), ForgotPasswordContract.View 
         if (result.status == com.myfood.constants.Constant.OK) {
             Popup.showInfo(
                 this, resources,
-                mutableTranslations?.get(com.myfood.constants.Constant.MSG_FORGOTTEN_PASSWORD_TEXT_OK)!!.text
+                mutableTranslations[Constant.MSG_FORGOTTEN_PASSWORD_TEXT_OK]!!
             )
         } else {
             Popup.showInfo(
                 this, resources,
-                mutableTranslations?.get(com.myfood.constants.Constant.MSG_FORGOTTEN_PASSWORD_TEXT_KO)!!.text
+                mutableTranslations[Constant.MSG_FORGOTTEN_PASSWORD_TEXT_KO]!!
             )
         }
     }

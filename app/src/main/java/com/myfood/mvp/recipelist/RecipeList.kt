@@ -7,6 +7,7 @@ data class RecipeList(
     val title: String
 )
 
+//Funcion que transforma el objeto RecipeListEntity a una lista de objetos RecipeList
 fun RecipeListEntity.toMVP(): List<RecipeList> {
     val list: MutableList<RecipeList> = mutableListOf()
     recipes.forEach {

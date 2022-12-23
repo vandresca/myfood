@@ -1,34 +1,40 @@
 package com.myfood.mvp.recipe
 
 import android.content.Context
-import androidx.lifecycle.MutableLiveData
-import com.myfood.databases.databasemysql.entity.RecipeEntity
-import com.myfood.databases.databasesqlite.entity.Translation
 
 
 class RecipePresenter(
-    private val recipeView: RecipeContract.View,
-    private val recipeModel: RecipeContract.Model,
+    private val recipeFragment: RecipeFragment,
     context: Context
 ) : RecipeContract.Presenter {
 
+    //Declaramos las variables globales
+    private val recipeModel: RecipeModel = RecipeModel()
+    private val currentLanguage: String
+
     init {
-        recipeModel.getInstance(context)
+
+        //Creamos las instancias de las bases de datos
+        recipeModel.createInstances(context)
+
+        //Obtenemos el idioma actual de la App
+        currentLanguage = recipeModel.getCurrentLanguage()
     }
 
-    override fun getRecipe(idRecipe: String, idLanguage: String): MutableLiveData<RecipeEntity> {
-        return recipeModel.getRecipe(idRecipe, idLanguage)
+    //Metodo que obtiene los atributos de la receta en un idioma dada su id
+    override fun getRecipe(idRecipe: String, idLanguage: String) {
+        return recipeModel.getRecipe(idRecipe, idLanguage).
+        observe(recipeFragment)
+        { recipe -> recipeFragment.onRecipeLoaded(recipe) }
     }
 
-    override fun getCurrentLanguage(): String {
-        return recipeModel.getCurrentLanguage()
-    }
-
-    override fun getTranslations(language: Int): MutableMap<String, Translation> {
-        val mutableTranslations: MutableMap<String, Translation> = mutableMapOf()
-        val translations = recipeModel.getTranslations(language)
+    //Metodo que devuelve las traducciones de la pantalla
+    override fun getTranslationsScreen():MutableMap<String, String>{
+        val mutableTranslations: MutableMap<String, String> =
+            mutableMapOf()
+        val translations = recipeModel.getTranslations(currentLanguage.toInt())
         translations.forEach {
-            mutableTranslations[it.word] = it
+            mutableTranslations[it.word] = it.text
         }
         return mutableTranslations
     }

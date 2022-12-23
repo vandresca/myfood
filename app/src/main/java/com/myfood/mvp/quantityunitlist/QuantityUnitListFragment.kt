@@ -11,7 +11,6 @@ import com.myfood.R
 import com.myfood.constants.Constant
 import com.myfood.constants.Constant.Companion.MODE_ADD
 import com.myfood.databases.databasesqlite.entity.QuantityUnit
-import com.myfood.databases.databasesqlite.entity.Translation
 import com.myfood.databinding.QuantityUnitListFragmentBinding
 import com.myfood.mvp.addquantityunit.AddQuantityUnitFragment
 
@@ -21,8 +20,7 @@ class QuantityUnitListFragment : Fragment(), QuantityUnitListContract.View {
     private var _binding: QuantityUnitListFragmentBinding? = null
     private val binding get() = _binding!!
     private lateinit var quantityUnitListPresenter: QuantityUnitListPresenter
-    private lateinit var quantityUnitListModel: QuantityUnitListModel
-    private var mutableTranslations: MutableMap<String, Translation>? = null
+    private var mutableTranslations: MutableMap<String, String> = mutableMapOf()
 
     //Método onCreateView
     //Mientras se está creando la vista
@@ -45,23 +43,13 @@ class QuantityUnitListFragment : Fragment(), QuantityUnitListContract.View {
         //Hacemos que el layout principal sea invisible hasta que no se carguen los datos
         binding.layoutQuantityUnitList.visibility = View.INVISIBLE
 
-        //Creamos el modelo
-        quantityUnitListModel = QuantityUnitListModel()
-
         //Creamos el presentador
-        quantityUnitListPresenter = QuantityUnitListPresenter(
-            this,
-            quantityUnitListModel, requireContext()
-        )
+        quantityUnitListPresenter = QuantityUnitListPresenter(this,
+            requireContext())
 
-        //Obtenemos los atributos del producto de despensa
-        val currentLanguage = quantityUnitListPresenter.getCurrentLanguage()
-        this.mutableTranslations =
-            quantityUnitListPresenter.getTranslations(currentLanguage.toInt())
+        //Obtenemos el idioma de la App y establecemos las traducciones
+        mutableTranslations = quantityUnitListPresenter.getTranslationsScreen()
         setTranslations()
-
-        //Cargamos la lista de unidades de cantidad
-        quantityUnitListPresenter.loadData()
 
         //Inicializamos el boton añadir unidad de cantidad
         initAddUpdateQuantityUnitClick()
@@ -79,7 +67,7 @@ class QuantityUnitListFragment : Fragment(), QuantityUnitListContract.View {
         }
     }
 
-    override fun showUpdateQuantityUnitScreen(quantityUnitToUpdate: QuantityUnit) {
+    override fun onUpdateQuantityUnit(quantityUnitToUpdate: QuantityUnit) {
         //Metodo que se ejecutara al hacer click en el boton modificar iendo
         //a la pantalla añadir cantidad en modo actualizar y pasando el id
         loadFragment(
@@ -110,7 +98,7 @@ class QuantityUnitListFragment : Fragment(), QuantityUnitListContract.View {
     override fun setTranslations() {
         binding.layoutQuantityUnitList.visibility = View.VISIBLE
         binding.header.titleHeader.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.TITLE_QUANTITY_UNIT_LIST)!!.text
+            mutableTranslations[Constant.TITLE_QUANTITY_UNIT_LIST]!!
 
     }
 

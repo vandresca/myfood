@@ -5,79 +5,95 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import com.myfood.databases.databasesqlite.entity.StorePlace
-import com.myfood.databases.databasesqlite.entity.Translation
 
 class StorePlaceListPresenter(
-    private val placeListView: StorePlaceListContract.View,
-    private val placeListModel: StorePlaceListContract.Model,
-    private val context: Context
+    private val storePlaceListFragment: StorePlaceListFragment,
+    context: Context
 ) : StorePlaceListContract.Presenter {
-    private lateinit var placeAdapter: StorePlaceListAdapter
-    private var placeMutableList: MutableList<StorePlace> = mutableListOf()
+
+    //Declaración de variables globales
+    private val storePlaceListModel: StorePlaceListModel = StorePlaceListModel()
+    private var storePlaceAdapter: StorePlaceListAdapter
+    private var storePlaceMutableList: MutableList<StorePlace> = mutableListOf()
     private var storePlaceFiltered: MutableList<StorePlace> = mutableListOf()
+    private var currentLanguage: String
 
     init {
-        placeListModel.getInstance(context)
-    }
 
-    override fun loadData() {
-        val places = placeListModel.getStorePlaces()
-        placeMutableList = mutableListOf()
-        places.forEach {
-            placeMutableList.add(it)
-        }
-        initData()
-    }
+        //Creamos las instancias de las bases de datos
+        storePlaceListModel.createInstances(context)
 
-    override fun initData() {
-        placeAdapter = StorePlaceListAdapter(
-            placeList = placeMutableList,
+        //Obtenemos el idioma actual de la App
+        currentLanguage =  storePlaceListModel.getCurrentLanguage()
+
+        //Obtenemos la lista de lugares de almacenaje y la transformamos a una lista mutable
+        storePlaceMutableList = storePlaceListModel.getStorePlaces().toMutableList()
+
+        //Creamos el adapter para el recyclerview
+        storePlaceAdapter = StorePlaceListAdapter(
+            placeList = storePlaceMutableList,
             onClickDelete = { position, placeItem -> onDeleteItem(position, placeItem) },
             onClickUpdate = { placeItem -> onUpdateItem(placeItem) })
 
+        //Inicializamos el recyclerview
         Handler(Looper.getMainLooper()).post {
-            placeListView.initRecyclerView(placeAdapter)
+            storePlaceListFragment.initRecyclerView(storePlaceAdapter)
         }
     }
 
+    //Metodo que se ejecuta cuando varia el contenido del campo de texto del buscador
     override fun doFilter(userFilter: Editable?) {
-        storePlaceFiltered = placeMutableList.filter { place ->
+
+        //Obtenemos la lista filtrada que coincide con la busqueda
+        storePlaceFiltered = storePlaceMutableList.filter { place ->
             place.storePlace.lowercase().contains(userFilter.toString().lowercase())
         }.toMutableList()
-        placeAdapter.updateStorePlaceList(storePlaceFiltered)
+
+        //Refrescamos el recyclerview con la lista filtrada
+        storePlaceAdapter.updateStorePlaceList(storePlaceFiltered)
     }
 
-    override fun getCurrentLanguage(): String {
-        return placeListModel.getCurrentLanguage()
-    }
-
-    override fun getTranslations(language: Int): MutableMap<String, Translation> {
-        val mutableTranslations: MutableMap<String, Translation> = mutableMapOf()
-        val translations = placeListModel.getTranslations(language)
+    //Metodo que devuelve las traducciones de la pantalla
+    override fun getTranslationsScreen():MutableMap<String, String>{
+        val mutableTranslations: MutableMap<String, String> =
+            mutableMapOf()
+        val translations = storePlaceListModel.getTranslations(currentLanguage.toInt())
         translations.forEach {
-            mutableTranslations[it.word] = it
+            mutableTranslations[it.word] = it.text
         }
         return mutableTranslations
     }
 
+    //Metodo que borra un lugar de almacenaje de la base de datos SQLite y la lista
     private fun onDeleteItem(position: Int, place: StorePlace) {
-        placeListModel.deleteStorePlace(place.idStorePlace.toString())
 
+        //Borramos el elemento de la base de datos
+        storePlaceListModel.deleteStorePlace(place.idStorePlace.toString())
+
+        //Obtenemos la posicion del elemento en la lista total
         var count = 0
         var pos = 0
-        placeMutableList.forEach {
+        storePlaceMutableList.forEach {
             if (it.idStorePlace == place.idStorePlace) {
                 pos = count
             }
             count += 1
         }
-        placeMutableList.removeAt(pos)
+
+        //Eliminamos el elemento de la lista total
+        storePlaceMutableList.removeAt(pos)
+
+        //Si la lista filtrada es no vacia (hemos realizado una busqueda) eliminamos
+        //el item de dicha lista
         if (storePlaceFiltered.isNotEmpty()) storePlaceFiltered.removeAt(position)
-        placeAdapter.notifyItemRemoved(position)
+
+        //Notificamos los cambios en el recyclerview
+        storePlaceAdapter.notifyItemRemoved(position)
     }
 
+    //Metodo que se ejecuta al pulsar el click de modificar en el item seleccionado
     private fun onUpdateItem(storePlaceList: StorePlace) {
-        placeListView.showUpdateStorePlaceScreen(storePlaceList)
+        storePlaceListFragment.onUpdateStorePlace(storePlaceList)
     }
 
 }

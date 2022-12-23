@@ -4,9 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.myfood.constants.Constant
 import com.myfood.constants.Constant.Companion.FIELD_SIGN_UP
 import com.myfood.databases.databasemysql.entity.OneValueEntity
-import com.myfood.databases.databasesqlite.entity.Translation
 import com.myfood.databinding.ActivitySignupBinding
 import com.myfood.mvp.login.LoginActivity
 import com.myfood.popup.Popup
@@ -15,9 +15,8 @@ class SignUpActivity : AppCompatActivity(), SignUpContract.View {
 
     //Declaración de variables globales
     private lateinit var binding: ActivitySignupBinding
-    private lateinit var signUpModel: SignUpModel
     private lateinit var signUpPresenter: SignUpPresenter
-    private var mutableTranslations: MutableMap<String, Translation>? = null
+    private var mutableTranslations: MutableMap<String, String> = mutableMapOf()
 
     //Metodo onCreate que se ejecuta cuando la vista esta creada
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,15 +30,11 @@ class SignUpActivity : AppCompatActivity(), SignUpContract.View {
         //Hacemos que el layout principal sea invisible hasta que no se carguen los datos
         binding.layoutSignUp.visibility = View.INVISIBLE
 
-        //Creamos el modelo
-        signUpModel = SignUpModel()
-
         //Creamos el presentador
-        signUpPresenter = SignUpPresenter(this, signUpModel, this)
+        signUpPresenter = SignUpPresenter(this)
 
         //Obtenemos el idioma de la App y establecemos las traducciones
-        val currentLanguage = signUpPresenter.getCurrentLanguage()
-        this.mutableTranslations = signUpPresenter.getTranslations(currentLanguage.toInt())
+        mutableTranslations = signUpPresenter.getTranslationsScreen()
         setTranslations()
 
         //Inicializamos el click del boton Registrarse
@@ -72,12 +67,12 @@ class SignUpActivity : AppCompatActivity(), SignUpContract.View {
             Popup.showInfo(this, resources, msg)
         } else {
             //Si el mensaje es vacio insertamos el usuario en la base de datos MySQL
-            signUpModel.insertUser(name, surnames, email, password).observe(this)
-            { result -> onInsertedUser(result) }
+            signUpPresenter.insertUser(name, surnames, email, password)
         }
 
     }
 
+    //Metodo que se ejecuta tras intentar insertar un usuario en la base de datos
     override fun onInsertedUser(result: OneValueEntity) {
 
         //Verificamos que el resultado es correcto
@@ -88,7 +83,7 @@ class SignUpActivity : AppCompatActivity(), SignUpContract.View {
             Popup.showInfo(
                 this,
                 resources,
-                mutableTranslations?.get(com.myfood.constants.Constant.MSG_USER_INSERTED)!!.text
+                mutableTranslations[Constant.MSG_USER_INSERTED]!!
             ) { onClickOKButton() }
         }
     }
@@ -101,16 +96,11 @@ class SignUpActivity : AppCompatActivity(), SignUpContract.View {
 
     override fun setTranslations() {
         binding.layoutSignUp.visibility = View.VISIBLE
-        binding.etConfirmPasswordSignUp.hint =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_CONFIRM_PASSWORD)!!.text
-        binding.etEmailSignUp.hint =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_EMAIL)!!.text
-        binding.etSurnamesSignUp.hint =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_SURNAMES)!!.text
-        binding.etNameSignUp.hint =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_NAME)!!.text
-        binding.etPasswordSignup.hint =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_PASSWORD)!!.text
-        binding.btnSignUp.text = mutableTranslations?.get(FIELD_SIGN_UP)!!.text
+        binding.etConfirmPasswordSignUp.hint = mutableTranslations[Constant.FIELD_CONFIRM_PASSWORD]!!
+        binding.etEmailSignUp.hint = mutableTranslations[Constant.FIELD_EMAIL]!!
+        binding.etSurnamesSignUp.hint = mutableTranslations[Constant.FIELD_SURNAMES]!!
+        binding.etNameSignUp.hint = mutableTranslations[Constant.FIELD_NAME]!!
+        binding.etPasswordSignup.hint = mutableTranslations[Constant.FIELD_PASSWORD]!!
+        binding.btnSignUp.text = mutableTranslations[FIELD_SIGN_UP]!!
     }
 }

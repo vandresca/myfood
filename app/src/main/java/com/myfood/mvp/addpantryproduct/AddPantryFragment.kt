@@ -3,32 +3,25 @@ package com.myfood.mvp.addpantryproduct
 import android.Manifest.permission.*
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import com.google.zxing.integration.android.IntentIntegrator
 import com.myfood.R
+import com.myfood.constants.Constant
 import com.myfood.databases.databasemysql.entity.OpenFoodEntity
 import com.myfood.databases.databasemysql.entity.PantryProductEntity
-import com.myfood.databases.databasesqlite.entity.QuantityUnit
-import com.myfood.databases.databasesqlite.entity.StorePlace
-import com.myfood.databases.databasesqlite.entity.Translation
 import com.myfood.databinding.AddPantryFragmentBinding
 import com.myfood.mvp.pantrylist.PantryListFragment
 import com.myfood.popup.Popup
 import com.myfood.util.DatePickerFragment
+import com.myfood.util.UtilTool
 import com.squareup.picasso.Picasso
-import java.io.ByteArrayOutputStream
 import java.util.*
 
 
@@ -38,12 +31,8 @@ class AddPantryFragment(private val mode: Int, private var idPantry: String = ""
     //Declaración de variables globales
     private var _binding: AddPantryFragmentBinding? = null
     private val binding get() = _binding!!
-    private lateinit var userId: String
-    private lateinit var addPantryModel: AddPantryModel
     private lateinit var addPantryPresenter: AddPantryPresenter
-    private lateinit var quantitiesUnitMutable: MutableList<String>
-    private lateinit var placesMutable: MutableList<String>
-    private var mutableTranslations: MutableMap<String, Translation>? = null
+    private lateinit var mutableTranslations: MutableMap<String, String>
 
     //Método onCreateView
     //Mientras se está creando la vista
@@ -66,44 +55,34 @@ class AddPantryFragment(private val mode: Int, private var idPantry: String = ""
         //Hacemos que el layout principal sea invisible hasta que no se carguen los datos
         binding.layoutAddPantry.visibility = View.INVISIBLE
 
+        //Creamos el presentador
+        addPantryPresenter = AddPantryPresenter(this, requireContext())
+
+        //Obtenemos las traducciones de pantalla
+        mutableTranslations = addPantryPresenter.getTranslationsScreen()
+        setTranslations()
+
+        //Inicializamos los combo de unidades de cantidad y lugares de almacenaje
+        setQuantitiesUnit()
+        setStorePlaces()
+
         //Incializamos los datpickers, elementos para seleccionar una fecha en el calendario
         initDataPickers()
 
         //Inicializamos los botones
-        initBtnScan()
-        initBtnAddUpdate()
-        initBtnChange()
-
-        //Creamos el modelo
-        addPantryModel = AddPantryModel()
-
-        //Creamos el presentador
-        addPantryPresenter = AddPantryPresenter(this, addPantryModel, requireContext())
-
-        //Obtenemos el usuario de la App
-        this.userId = addPantryPresenter.getUserId()
-
-        //Inicializamos los combo de unidades de cantidad y lugares de almacenaje
-        setQuantities(addPantryPresenter.getQuantitiesUnit())
-        setPlaces(addPantryModel.getPlaces())
+        initButtons()
 
         //Aplicamos acciones segun el modo del que venimos
         initDependingMode()
-
-        //Obtenemos el idioma de la App y establecemos las traducciones
-        val currentLanguage = addPantryPresenter.getCurrentLanguage()
-        this.mutableTranslations = addPantryPresenter.getTranslations(currentLanguage.toInt())
-        setTranslations()
     }
 
     private fun initDependingMode() {
 
         //Si venimos del modo SCAN iniciamos el escaner de código de barras
         //Si venimos de modificar (UPDATE) cargamos los datos del producto despensa
-        if (mode == com.myfood.constants.Constant.MODE_SCAN) initScanner()
-        if (mode == com.myfood.constants.Constant.MODE_UPDATE) {
-            addPantryPresenter.getPantryProduct(idPantry).observe(this.viewLifecycleOwner)
-            { data -> onLoadPantryToUpdate(data) }
+        if (mode == Constant.MODE_SCAN) initScanner()
+        if (mode == Constant.MODE_UPDATE) {
+            addPantryPresenter.getPantryProduct(idPantry)
         }
     }
 
@@ -111,14 +90,7 @@ class AddPantryFragment(private val mode: Int, private var idPantry: String = ""
     override fun onLoadPantryToUpdate(result: PantryProductEntity) {
 
         //Verificamos que la respuesta es correcta
-        if (result.status == com.myfood.constants.Constant.OK) {
-
-            //Verificamos si la imagen no está vacia y si es así la cargamos
-            if (result.image.isNotEmpty()) {
-                val decoded = Base64.getDecoder().decode(result.image)
-                val bitmap = BitmapFactory.decodeByteArray(decoded, 0, decoded.size)
-                binding.ivProduct.setImageBitmap(bitmap)
-            }
+        if (result.status == Constant.OK) {
 
             //Verificamos si la fecha de caducidad no está vacia y si es así la cargamos
             if (result.expiredDate.isNotEmpty())
@@ -133,14 +105,17 @@ class AddPantryFragment(private val mode: Int, private var idPantry: String = ""
             binding.etBarcode.setText(result.barcode)
             binding.etQuantity.setText(result.quantity)
             binding.sQuantityUnit.setSelection(
-                quantitiesUnitMutable.indexOf(result.quantityUnit)
-            )
-            binding.sPLace.setSelection(
-                placesMutable.indexOf(result.storePlace)
-            )
+                addPantryPresenter.getPositionQuantitiesUnit(result.quantityUnit))
+            binding.sStorePLace.setSelection(
+                addPantryPresenter.getPositionStorePlaces(result.storePlace))
             binding.etWeight.setText(result.weight)
             binding.etPrice.setText(result.price)
             binding.etBrand.setText(result.brand)
+
+            //Verificamos si la imagen no está vacia y si es así la cargamos
+            if (result.image.isNotEmpty()) {
+                binding.ivProduct.setImageBitmap(UtilTool.base64ToBitmap(result.image))
+            }
         }
 
         //Una vez cargados los datos hacemos el layout visible al usuario.
@@ -158,7 +133,10 @@ class AddPantryFragment(private val mode: Int, private var idPantry: String = ""
                 binding.etBarcode.setText("")
             } else {
                 binding.etBarcode.setText(result.contents)
-                fillProduct(result.contents)
+
+                //Llamamos al metodo fillProductOpenFood para devolver los atributos del producto
+                //alimenticio a partir del código de barras.
+                addPantryPresenter.fillProductOpenFood(result.contents)
             }
         } else {
             binding.etBarcode.setText("")
@@ -166,20 +144,11 @@ class AddPantryFragment(private val mode: Int, private var idPantry: String = ""
         commit()
     }
 
-
-    override fun fillProduct(barcode: String) {
-        //Llamamos al metodo getOpenFoodProduct para devolver los atributos del producto
-        //alimenticio a partir del código de barras.
-        addPantryPresenter.getOpenFoodProduct("${com.myfood.constants.Constant.OPEN_FOOD_URL}$barcode.json")
-            .observe(this.viewLifecycleOwner)
-            { result -> onFillProductData(result) }
-    }
-
     //Se ejecuta tras la llamada de getOpenFoodProduct
-    override fun onFillProductData(result: OpenFoodEntity) {
+    override fun onFillProductOpenFood(result: OpenFoodEntity) {
 
         //Verificamos que la respuesta es correcta.
-        if (result.status == com.myfood.constants.Constant.OK_INT) {
+        if (result.status == Constant.OK_INT) {
 
             //Declaramos variables necesarias
             var nameProduct = String()
@@ -216,11 +185,8 @@ class AddPantryFragment(private val mode: Int, private var idPantry: String = ""
             binding.etProductName.setText(nameProduct)
             binding.etBarcode.setText(result.product.barcode)
             binding.etBrand.setText(brand)
+            Picasso.get().load(srcImage).into(binding.ivProduct)
 
-            binding.ivProduct.tag = srcImage
-            Handler(Looper.getMainLooper()).post {
-                Picasso.get().load(srcImage).into(binding.ivProduct)
-            }
         } else {
             //En caso de que la respuesta no sea correcta mostramos
             //un mensaje al usuario indicando que el producto no ha sido
@@ -228,7 +194,7 @@ class AddPantryFragment(private val mode: Int, private var idPantry: String = ""
             Popup.showInfo(
                 requireContext(),
                 resources,
-                mutableTranslations?.get(com.myfood.constants.Constant.MSG_PRODUCT_NOT_FOUND)!!.text
+                mutableTranslations[Constant.MSG_PRODUCT_NOT_FOUND]!!
             )
         }
     }
@@ -241,23 +207,16 @@ class AddPantryFragment(private val mode: Int, private var idPantry: String = ""
             val dialogDate =
                 DatePickerFragment { year, month, day -> showExpirationResult(year, month, day) }
             //Lo mostramos
-            dialogDate.show(childFragmentManager, com.myfood.constants.Constant.CONST_DPICKER)
+            dialogDate.show(childFragmentManager, Constant.CONST_DPICKER)
         }
         binding.dpPreferenceDate.setOnClickListener {
             //Creamos un dialogo Datapicker
             val dialogDate =
                 DatePickerFragment { year, month, day -> showPreferenceResult(year, month, day) }
             //Lo mostramos
-            dialogDate.show(childFragmentManager, com.myfood.constants.Constant.CONST_DPICKER)
+            dialogDate.show(childFragmentManager, Constant.CONST_DPICKER)
         }
     }
-
-    private fun initBtnScan() {
-        //Inicialiamos el boton de escaneo para que inicie el escaner de
-        //código de barras cuando se haga click
-        binding.btnScan.setOnClickListener { initScanner() }
-    }
-
 
     private fun initScanner() {
 
@@ -265,19 +224,21 @@ class AddPantryFragment(private val mode: Int, private var idPantry: String = ""
         val intentIntegrator = IntentIntegrator.forSupportFragment(this)
         intentIntegrator.setBeepEnabled(false)
         intentIntegrator.setCameraId(0)
-        intentIntegrator.setPrompt(com.myfood.constants.Constant.CONST_SCAN)
+        intentIntegrator.setPrompt(Constant.CONST_SCAN)
         intentIntegrator.setBarcodeImageEnabled(false)
         intentIntegrator.initiateScan()
     }
 
-    private fun initBtnAddUpdate() {
+    private fun initButtons() {
+
+        //Inicialiamos el boton de escaneo para que inicie el escaner de
+        //código de barras cuando se haga click
+        binding.btnScan.setOnClickListener { initScanner() }
 
         //Inicializamos el boton de Añadir Producto Despensa para que inicie el método de
         //inserción al hacer click.
         binding.btnAddPurchaseProduct.setOnClickListener { addUpdateProductToDB() }
-    }
 
-    private fun initBtnChange() {
         //Metodo con callback que se ejecuta tras lanzar el Intent y seleccioar una imagen
         //de la galeria de imagen de abajo
         val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
@@ -300,117 +261,68 @@ class AddPantryFragment(private val mode: Int, private var idPantry: String = ""
         val name = binding.etProductName.text.toString()
         val quantity = binding.etQuantity.text.toString()
         val quantityUnit = binding.sQuantityUnit.selectedItem.toString()
-        val place = binding.sPLace.selectedItem.toString()
+        val place = binding.sStorePLace.selectedItem.toString()
         val weight = binding.etWeight.text.toString()
         val price = binding.etPrice.text.toString()
         val expirationDate = binding.etExpirationDate.text.toString()
         val preferenceDate = binding.etPreferenceDate.text.toString()
         val brand = binding.etBrand.text.toString()
-
-        //Obtenemos el bitmap del ImageView
-        val bitmap = binding.ivProduct.drawable.toBitmap()
-
-        //Creamos un outputStream de tipo ByteArray
-        val stream = ByteArrayOutputStream()
-
-        //Llenamos el outputstream con el bitmap con calidad 100%
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-
-        //Transformamos el outputstream a bytearray
-        val byteArray = stream.toByteArray()
-
-        //Transformamos el byteArray a String en codificación base64
-        val image = Base64.getEncoder().encodeToString(byteArray)
+        val image = UtilTool.bitmapToBase64(binding.ivProduct.drawable.toBitmap())
 
         //Verificamos que hayamos insertado un mombre de producto y si no mostramos
         //un  mensaje al usuario indicando que lo haga
         if (name.isEmpty()) {
             Popup.showInfo(
                 requireContext(), resources,
-                mutableTranslations?.get(com.myfood.constants.Constant.MSG_NOT_EMPTY_NAME)!!.text
+                mutableTranslations[Constant.MSG_NOT_EMPTY_NAME]!!
             )
             //Verificamos que hayamos insertado una fecha de caducidad y si  no mostramos
             //un mensaje al usuario indicando que lo haga
         } else if (expirationDate.isEmpty()) {
             Popup.showInfo(
                 requireContext(), resources,
-                mutableTranslations?.get(com.myfood.constants.Constant.MSG_NOT_EMPTY_EXPIRED_DATE)!!.text
+                mutableTranslations[Constant.MSG_NOT_EMPTY_EXPIRED_DATE]!!
             )
         } else {
-            //Si todo es correcto y estamos en el modo Actualizar, actualizamos
+            //Si es correcto y estamos en el modo Actualizar, actualizamos
             //el producto con los datos y cuando recibimos respuesta correcta
             // volvemos a pantalla Despensa
-            if (mode != com.myfood.constants.Constant.MODE_UPDATE) {
+            if (mode != Constant.MODE_UPDATE) {
                 addPantryPresenter.insertPantry(
                     barcode, name, quantity, quantityUnit, place,
-                    weight, price, expirationDate, preferenceDate, image, brand, userId
-                ).observe(this.viewLifecycleOwner) { result ->
-                    if (result.status == com.myfood.constants.Constant.OK) {
-                        loadFragment(PantryListFragment())
-                    }
-                }
-                //Si todo es correcto y estamos en el modo insertar, insertamos el nuevo
+                    weight, price, expirationDate, preferenceDate, image, brand
+                )
+
+                //Si es correcto y estamos en el modo insertar, insertamos el nuevo
                 //producto con los datos y cuando recibimos respuesta correcta volvemos
                 //a la pantalla Despensa
             } else {
                 addPantryPresenter.updatePantry(
                     barcode, name, quantity, quantityUnit, place,
                     weight, price, expirationDate, preferenceDate, image, brand, idPantry
-                ).observe(this.viewLifecycleOwner) { result ->
-                    if (result.status == com.myfood.constants.Constant.OK) {
-                        loadFragment(PantryListFragment())
-                    }
-                }
+                )
             }
         }
     }
 
+    //Metodo que se ejecuta tras realizarse correctamente una inserción o actualización
+    //de un producto de despensa
+    override fun onInsertedOrUpdatedPantry(){
+        loadFragment(PantryListFragment())
+    }
+
     //Metodo que se ejecuta tras recibir la lista de unidades de cantidad
-    private fun setQuantities(quantitiesUnit: List<QuantityUnit>?) {
+    private fun setQuantitiesUnit() {
 
-        //Declaramos una variable global de tipo lista mutable
-        //de tipo String.
-        //Recorremos los objetos de unidades de cantidad e insertamos en la lista
-        //las unidades de cantidad como String
-        quantitiesUnitMutable = mutableListOf()
-        quantitiesUnit!!.forEach {
-            quantitiesUnitMutable.add(it.quantityUnit)
-        }
-
-        //Poblamos el combo con la lista
-        ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            quantitiesUnitMutable
-        ).also { adapter ->
-            // Especifica el layout para usar cuando la lista de opciones aparece
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            //Aplicamos el adapter al spinner
-            binding.sQuantityUnit.adapter = adapter
-        }
+        //Aplicamos el adapter al spinner
+        binding.sQuantityUnit.adapter = addPantryPresenter.createAdapterQuantityUnit()
     }
 
     //Metodo que se ejecuta tras recibir la lista de lugares de almacenaje
-    private fun setPlaces(places: List<StorePlace>) {
+    private fun setStorePlaces() {
 
-        //Declaramos una variable global de tipo lista mutable
-        //de tipo String.
-        //Recorremos los objetos de lugares de almacenaje e insertamos en la lista
-        //los lugares de almacenaje como String
-        placesMutable = mutableListOf()
-        places.forEach {
-            placesMutable.add(it.storePlace)
-        }
-        ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            placesMutable
-        ).also { adapter ->
-            // Especifica el layout para usar cuando la lista de opciones aparece
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            //Aplicamos el adapter al spinner
-            binding.sPLace.adapter = adapter
-        }
+        //Aplicamos el adapter al spinner
+        binding.sStorePLace.adapter = addPantryPresenter.createAdapterStorePlace()
     }
 
     //Metodo para confirmar el cambio de pantalla de vuelta tras el escaneo del código de
@@ -451,41 +363,27 @@ class AddPantryFragment(private val mode: Int, private var idPantry: String = ""
 
     //Establece las traducciones de los textos
     override fun setTranslations() {
-        binding.layoutAddPantry.visibility = View.VISIBLE
-        binding.lBarcode.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_BARCODE)!!.text
-        binding.lProductName.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_NAME)!!.text
-        binding.lBrand.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_BRAND)!!.text
-        binding.lPlace.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_PLACE)!!.text
-        binding.lPrice.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_PRICE)!!.text
-        binding.lQuantity.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_QUANTITY)!!.text
-        binding.lQuantityUnit.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_QUANTITY_UNIT)!!.text
-        binding.lWeight.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_WEIGHT)!!.text
-        binding.lExpirationDate.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_EXPIRATION_DATE)!!.text
-        binding.lPreferenceDate.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_PREFERENCE_DATE)!!.text
-        binding.btnChangeImage.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.BTN_CHANGE_IMAGE)!!.text
-        binding.btnScan.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.BTN_SCAN)!!.text
-        if (mode == com.myfood.constants.Constant.MODE_ADD || mode == com.myfood.constants.Constant.MODE_SCAN) {
-            binding.header.titleHeader.text =
-                mutableTranslations?.get(com.myfood.constants.Constant.TITLE_ADD_PANTRY)!!.text
-            binding.btnAddPurchaseProduct.text =
-                mutableTranslations?.get(com.myfood.constants.Constant.BTN_ADD_PANTRY)!!.text
+        binding.lBarcode.text = mutableTranslations[Constant.FIELD_BARCODE]!!
+        binding.lProductName.text = mutableTranslations[Constant.FIELD_NAME]!!
+        binding.lBrand.text = mutableTranslations[Constant.FIELD_BRAND]!!
+        binding.lStorePlace.text = mutableTranslations[Constant.FIELD_PLACE]!!
+        binding.lPrice.text = mutableTranslations[Constant.FIELD_PRICE]!!
+        binding.lQuantity.text = mutableTranslations[Constant.FIELD_QUANTITY]!!
+        binding.lQuantityUnit.text = mutableTranslations[Constant.FIELD_QUANTITY_UNIT]!!
+        binding.lWeight.text = mutableTranslations[Constant.FIELD_WEIGHT]!!
+        binding.lExpirationDate.text = mutableTranslations[Constant.FIELD_EXPIRATION_DATE]!!
+        binding.lPreferenceDate.text = mutableTranslations[Constant.FIELD_PREFERENCE_DATE]!!
+        binding.btnChangeImage.text = mutableTranslations[Constant.BTN_CHANGE_IMAGE]!!
+        binding.btnScan.text = mutableTranslations[Constant.BTN_SCAN]!!
+        if (mode == Constant.MODE_ADD || mode == Constant.MODE_SCAN) {
+            binding.header.titleHeader.text = mutableTranslations[Constant.TITLE_ADD_PANTRY]!!
+            binding.btnAddPurchaseProduct.text = mutableTranslations[Constant.BTN_ADD_PANTRY]!!
+
+            //Una vez cargadas las traducciones hacemos el layout visible al usuario.
+            binding.layoutAddPantry.visibility = View.VISIBLE
         } else {
-            binding.header.titleHeader.text =
-                mutableTranslations?.get(com.myfood.constants.Constant.TITLE_UPDATE_PANTRY)!!.text
-            binding.btnAddPurchaseProduct.text =
-                mutableTranslations?.get(com.myfood.constants.Constant.BTN_UPDATE_PANTRY)!!.text
+            binding.header.titleHeader.text = mutableTranslations[Constant.TITLE_UPDATE_PANTRY]!!
+            binding.btnAddPurchaseProduct.text = mutableTranslations[Constant.BTN_UPDATE_PANTRY]!!
         }
     }
 }

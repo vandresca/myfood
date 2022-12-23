@@ -1,25 +1,29 @@
 package com.myfood.mvp.main
 
-import com.myfood.databases.databasesqlite.entity.Translation
-
 class MainPresenter(
-    private val mainView: MainContract.View,
-    private val mainModel: MainContract.Model,
     mainActivity: MainActivity
 ) : MainContract.Presenter {
+
+    //Declaramos las variables globales
+    private var mainModel:MainModel= MainModel()
+    private var currentLanguage: String
+
     init {
-        mainModel.getInstance(mainActivity)
+
+        //Creamos las instancias en las bases de datos
+        mainModel.createInstances(mainActivity)
+
+        //Obtenemos el lenguage actual de la app
+        currentLanguage = mainModel.getCurrentLanguage()
     }
 
-    override fun getCurrentLanguage(): String {
-        return mainModel.getCurrentLanguage()
-    }
-
-    override fun getTranslations(language: Int): MutableMap<String, Translation> {
-        val mutableTranslations: MutableMap<String, Translation> = mutableMapOf()
-        val translations = mainModel.getTranslations(language)
+    //Metodo que devuelve las traducciones del menu de navegacion en el idioma actual
+    override fun getTranslationsMenu():MutableMap<String, String>{
+        val mutableTranslations: MutableMap<String, String> =
+            mutableMapOf()
+        val translations = mainModel.getTranslations(currentLanguage.toInt())
         translations.forEach {
-            mutableTranslations[it.word] = it
+            mutableTranslations[it.word] = it.text
         }
         return mutableTranslations
     }

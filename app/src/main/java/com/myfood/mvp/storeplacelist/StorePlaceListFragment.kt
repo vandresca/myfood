@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.myfood.R
 import com.myfood.constants.Constant
 import com.myfood.databases.databasesqlite.entity.StorePlace
-import com.myfood.databases.databasesqlite.entity.Translation
 import com.myfood.databinding.StorePlaceListFragmentBinding
 import com.myfood.mvp.addstoreplace.AddStorePlaceFragment
 
@@ -19,9 +18,8 @@ class StorePlaceListFragment : Fragment(), StorePlaceListContract.View {
     //Declaración de variables
     private var _binding: StorePlaceListFragmentBinding? = null
     private val binding get() = _binding!!
-    private lateinit var placeListPresenter: StorePlaceListPresenter
-    private lateinit var placeListModel: StorePlaceListModel
-    private var mutableTranslations: MutableMap<String, Translation>? = null
+    private lateinit var storePlaceListPresenter: StorePlaceListPresenter
+    private var mutableTranslations: MutableMap<String, String> = mutableMapOf()
 
     //Método onCreateView
     //Mientras se está creando la vista
@@ -44,19 +42,13 @@ class StorePlaceListFragment : Fragment(), StorePlaceListContract.View {
         //Hacemos que el layout principal sea invisible hasta que no se carguen los datos
         binding.layoutPlaceList.visibility = View.INVISIBLE
 
-        //Creamos el modelo
-        placeListModel = StorePlaceListModel()
-
         //Creamos el presentador
-        placeListPresenter = StorePlaceListPresenter(this, placeListModel, requireContext())
+        storePlaceListPresenter = StorePlaceListPresenter(this,
+            requireContext())
 
-        //Obtenemos el id de usuario de la App
-        val currentLanguage = placeListPresenter.getCurrentLanguage()
-        this.mutableTranslations = placeListPresenter.getTranslations(currentLanguage.toInt())
+        //Obtenemos el idioma de la App y establecemos las traducciones
+        mutableTranslations = storePlaceListPresenter.getTranslationsScreen()
         setTranslations()
-
-        //Cargamos la lista de lugares de almacenaje
-        placeListPresenter.loadData()
 
         //Inicializamos el boton añadir lugar de almacenaje
         initAddUpdateStorePlaceClick()
@@ -71,7 +63,7 @@ class StorePlaceListFragment : Fragment(), StorePlaceListContract.View {
         //Incializamos el evento que se activa cuando se produce un cambio de texto en
         //el campo de texto y que lanzara el metodo doFilter
         binding.etFilterPlaceL.addTextChangedListener { watchText ->
-            placeListPresenter.doFilter(watchText)
+            storePlaceListPresenter.doFilter(watchText)
         }
     }
 
@@ -91,13 +83,13 @@ class StorePlaceListFragment : Fragment(), StorePlaceListContract.View {
         }
     }
 
-    override fun showUpdateStorePlaceScreen(storePlaceToUpdate: StorePlace) {
+    override fun onUpdateStorePlace(storePlaceToUpdate: StorePlace) {
 
         //Si se pulsa el boton modificar en el item de la lista se ira a la pantalla
         //añadir lugar de almacenaje en modo actualizar pasando el id
         loadFragment(
             AddStorePlaceFragment(
-                com.myfood.constants.Constant.MODE_UPDATE,
+                Constant.MODE_UPDATE,
                 storePlaceToUpdate
             )
         )
@@ -121,8 +113,8 @@ class StorePlaceListFragment : Fragment(), StorePlaceListContract.View {
     override fun setTranslations() {
         binding.layoutPlaceList.visibility = View.VISIBLE
         binding.header.titleHeader.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.TITLE_STORE_PLACES_LIST)!!.text
+            mutableTranslations[Constant.TITLE_STORE_PLACES_LIST]!!
         binding.etFilterPlaceL.hint =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_SEARCH)!!.text
+            mutableTranslations[Constant.FIELD_SEARCH]!!
     }
 }

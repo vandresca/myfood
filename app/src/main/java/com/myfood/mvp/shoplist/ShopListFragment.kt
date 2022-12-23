@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.myfood.R
 import com.myfood.constants.Constant
-import com.myfood.databases.databasesqlite.entity.Translation
 import com.myfood.databinding.ShopListFragmentBinding
 import com.myfood.mvp.addshopproduct.AddShopFragment
 
@@ -19,8 +18,7 @@ class ShopListFragment : Fragment(), ShopListContract.View {
     private var _binding: ShopListFragmentBinding? = null
     private val binding get() = _binding!!
     private lateinit var shopListPresenter: ShopListPresenter
-    private lateinit var shopListModel: ShopListModel
-    private var mutableTranslations: MutableMap<String, Translation>? = null
+    private var mutableTranslations: MutableMap<String, String> = mutableMapOf()
 
     //Método onCreateView
     //Mientras se está creando la vista
@@ -43,24 +41,11 @@ class ShopListFragment : Fragment(), ShopListContract.View {
         //Hacemos que el layout principal sea invisible hasta que no se carguen los datos
         binding.layoutShopList.visibility = View.INVISIBLE
 
-        //Creamos el modelo
-        shopListModel = ShopListModel()
-
         //Creamos el presentador
-        shopListPresenter = ShopListPresenter(
-            this, ShopListModel(), this,
-            requireContext()
-        )
+        shopListPresenter = ShopListPresenter(this , requireContext())
 
-        //Obtenemos el id de usuario de la App
-        val idUser = shopListPresenter.getUserId()
-
-        //Inicializamos el usuario y cargamos la lista de productos de compra
-        shopListPresenter.setIdUser(this, idUser)
-
-        //Obtenemos los atributos del producto de despensa
-        val currentLanguage = shopListPresenter.getCurrentLanguage()
-        this.mutableTranslations = shopListPresenter.getTranslations(currentLanguage.toInt())
+        //Obtenemos el idioma de la App y establecemos las traducciones
+        mutableTranslations = shopListPresenter.getTranslationsScreen()
         setTranslations()
 
         //Inicializar buscador
@@ -72,7 +57,7 @@ class ShopListFragment : Fragment(), ShopListContract.View {
     }
 
 
-    override fun showUpdateShopProductScreen(idShop: String) {
+    override fun onUpdateShopProduct(idShop: String) {
         //Si se ha pulsado el boto modificar del producto en la lista vamos a la pantalla
         //añadir producto compra con el id de compra
         loadFragment(AddShopFragment(Constant.MODE_UPDATE, idShop))
@@ -99,7 +84,7 @@ class ShopListFragment : Fragment(), ShopListContract.View {
         //Inicializamos el boton añadir producto de compra para que vaya a la pantalla
         //añadir producto de compra en modo añadir
         binding.addSLItem.setOnClickListener {
-            loadFragment(AddShopFragment(com.myfood.constants.Constant.MODE_ADD))
+            loadFragment(AddShopFragment(Constant.MODE_ADD))
         }
     }
 
@@ -119,9 +104,7 @@ class ShopListFragment : Fragment(), ShopListContract.View {
     //Establecemos las traducciones
     override fun setTranslations() {
         binding.layoutShopList.visibility = View.VISIBLE
-        binding.header.titleHeader.text =
-            mutableTranslations?.get(com.myfood.constants.Constant.TITLE_SHOPPING_LIST)!!.text
-        binding.etFilterSL.hint =
-            mutableTranslations?.get(com.myfood.constants.Constant.FIELD_SEARCH)!!.text
+        binding.header.titleHeader.text = mutableTranslations[Constant.TITLE_SHOPPING_LIST]!!
+        binding.etFilterSL.hint = mutableTranslations[Constant.FIELD_SEARCH]!!
     }
 }

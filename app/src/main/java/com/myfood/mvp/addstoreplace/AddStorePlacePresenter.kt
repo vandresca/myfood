@@ -1,34 +1,38 @@
 package com.myfood.mvp.addstoreplace
 
 import android.content.Context
-import com.myfood.databases.databasesqlite.entity.Translation
 
 class AddStorePlacePresenter(
-    private val addStorePlaceView: AddStorePlaceContract.View,
-    private val addStorePlaceModel: AddStorePlaceContract.Model,
     context: Context
 ) : AddStorePlaceContract.Presenter {
+
+    //Declaramos las variables globales
+    private val addStorePlaceModel: AddStorePlaceModel= AddStorePlaceModel()
+
     init {
-        addStorePlaceModel.getInstance(context)
+
+        //Creamos las instancias de la base de datos
+        addStorePlaceModel.createInstances(context)
     }
 
-    override fun getCurrentLanguage(): String {
-        return addStorePlaceModel.getCurrentLanguage()
-    }
-
-    override fun getTranslations(language: Int): MutableMap<String, Translation> {
-        val mutableTranslations: MutableMap<String, Translation> = mutableMapOf()
-        val translations = addStorePlaceModel.getTranslations(language)
+    //Metodo que devuelve las traducciones de la pantalla
+    override fun getTranslationsScreen():MutableMap<String, String>{
+        val mutableTranslations: MutableMap<String, String> =
+            mutableMapOf()
+        val currentLanguage = addStorePlaceModel.getCurrentLanguage()
+        val translations = addStorePlaceModel.getTranslations(currentLanguage.toInt())
         translations.forEach {
-            mutableTranslations[it.word] = it
+            mutableTranslations[it.word] = it.text
         }
         return mutableTranslations
     }
 
+    //Metodo que añade un lugar de almacenaje en la base de datos SQLite
     override fun addStorePlace(storePlace: String) {
         addStorePlaceModel.addStorePlace(storePlace)
     }
 
+    //Metodo que actualiza un lugar de almacenaje en la base de datos SQLite dado su id
     override fun updateStorePlace(storePlace: String, idStorePlace: String) {
         addStorePlaceModel.updateStorePlace(storePlace, idStorePlace)
     }

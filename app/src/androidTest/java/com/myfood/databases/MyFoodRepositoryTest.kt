@@ -17,8 +17,8 @@ internal class MyFoodRepositoryTest {
     @Before
     fun setUp() {
         context = ApplicationProvider.getApplicationContext()
-        myFoodRepository = com.myfood.databases.MyFoodRepository()
-        myFoodRepository.getInstance(context)
+        myFoodRepository = MyFoodRepository()
+        myFoodRepository.createInstances(context)
     }
 
     @Test
@@ -521,7 +521,7 @@ internal class MyFoodRepositoryTest {
     fun getNutrientsByType() {
         //We select group 2: Vitamins
         val response = myFoodRepository.getNutrientsByType(
-            "2",
+            "3",
             "2004",
             "5"
         ).getOrAwaitValueTest()

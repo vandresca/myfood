@@ -39,6 +39,11 @@ class ExpirationListAdapter(
     //Metodo que devuelve la cantidad de elementos que existen en la lista
     override fun getItemCount(): Int = expirationList.size
 
+    //Obtenemos la suma de precios de todos los elementos de la lista
+    fun getTotalPrice(): Double {
+        return expirationList.sumOf { expiration -> expiration.price.toDouble() }
+    }
+
     //Metodo que actualiza la lista de elementos
     @SuppressLint("NotifyDataSetChanged")
     fun updateExpirationList(updatedExpirationList: List<ExpirationList>) {

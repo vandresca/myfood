@@ -98,9 +98,6 @@ class ExpirationListFragment : Fragment(), ExpirationListContract.View {
         //Inicializamos un  linear layour manager y el adapter del recyclerview
         binding.rvEL.layoutManager = LinearLayoutManager(this.context)
         binding.rvEL.adapter = expirationListAdapter
-
-        //Incializamos la cabecera que va justo encima del recyclerview
-        binding.tvELPrice.text = String.format("%.2f", expirationListAdapter.getTotalPrice())
     }
 
     //Establecemos las traducciones

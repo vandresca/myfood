@@ -96,7 +96,7 @@ class LoginActivity : AppCompatActivity(), LoginContract.View {
 
     //Establecemos las traducciones
     override fun setTranslations() {
-        binding.etNameLogin.hint = mutableTranslations[Constant.FIELD_NAME]!!
+        binding.etNameLogin.hint = mutableTranslations[Constant.FIELD_USER_NAME]!!
         binding.etPasswordLogin.hint = mutableTranslations[Constant.FIELD_PASSWORD]!!
         binding.btnSignUpLogin.text = mutableTranslations[FIELD_SIGN_UP]!!
         binding.btnPasswordForgotten.text = mutableTranslations[Constant.FIELD_FORGOTTEN_PASSWORD]!!

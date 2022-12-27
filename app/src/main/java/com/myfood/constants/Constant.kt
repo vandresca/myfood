@@ -18,6 +18,7 @@ class Constant {
         const val GENERAL_NUTRIENT = "1"
 
         //Fields
+        const val FIELD_USER_NAME = "userName"
         const val FIELD_NAME = "name"
         const val FIELD_PASSWORD = "password"
         const val FIELD_SIGN_UP = "signUp"
@@ -133,6 +134,8 @@ class Constant {
         const val LABEL_WEIGHT = "weight"
         const val LABEL_EXPIRATION_DATE = "expirationDate"
         const val LABEL_PREFERENCE_DATE = "preferenceDate"
+        const val LABEL_BARCODE_OPTION = "barcodeOption"
+        const val LABEL_MANUAL_OPTION = "manualOption"
 
         //Menu
         const val MENU_PANTRY = "menuPurchase"

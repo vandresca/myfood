@@ -65,8 +65,9 @@ class OptionAddPantryFragment : Fragment(), OptionAddPantryContract.View {
     //Establecemos las traducciones
     override fun setTranslations() {
         binding.layoutOptionAddPantry.visibility = View.VISIBLE
-        binding.header.titleHeader.text =
-            mutableTranslations[Constant.TITLE_ADD_PANTRY]!!
+        binding.header.titleHeader.text = mutableTranslations[Constant.TITLE_ADD_PANTRY]!!
+        binding.tvBarcode.text = mutableTranslations[Constant.LABEL_BARCODE_OPTION]!!
+        binding.tvManual.text = mutableTranslations[Constant.LABEL_MANUAL_OPTION]!!
     }
 
     //Metodo que nos permite navegar a otro Fragment o pantalla

@@ -4,20 +4,25 @@
 include('../credencialesBaseDatos.php');
 
 
-// Create connection
+// Creamos la conexión con la base de datos
 $con = mysqli_connect($servername, $username, $password, $database);
 
-// Check connection
+// Chequeamos la conexión
 if (mysqli_connect_errno()){
   echo "Failed to connect to MySQL: " . mysqli_connect_error();
   exit();
 }
 
+//Si no venimos de una petición POST obtenemos el id de usuario y el lenguaje y
+//printamos el formulario
 if ($_SERVER["REQUEST_METHOD"] != "POST") {
     $user =$_GET['u'];
     $language = $_GET['l'];
     printForm($user, $language);
+//En caso de venir de un POST, (hemos rellenado los datos del formualario)
 }else{
+    //Comprobamos que la contraseña introducida y su comprobación son iguales si no lo son
+    //mostramos un aviso al usuario en su idioma
     if($_POST['pass'] != $_POST['passConf']){
         $language = $_POST['language'];
         if($language==1){
@@ -37,6 +42,8 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") {
         }
         echo "<div style='margin-left:50px; margin-top:50px;color:red;'>$passNotMatch</div>";
         printForm($_POST['user'], $_POST['language']);
+
+   //En caso de coincidir cambiamos la contraseña y avisamos al usuario.
     }else{
         $language = $_POST['language'];
         if($language==1){
@@ -64,6 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") {
     }
 }
 
+//Función que printa el formularo para cambiar la contraseña
 function printForm($user, $language){
     $self = $_SERVER['PHP_SELF'];
     if($language==1){

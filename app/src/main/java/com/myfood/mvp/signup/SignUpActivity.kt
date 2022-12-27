@@ -99,7 +99,7 @@ class SignUpActivity : AppCompatActivity(), SignUpContract.View {
         binding.etConfirmPasswordSignUp.hint = mutableTranslations[Constant.FIELD_CONFIRM_PASSWORD]!!
         binding.etEmailSignUp.hint = mutableTranslations[Constant.FIELD_EMAIL]!!
         binding.etSurnamesSignUp.hint = mutableTranslations[Constant.FIELD_SURNAMES]!!
-        binding.etNameSignUp.hint = mutableTranslations[Constant.FIELD_NAME]!!
+        binding.etNameSignUp.hint = mutableTranslations[Constant.FIELD_USER_NAME]!!
         binding.etPasswordSignup.hint = mutableTranslations[Constant.FIELD_PASSWORD]!!
         binding.btnSignUp.text = mutableTranslations[FIELD_SIGN_UP]!!
     }

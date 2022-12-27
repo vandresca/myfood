@@ -39,22 +39,36 @@ $data= new stdClass();
 //Creamos un array para almacenar los productos resultantes
 $products = array();
 if ($result = mysqli_query($con, $sql)) {
-  // Get field information for all fields
-  
+
+  //Recorremos cada una de las filas resultantes
   while ($row = mysqli_fetch_row($result)) {
+
+    //Creamos un producto por cada fila
     $product = new stdClass();
+
+    //Asignamos cada uno de los atributos del producto
     $product->name = $row[1];
     $product->days = $row[2];
     $product->price = $row[3];
     $product->expiration = $row[4];
+
+    //Añadimos el producto al array de productos
     array_push($products, $product);
-    
+
+    //Devolvemos en el objeto data respuesta correcta
     $data->response="OK";
   }
+
+  //Liberamos recursos
   mysqli_free_result($result);
 }
+
+//Asignamos el array de productos al objeto data
 $data->products =$products;
 
+//Cerramos la conexión con la base de datos
 mysqli_close($con);
+
+//Devolvemos el objeto serializado como json
 echo json_encode($data);
 ?>

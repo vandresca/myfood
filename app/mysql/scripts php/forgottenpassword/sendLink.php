@@ -82,9 +82,9 @@ if ($result = mysqli_query($con, $sql)) {
     }
 }
 
-
+//Cerramos la conexión con la base de datos
 mysqli_close($con);
 
+//Devolvemos el objeto data serializado como json.
 echo json_encode($data);
-
 ?>

@@ -1,5 +1,7 @@
 <?php
 
+include('../utilities.php');
+
 //Cargamos las credenciales de la base de datos MySQL
 include('../credencialesBaseDatos.php');
 
@@ -50,139 +52,40 @@ if (mysqli_connect_errno()){
   exit();
 }
 
-//pasamos el nombre a minusculas y sin espacios
-$pal = strtolower(trim($_GET['n']));
-//Realizamos algunos ajustes  para que encuentre alimentos
+$pal = toSingular(trim($n));
 $pal = str_replace("fideo", "fideos", $pal);
 $pal = str_replace("edulcorante", "azucar blanco", $pal);
-$pal = str_replace(" mesa ", " ", $pal);
+$pal = str_replace("Edulcorante", "Azucar blanco", $pal);
 
-//Separamos el nombre por espacios
-$arr = explode(" ",$pal);
 
-//Creamos la subselect para que detecte alimentos que contengan las palabras del nombre
-$select = "(";
-$subselect = "";
-$i=0;
-
-//Si solo es una palabra
-if(count($arr) == 1){
-    $select .= "p".$i;
-    $subselect .= "case when instr(lower(name), lower('$p'))>0 then 1 else 0 end as p$i";
-
-//Si es más de una palabra
-}else{
-    //Recorremos todas las palabras
-    foreach($arr as $key=>$value){
-        if($i== 0){
-            $select .= "p".$i;
-            $subselect .= "case when instr(lower(name), lower('$value '))>0 then 1 else 0 end as p$i";
-            $i++;
-        } else{
-            $select .= "+p".$i;
-            $subselect .= ", case when instr(lower(name), lower('$value'))>0 then 1 else 0 end as p$i";
-            $i++;
-            $select .= "+p".$i;
-            $subselect .= ", case when instr(lower(name), lower(' $value '))>0 then 1 else 0 end as p$i";
-            $i++;
-            $select .= "+p".$i;
-            $subselect .= ", case when instr(lower(name), lower(' $value'))>0 then 1 else 0 end as p$i";
-            $i++;
-        }
-    }
-}
-
-$select .= ")";
-
-//Montamos la select completa
-$sql ="SELECT lower(name), $select as p3, id_food FROM";
-$sql .= " (SELECT id_food, name, $subselect FROM `Food`) as t1 having p3 > 0";
-$con -> query('SET NAMES utf8');
-
-//Creamos 4 arrays
-//array_a => Almacena los nombres de los alimentos
-//array_b => Almacena el peso de las coincidencias de palabras
-//array_c => Almacena los id_food
-$arr_a = array();
-$arr_b = array();
-$arr_c = array();
-
-//Creamos un objeto data para la respuesta
-$data= new stdClass();
+// Consulta para obtener registros de la tabla "Food" que tengan las mismas palabras que el nombre "$pal" y que se encuentren al principio de la frase
+$sql = "SELECT * FROM Food WHERE MATCH(name) AGAINST ('$pal' IN BOOLEAN MODE) AND name LIKE '$pal %' ORDER BY MATCH (name) AGAINST ('$pal') DESC";
 
 //Ejecutamos la sql
-if ($result = mysqli_query($con, $sql)) {
-  //Obtenemos las filas del resultado
-  while ($row = mysqli_fetch_row($result)) {
-    //Asignamos los arrays
-    array_push($arr_a,$row[0]);
-    array_push($arr_b,$row[1]);
-    array_push($arr_c,$row[2]);
-    //Indicamos que la respuesta es correcta
-    $data->response = "OK";
-  }
-  //Obtenemos el nùmero de filas resultantes
-  $rowcount=mysqli_num_rows($result);
-  //Si el número es inferior a 1 devolvemos un KO
-  if($rowcount < 1){
-    $data->response='KO';
-  }
-  //Liberamos recursos
-  mysqli_free_result($result);
-}
+$result = mysqli_query($con, $sql);
 
-$max=0;
-$return=0;
-$cont=0;
-
-//Array que almacena la clave con el valor máximo de coincidencias
-//de palabras
-$select = array();
-
-//Si solo existe una palabra en el nombre cogemos el elemento del array
-//que tiene solo una palabra
-if(count($arr)==1){
-    foreach($arr_a as $key=>$value){
-        $explode = explode(' ', $value);
-        if(count($explode)==1) $return = $key;
-    }
-//En caso de que exista más de una palabra
-}else{
-    //Recorremos las coincidencias de palabras y cada vez que el valor
-    //sea mayor al maximo almacenado almacenamos en el array select la clave
-    //con la coincidencia máxima de palabras
-    foreach($arr_b as $key=>$value){
-        if($value == $max){
-            array_push($select,$key);
-            $cont++;
-        }
-        if($value>$max){
-            $max = $value;
-            $return=$key;
-            $cont=0;
-            $select = array();
-            array_push($select,$key);
-        } 
-        
-    }
-}
 //Inicializamos idFood a 0
-$idFood = "0";
+$idFood = 0;
 
-//Si existe más de una palabra
-if($i>0){
-    //Recorremos el array de claves con el máximo de coincidencias
-    foreach($select as $value){
-        //Devolvemos la calve cuyo valor empiece por la palabra inicial más espacio
-        if(str_starts_with($arr_a[$value], $arr[0]." ")){
-            $return=$value;
-        }
+// Mostramos los registros obtenidos
+if (mysqli_num_rows($result) > 0) {
+  $row = mysqli_fetch_assoc($result);
+  $idFood = $row["id_food"];
+}
+
+if($idFood == 0){
+    $pal = toPlural($pal);
+    // Consulta para obtener registros de la tabla "Food" que tengan las mismas palabras que el nombre "$pal" y que se encuentren al principio de la frase
+    $sql = "SELECT * FROM Food WHERE MATCH(name) AGAINST ('$pal' IN BOOLEAN MODE) AND name LIKE '$pal %' ORDER BY MATCH (name) AGAINST ('$pal') DESC";
+
+    //Ejecutamos la sql
+    $result = mysqli_query($con, $sql);
+
+    // Mostramos los registros obtenidos
+    if (mysqli_num_rows($result) > 0) {
+      $row = mysqli_fetch_assoc($result);
+      $idFood = $row["id_food"];
     }
-    //Si la clave devuelta es diferente a 0 devolvemos el idFood correspondiente
-    if($return != 0) $idFood = $arr_c[$return];
-}else{
-    //Si existe una única palabra devolvemos el idFodd correspondiente
-    $idFood = $arr_c[$return];
 }
 
 //Si el nombre y la fecha de vencimiento existen y no son vacias insertamos los datos del producto

@@ -1,7 +1,8 @@
 <?php
 
+include('../utilities.php')
 
-i//Cargamos las credenciales de la base de datos MySQL
+//Cargamos las credenciales de la base de datos MySQL
 include('../credencialesBaseDatos.php');
 
 //Indicamos que el contenido que vamos a devolver es un json
@@ -43,6 +44,44 @@ if (mysqli_connect_errno()){
   echo "Failed to connect to MySQL: " . mysqli_connect_error();
   exit();
 }
+
+$pal = toSingular(trim($n));
+$pal = str_replace("fideo", "fideos", $pal);
+$pal = str_replace("edulcorante", "azucar blanco", $pal);
+$pal = str_replace("Edulcorante", "Azucar blanco", $pal);
+
+
+// Consulta para obtener registros de la tabla "Food" que tengan las mismas palabras que el nombre "$pal" y que se encuentren al principio de la frase
+$sql = "SELECT * FROM Food WHERE MATCH(name) AGAINST ('$pal' IN BOOLEAN MODE) AND name LIKE '$pal %' ORDER BY MATCH (name) AGAINST ('$pal') DESC";
+
+//Ejecutamos la sql
+$result = mysqli_query($con, $sql);
+
+//Inicializamos idFood a 0
+$idFood = 0;
+
+// Mostramos los registros obtenidos
+if (mysqli_num_rows($result) > 0) {
+  $row = mysqli_fetch_assoc($result);
+  $idFood = $row["id_food"];
+}
+
+if($idFood == 0){
+    $pal = toPlural($pal);
+    // Consulta para obtener registros de la tabla "Food" que tengan las mismas palabras que el nombre "$pal" y que se encuentren al principio de la frase
+    $sql = "SELECT * FROM Food WHERE MATCH(name) AGAINST ('$pal' IN BOOLEAN MODE) AND name LIKE '$pal %' ORDER BY MATCH (name) AGAINST ('$pal') DESC";
+
+    //Ejecutamos la sql
+    $result = mysqli_query($con, $sql);
+
+    // Mostramos los registros obtenidos
+    if (mysqli_num_rows($result) > 0) {
+      $row = mysqli_fetch_assoc($result);
+      $idFood = $row["id_food"];
+    }
+}
+
+
 
 //Creamos un objeto data para devolver la respuesta
 $data = new stdClass();

@@ -21,8 +21,8 @@ http://vandresc.site/video/presentacion.mp4
 # Imagenes
 
 <p style="float:left;">
-<img src="https://github.com/vandrescaceres/myfood/blob/master/myFood_1.png" width="200" height="500"/>
-<img src="https://github.com/vandrescaceres/myfood/blob/master/myFood_2.png" width="200" height="500"/>
-<img src="https://github.com/vandrescaceres/myfood/blob/master/myFood_3.png" width="200" height="500"/>
-<img src="https://github.com/vandrescaceres/myfood/blob/master/myFood_4.png" width="200" height="500"/>
+<img src="https://github.com/vandrescaceres/myfood/blob/master/myFood_1.png" width="230" height="500"/>
+<img src="https://github.com/vandrescaceres/myfood/blob/master/myFood_2.png" width="230" height="500"/>
+<img src="https://github.com/vandrescaceres/myfood/blob/master/myFood_3.png" width="230" height="500"/>
+<img src="https://github.com/vandrescaceres/myfood/blob/master/myFood_4.png" width="230" height="500"/>
 </p>

@@ -14,9 +14,9 @@
 * Servicio API REST por medio de un servidor PHP que se comunica con una base de datos MySQL
 * Servicio API REST de OpenFoodFact para la obtención de los datos de un producto alimentico a partir del código de barras 
 
-# Video presentación
+# Trabajo Final de Grado (TFG) y Vídeo presentación
 
-http://vandresc.site/video/presentacion.mp4
+[TFG y Vídeo](https://openaccess.uoc.edu/handle/10609/147319)
 
 # Imagenes
 

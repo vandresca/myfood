@@ -16,7 +16,7 @@
 
 # Video presentación
 
-http://vandresc.site/video/presentacion.mp4
+[http://vandresc.site/video/presentacion.mp4](https://openaccess.uoc.edu/handle/10609/147319)
 
 # Imagenes
 

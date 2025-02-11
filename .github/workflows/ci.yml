@@ -25,5 +25,7 @@ jobs:
         run: chmod +x gradlew  # Asegurar que Gradle pueda ejecutarse
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
+      - name: Check Gradle version
+        run: ./gradlew --version
       - name: Build app
         run: ./gradlew build

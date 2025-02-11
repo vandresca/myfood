@@ -29,5 +29,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
       - name: Check Gradle version
         run: ./gradlew --version
+      - name: Run Lint (ignore errors)
+        run: ./gradlew lintDebug || true  # Esto hará que el flujo continúe incluso si Lint falla
       - name: Build app
         run: ./gradlew build

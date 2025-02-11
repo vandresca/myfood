@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace 'com.example.myfood'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.example.myfood"
@@ -31,19 +31,15 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_19
+        targetCompatibility JavaVersion.VERSION_19
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '19'
     }
 
     buildFeatures {
         viewBinding true
-    }
-
-    lint {
-                 disable "UnsafeOptInUsageError", "UnsafeOptInUsageWarning"
     }
     
     lintOptions{

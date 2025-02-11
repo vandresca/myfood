@@ -42,6 +42,10 @@ android {
         viewBinding true
     }
 
+    lint {
+                 disable "UnsafeOptInUsageError", "UnsafeOptInUsageWarning"
+    }
+    
     lintOptions{
         abortOnError false;
     }

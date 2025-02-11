@@ -32,4 +32,4 @@ jobs:
       - name: Run Lint (ignore errors)
         run: ./gradlew lintDebug || true  # Esto hará que el flujo continúe incluso si Lint falla
       - name: Build app
-        run: ./gradlew build
+        run: ./gradlew --warning-mode all build 

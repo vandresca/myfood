@@ -522,7 +522,8 @@ internal class MyFoodRepositoryTest {
         //We select group 2: Vitamins
         val response = myFoodRepository.getNutrientsByType(
             "2",
-            "2004"
+            "2004",
+            "5"
         ).getOrAwaitValueTest()
         Assert.assertEquals(response.foodNutrients[0].column, "Calcio(mg)")
         Assert.assertEquals(response.foodNutrients[0].value, "110.00")

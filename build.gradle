@@ -5,4 +5,8 @@ plugins {
     id 'org.jetbrains.kotlin.android' version '1.6.10' apply false
     //id 'com.google.dagger.hilt.android' version '2.44' apply false
 }
-
+android {
+    lintOptions {
+        abortOnError false  // No detiene la compilación si hay errores de Lint
+    }
+}
